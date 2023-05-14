@@ -24,7 +24,13 @@ class Conductor(Persona):
     def __str__(self):
         return f'{self.cedula} - {self.nombres} {self.apellidos} - {self.licencia}'
 
+class Propietario(Persona):
+    pass
+
 class Vehiculo(models.Model):
+    propietario = models.ForeignKey(
+        Propietario, on_delete=models.CASCADE, related_name='vehiculos', default=1
+    )
     marca = models.CharField('Marca', max_length=50)
     modelo = models.CharField('Modelo', max_length=50)
     placa = models.CharField('Placa', max_length=10, unique=True)
@@ -38,6 +44,7 @@ class Vehiculo(models.Model):
     fotografia = models.ImageField('Fotografía', upload_to='vehiculos', null=True, blank=True)
 
 class Matricula(models.Model):
+    propietario = models.ForeignKey(Propietario, on_delete=models.SET_NULL, null=True)
     vehiculo = models.OneToOneField(Vehiculo, on_delete=models.CASCADE, related_name='matricula')
     matricula = models.CharField('Matrícula', max_length=50, unique=True)
     foto = models.ImageField('Fotografía', upload_to='matriculas', null=True, blank=True)
