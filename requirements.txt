@@ -248,7 +248,7 @@ soupsieve==2.2.1
 SpeechRecognition==3.9.0
 Sphinx==3.4.3
 sphinxcontrib-napoleon==0.7
-sqlparse==0.4.1
+sqlparse==0.4.4
 stack-data==0.6.2
 stem==1.8.1
 sympy==1.11.1
