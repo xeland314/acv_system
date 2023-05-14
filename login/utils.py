@@ -1,5 +1,12 @@
-"""
-Módulo utils que contiene clases y variables de utilidad para el proyecto.
+"""utils.py
+
+Este módulo define varias clases y funciones de utilidad para el proyecto,
+incluyendo clases de enumeración para representar
+estados civiles y niveles de educación, y funciones
+para validar cédulas y números de teléfono en Ecuador.
+
+Autor: Christopher Villamarín (@xeland314)
+Dependencias: enum.Enum, re
 """
 
 from enum import Enum
@@ -25,11 +32,11 @@ class NivelEducacion(Enum):
     BACHILLERATO = "Bachillerato"
     SUPERIOR = "Superior"
 
-# Tupla con los valores de la clase enumeración EstadoCivil
-ESTADOS_CIVILES = tuple(map(lambda e: e.value , EstadoCivil))
+# Lista con los valores de la clase enumeración EstadoCivil
+ESTADOS_CIVILES = [(tag.name, tag.value) for tag in EstadoCivil]
 
-# Tupla con los valores de la clase enumeración NivelEducacion
-NIVELES_EDUCACION = tuple(map(lambda e: e.value , NivelEducacion))
+# Lista con los valores de la clase enumeración NivelEducacion
+NIVELES_EDUCACION = [(tag.name, tag.value) for tag in NivelEducacion]
 
 def es_una_cedula_valida(cedula: str) -> bool:
     """Verifica si una cédula ecuatoriana es válida.
