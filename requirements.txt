@@ -284,7 +284,7 @@ webcolors==1.12
 webencodings==0.5.1
 websocket-client==1.4.2
 websockets==10.4
-Werkzeug==2.2.2
+Werkzeug==2.2.3
 wifite==2.5.8
 WoeUSB-ng==0.2.10.post2
 wordcloud==1.8.2.2
