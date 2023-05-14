@@ -84,7 +84,7 @@ imagesize==1.2.0
 importlib-metadata==5.0.0
 instaloader==4.9.5
 ipykernel==6.20.1
-ipython==8.8.0
+ipython==8.10.0
 ipython-genutils==0.2.0
 isc==2.0
 isoduration==20.11.0
