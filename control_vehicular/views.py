@@ -1,10 +1,52 @@
 from rest_framework import viewsets
-from .serializers import VehiculoSerializer
-from .models import Vehiculo
+from .serializers import (
+    ConductorSerializer, LicenciaSerializer,
+    LlantaSerializer, MatriculaSerializer,
+    PropietarioSerializer, VehiculoSerializer
+)
+from .models import (
+    Conductor, Licencia, Llanta,
+    Matricula, Propietario, Vehiculo
+)
+
+class ConductorView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear conductores.
+    """
+    queryset = Conductor.objects.all()
+    serializer_class = ConductorSerializer
+
+class LicenciaView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear licencias.
+    """
+    queryset = Licencia.objects.all()
+    serializer_class = LicenciaSerializer
+
+class LlantaView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear llantas.
+    """
+    queryset = Llanta.objects.all()
+    serializer_class = LlantaSerializer
+
+class MatriculaView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear matriculas.
+    """
+    queryset = Matricula.objects.all()
+    serializer_class = MatriculaSerializer
+
+class PropietarioView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear propietarios.
+    """
+    queryset = Propietario.objects.all()
+    serializer_class = PropietarioSerializer
 
 class VehiculoView(viewsets.ModelViewSet):
     """
     Clase que define la vista para listar y crear vehiculos.
     """
     queryset = Vehiculo.objects.all()
-    serializer_class = VehiculoSerializer 
+    serializer_class = VehiculoSerializer
