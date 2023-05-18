@@ -47,7 +47,7 @@ class PersonaSerializer(serializers.ModelSerializer):
 
         model = Persona
         fields = (
-            'nombres', 'apellidos', 'cedula', 'email',
+            'nombres', 'apellidos', 'cedula', 'email', 'direccion'
             'telefono', 'fecha_nacimiento', 'nivel_educacion',
             'estado_civil', 'contrasena', 'contrasena2', 'fotografia'
         )

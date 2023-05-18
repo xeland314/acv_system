@@ -41,6 +41,7 @@ class Persona(models.Model):
     cedula = models.CharField('Cédula', max_length=10, blank=False)
     email = models.EmailField('Email', max_length=100, blank=False)
     telefono = models.CharField('Teléfono', max_length=15, blank=False)
+    direccion = models.TextField('Dirección', blank=True)
     fecha_nacimiento = models.DateField('Fecha de nacimiento', blank=False)
     nivel_educacion = models.CharField(
         'Nivel de educación', max_length=30, choices=NIVELES_EDUCACION
