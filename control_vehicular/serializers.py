@@ -5,7 +5,7 @@ Autor: Christopher Villamarín (@xeland314)
 """
 
 from rest_framework import serializers
-from .models import Licencia, Conductor, Propietario, Vehiculo, Matricula, Llanta
+from .models import Bateria, Licencia, Conductor, Propietario, Vehiculo, Matricula, Llanta
 
 class LicenciaSerializer(serializers.ModelSerializer):
     """
@@ -85,4 +85,14 @@ class LlantaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Llanta
+        fields = '__all__'
+
+class BateriaSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Batería.
+    """
+    vehiculo = VehiculoSerializer()
+
+    class Meta:
+        model = Bateria
         fields = '__all__'

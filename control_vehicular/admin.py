@@ -1,10 +1,11 @@
 from django.contrib import admin
 
 from .models import (
-    Conductor, Licencia, Llanta, 
+    Bateria, Conductor, Licencia, Llanta,
     Matricula, Propietario, Vehiculo
 )
 
+admin.site.register(Bateria)
 admin.site.register(Conductor)
 admin.site.register(Licencia)
 admin.site.register(Llanta)

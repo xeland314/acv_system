@@ -137,3 +137,15 @@ class Llanta(models.Model):
     posicion_respecto_al_vehiculo = models.CharField(
         'Posición respecto al vehículo', max_length=50, choices=POSICIONES_LLANTA
     )
+
+class Bateria(models.Model):
+    """
+    Representa una batería de un vehículo.
+
+    Atributos:
+        - vehiculo (Vehiculo): El vehículo al que pertenece la batería.
+        - codigo_de_fabricacion (str): El código de fabricación de la batería.
+    """
+
+    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, related_name='baterias')
+    codigo_de_fabricacion = models.CharField('Código de fabricación', max_length=50)
