@@ -8,11 +8,12 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (
-    ConductorView, LicenciaView, LlantaView,
+    BateriaView, ConductorView, LicenciaView, LlantaView,
     MatriculaView, PropietarioView, VehiculoView
 )
 
 router = routers.DefaultRouter()
+router.register(r'baterias', BateriaView, basename='baterias')
 router.register(r'vehiculos', VehiculoView, basename='vehiculos')
 router.register(r'conductores', ConductorView, basename='conductores')
 router.register(r'propietarios', PropietarioView, basename='propietarios')

@@ -34,7 +34,6 @@ class Licencia(models.Model):
     """
     tipo = models.CharField(max_length=2, choices=TIPOS_LICENCIA)
     fecha_de_caducidad = models.DateField(blank=False)
-    es_profesional = models.BooleanField(blank=False)
 
     def __str__(self):
         return f'{self.tipo} - {self.fecha_de_caducidad}'
