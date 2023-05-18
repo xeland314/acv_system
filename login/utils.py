@@ -33,10 +33,10 @@ class NivelEducacion(Enum):
     SUPERIOR = "Superior"
 
 # Lista con los valores de la clase enumeración EstadoCivil
-ESTADOS_CIVILES = [(tag.name, tag.value) for tag in EstadoCivil]
+ESTADOS_CIVILES = [(tag.value, tag.name) for tag in EstadoCivil]
 
 # Lista con los valores de la clase enumeración NivelEducacion
-NIVELES_EDUCACION = [(tag.name, tag.value) for tag in NivelEducacion]
+NIVELES_EDUCACION = [(tag.value, tag.name) for tag in NivelEducacion]
 
 def es_una_cedula_valida(cedula: str) -> bool:
     """Verifica si una cédula ecuatoriana es válida.

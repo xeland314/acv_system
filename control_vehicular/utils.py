@@ -81,8 +81,8 @@ class TipoLicencia(Enum):
     E = 'E'
     E1 = 'E1'
 
-COMBUSTIBLES = [(tag.name, tag.value) for tag in Combustible]
-TIPOS_VEHICULO = [(tag.name, tag.value) for tag in TipoVehiculo]
-CONDICIONES_VEHICULARES = [(tag.name, tag.value) for tag in CondicionVehicular]
-POSICIONES_LLANTA = [(tag.name, tag.value) for tag in PosicionLlanta]
-TIPOS_LICENCIA = [(tag.name, tag.value) for tag in TipoLicencia]
+COMBUSTIBLES = [(tag.value, tag.name) for tag in Combustible]
+TIPOS_VEHICULO = [(tag.value, tag.name) for tag in TipoVehiculo]
+CONDICIONES_VEHICULARES = [(tag.value, tag.name) for tag in CondicionVehicular]
+POSICIONES_LLANTA = [(tag.value, tag.name) for tag in PosicionLlanta]
+TIPOS_LICENCIA = [(tag.value, tag.name) for tag in TipoLicencia]
