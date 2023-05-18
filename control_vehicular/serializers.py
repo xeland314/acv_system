@@ -23,7 +23,6 @@ class LicenciaSerializer(serializers.ModelSerializer):
         model = Licencia
         fields = ('tipo', 'fecha_de_caducidad')
 
-
 class ConductorSerializer(PersonaSerializer):
     """
     Serializador para el modelo Conductor.
