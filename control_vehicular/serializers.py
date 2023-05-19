@@ -1,57 +1,110 @@
+"""
+Este módulo contiene los serializadores de los modelos de control_vehicular.
+
+Autor: Christopher Villamarín (@xeland314)
+"""
+
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Vehiculo, Matricula, Llanta
+from login.serializers import PersonaSerializer
+from .models import Bateria, Licencia, Conductor, Propietario, Vehiculo, Matricula, Llanta
 
-class MatriculaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Matricula
-        fields = ('id', 'matricula', 'foto')
+class LicenciaSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Licencia.
 
-class LlantaSerializer(serializers.ModelSerializer):
+    Campos:
+        - tipo: tipo de licencia.
+        - fecha_de_caducidad: fecha de caducidad de la licencia.
+        - es_profesional: indica si la licencia es profesional.
+    """
+
     class Meta:
-        model = Llanta
-        fields = ('id', 'codigo_de_fabricacion', 'posicion_respecto_al_vehiculo')
+        model = Licencia
+        fields = ('tipo', 'fecha_de_caducidad')
+
+class ConductorSerializer(PersonaSerializer):
+    """
+    Serializador para el modelo Conductor.
+    """
+    licencia = LicenciaSerializer()
+
+    class Meta:
+        model = Conductor
+        fields = (
+            'nombres', 'apellidos', 'cedula', 'email', 'direccion',
+            'telefono', 'fecha_nacimiento', 'nivel_educacion',
+            'estado_civil', 'contrasena', 'contrasena2', 'fotografia',
+            'licencia'
+        )
+        verbose_name_plural = 'Conductores'
+
+    def create(self, validated_data: dict):
+        """Crea una nueva instancia del modelo Persona a partir de los datos validados.
+
+        Args:
+            validated_data: Diccionario con los datos validados.
+
+        Returns:
+            Conductor: Nueva instancia del modelo Persona creada a partir de los datos validados.
+        """
+        password = validated_data.pop('contrasena')
+        username = validated_data.get('cedula')
+        email = validated_data.get('email')
+        datos_licencia = validated_data.pop('licencia')
+        licencia = Licencia.objects.create(**datos_licencia)
+        user = User.objects.create_user(username, email, password)
+        validated_data['user'] = user
+        validated_data['licencia'] = licencia
+        usuario = Conductor.objects.create(**validated_data)
+        return usuario
+
+class PropietarioSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Propietario.
+    """
+    class Meta:
+        model = Propietario
+        fields = '__all__'
 
 class VehiculoSerializer(serializers.ModelSerializer):
-    matricula = MatriculaSerializer()
-    llantas = LlantaSerializer(many=True)
+    """
+    Serializador para el modelo Vehiculo.
+    """
+    propietario = PropietarioSerializer()
+    matricula = serializers.CharField(source='matricula.matricula', read_only=True)
 
     class Meta:
         model = Vehiculo
-        fields = (
-            'id', 'marca', 'modelo', 'placa', 'anio_de_fabricacion', 'color', 'cilindraje', 'tonelaje',
-            'unidad_carburaje', 'combustible', 'condicion', 'fotografia', 'matricula', 'llantas'
-        )
+        fields = '__all__'
 
-    def create(self, validated_data):
-        matricula_data = validated_data.pop('matricula')
-        llantas_data = validated_data.pop('llantas')
-        vehiculo = Vehiculo.objects.create(**validated_data)
-        Matricula.objects.create(vehiculo=vehiculo, **matricula_data)
-        for llanta_data in llantas_data:
-            Llanta.objects.create(vehiculo=vehiculo, **llanta_data)
-        return vehiculo
+class MatriculaSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Matricula.
+    """
+    propietario = PropietarioSerializer()
+    vehiculo = VehiculoSerializer()
 
-    def update(self, instance, validated_data):
-        matricula_data = validated_data.pop('matricula')
-        llantas_data = validated_data.pop('llantas')
-        matricula = instance.matricula
-        matricula.matricula = matricula_data.get('matricula', matricula.matricula)
-        matricula.foto = matricula_data.get('foto', matricula.foto)
-        matricula.save()
-        llantas = {llanta.id: llanta for llanta in instance.llantas.all()}
-        for llanta_data in llantas_data:
-            llanta_id = llanta_data.get('id', None)
-            if llanta_id:
-                if llanta_id in llantas:
-                    llanta = llantas.pop(llanta_id)
-                    llanta.codigo_de_fabricacion = llanta_data.get('codigo_de_fabricacion', llanta.codigo_de_fabricacion)
-                    llanta.posicion_respecto_al_vehiculo = llanta_data.get('posicion_respecto_al_vehiculo', llanta.posicion_respecto_al_vehiculo)
-                    llanta.save()
-                else:
-                    Llanta.objects.create(vehiculo=instance, **llanta_data)
-        for llanta in llantas.values():
-            llanta.delete()
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
+    class Meta:
+        model = Matricula
+        fields = '__all__'
+
+class LlantaSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Llanta.
+    """
+    vehiculo = VehiculoSerializer()
+
+    class Meta:
+        model = Llanta
+        fields = '__all__'
+
+class BateriaSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo Batería.
+    """
+    vehiculo = VehiculoSerializer()
+
+    class Meta:
+        model = Bateria
+        fields = '__all__'
