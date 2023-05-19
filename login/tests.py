@@ -8,14 +8,17 @@ Dependencias: django.test.TestCase, django.contrib.auth.models.User,
     rest_framework.test.APIClient, .models.Persona, .utils.es_una_cedula_valida,
     .utils.es_un_numero_de_telefono_valido
 """
-from datetime import date
+from datetime import date, timedelta
 import unittest
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from .models import Persona
-from .utils import es_una_cedula_valida, es_un_numero_de_telefono_valido
+from .utils import (
+    es_una_cedula_valida, es_un_numero_de_telefono_valido,
+    es_una_fecha_de_nacimiento_valida
+)
 
 class UtilsTestCase(TestCase):
     """Clase de pruebas para las funciones de utilidad."""
@@ -71,6 +74,34 @@ class UtilsTestCase(TestCase):
         # Otros casos inválidos
         self.assertFalse(es_un_numero_de_telefono_valido(""))  # Cadena vacía
         self.assertFalse(es_un_numero_de_telefono_valido(" "))  # Espacio en blanco
+
+    def test_es_una_fecha_de_nacimiento_valida(self):
+        """Prueba la función es_una_fecha_de_nacimiento_valida.
+
+        Verifica si la función es_una_fecha_de_nacimiento_valida devuelve
+        el resultado esperado para diferentes casos de entrada,
+        incluyendo fechas de nacimiento válidas e inválidas.
+        """
+        hoy = date.today()
+        # Ayer fue su cumpleaños #18
+        edad_18_1 = hoy.replace(year=(hoy.year - 18)) - timedelta(days=1)
+        # Hoy es el cumpleaños #18
+        edad_18 = hoy.replace(year=(hoy.year - 18))
+        # Mañana será el cumpleaños #18
+        edad_17 = hoy.replace(year=(hoy.year - 18)) + timedelta(days=1)
+        # Casos válidos de fechas de nacimiento
+        self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18_1))
+        self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18))
+        self.assertTrue(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*19)))
+        self.assertTrue(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*20)))
+        self.assertTrue(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*30)))
+
+        # Casos inválidos de fechas de nacimiento
+        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy))
+        self.assertFalse(es_una_fecha_de_nacimiento_valida(edad_17))
+        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*17)))
+        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*16)))
+        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*10)))
 
 class ViewsTestCase(TestCase):
     """Clase de pruebas para las vistas."""

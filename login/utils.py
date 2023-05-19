@@ -9,6 +9,7 @@ Autor: Christopher Villamarín (@xeland314)
 Dependencias: enum.Enum, re
 """
 
+from datetime import date
 from enum import Enum
 import re
 
@@ -71,6 +72,32 @@ def es_una_cedula_valida(cedula: str) -> bool:
         return int(cedula[9]) == verificador
 
     return int(cedula[9]) == (10 - verificador)
+
+def es_una_fecha_de_nacimiento_valida(fecha_nacimiento: date) -> bool:
+    """Verifica si una fecha de nacimiento es válida.
+
+    Esta función toma una fecha de nacimiento como argumento y verifica si
+    la persona es mayor de edad (mayor o igual a 18 años).
+
+    Args:
+        fecha_nacimiento (date): La fecha de nacimiento a validar.
+
+    Returns:
+        bool: True si la fecha de nacimiento es válida, False en caso contrario.
+    """
+    hoy = date.today()
+    edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+    if edad >= 18:
+        return True
+    elif edad == 17 and hoy.month == fecha_nacimiento.month and hoy.day == fecha_nacimiento.day:
+        anos_bisiestos = 0
+        for year in range(fecha_nacimiento.year, hoy.year):
+            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+                anos_bisiestos += 1
+        dias = (hoy - fecha_nacimiento).days - anos_bisiestos
+        return dias >= 365 * 18
+    else:
+        return False
 
 def es_un_numero_de_telefono_valido(telefono: str) -> bool:
     """Verifica si un número de teléfono o celular en Ecuador es válido.
