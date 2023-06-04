@@ -23,5 +23,6 @@ urlpatterns = [
     path('api_generate_token/', views.obtain_auth_token),
     path('auth/', include('login.urls')),
     path('', include('control_vehicular.urls')),
+    path('', include('operaciones.urls')),
     path('docs/', include_docs_urls(title='Users API')),
 ]
