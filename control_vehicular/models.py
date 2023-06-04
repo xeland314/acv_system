@@ -12,6 +12,7 @@ Dependencias:
 
 from datetime import date
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from login.models import Persona
 
@@ -56,6 +57,10 @@ class Conductor(Persona):
 
     licencia = models.OneToOneField(Licencia, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name = _("Conductor")
+        verbose_name_plural = _("Conductores")
+
     def __str__(self):
         return f'{self.cedula} - {self.nombres} {self.apellidos} - {self.licencia}'
 
@@ -96,7 +101,7 @@ class Vehiculo(models.Model):
     color = models.CharField('Color', max_length=50)
     cilindraje = models.FloatField('Cilindraje')
     tonelaje = models.FloatField('Tonelaje')
-    unidad_carburaje = models.FloatField('Unidad de carburaje')
+    unidad_carburante = models.FloatField('Unidad carburante')
     combustible = models.CharField('Combustible', max_length=30, choices=COMBUSTIBLES)
     condicion = models.CharField(
         'Condición vehicular', max_length=30, choices=CONDICIONES_VEHICULARES
