@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from .models import Persona
+from .exceptions import CedulaInvalida
 from .utils import (
     es_una_cedula_valida, es_un_numero_de_telefono_valido,
     es_una_fecha_de_nacimiento_valida
@@ -34,17 +35,28 @@ class UtilsTestCase(TestCase):
         self.assertTrue(es_una_cedula_valida("1753828696"))
 
         # Casos inválidos de cédulas ecuatorianas
-        self.assertFalse(es_una_cedula_valida("123456789"))  # Cédula incompleta
-        #self.assertFalse(es_una_cedula_valida("abcdefghij"))  # Cédula no numérica
-        #self.assertFalse(es_una_cedula_valida("123456789X"))  # Cédula con carácter no numérico
-        #self.assertFalse(es_una_cedula_valida("123456789X0"))  # Cédula con carácter no numérico
-        #self.assertFalse(es_una_cedula_valida("0000000000"))  # Cédula con todos los dígitos iguales
-        self.assertFalse(es_una_cedula_valida("9999999999"))  # Cédula con todos los dígitos iguales
-
-        # Otros casos inválidos
-        self.assertFalse(es_una_cedula_valida(""))  # Cadena vacía
-        self.assertFalse(es_una_cedula_valida(" "))  # Espacio en blanco
-
+        self.assertTrue(es_una_cedula_valida("0000000000"))
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "123456789"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "abcdefghij"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "123456789X"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "123456789X0"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "9999999999"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, ""
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, " "
+        )
 
     def test_es_un_numero_de_telefono_valido(self):
         """Prueba la función es_un_numero_de_telefono_valido.
@@ -118,8 +130,8 @@ class ViewsTestCase(TestCase):
             fecha_nacimiento=date(2000, 1, 1),
             telefono='0987654321',
             direccion='Calle Principal',
-            nivel_educacion='Superior',
-            estado_civil='Soltero'
+            nivel_educacion='SUPERIOR',
+            estado_civil='SOLTERO'
         )
         self.api_direcction = '/auth/api/v1/users/'
 
@@ -150,8 +162,8 @@ class ViewsTestCase(TestCase):
             'email': 'johndoe@example.com',
             'telefono': '0987129357',
             'fecha_nacimiento': date(2000, 1, 1),
-            'nivel_educacion': 'Superior',
-            'estado_civil': 'Soltero',
+            'nivel_educacion': 'SUPERIOR',
+            'estado_civil': 'SOLTERO',
             'contrasena': 'password',
             'contrasena2': 'password'
         }
