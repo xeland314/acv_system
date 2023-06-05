@@ -1,2 +1,5 @@
+[MASTER]
+ignore=migrations
+
 [TYPECHECK]
 ignored-classes=Administrador, AperturaOrdenMovimiento, Bateria, CierreOrdenMovimiento, Conductor, Licencia, Llanta, Matricula, OrdenTrabajo, OrdenMovimiento, Persona, Propietario, Responsable, Token, Vehiculo
