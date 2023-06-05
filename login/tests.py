@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from .models import Persona
+from .exceptions import CedulaInvalida
 from .utils import (
     es_una_cedula_valida, es_un_numero_de_telefono_valido,
     es_una_fecha_de_nacimiento_valida
@@ -32,19 +33,30 @@ class UtilsTestCase(TestCase):
         """
         # Casos válidos de cédulas ecuatorianas
         self.assertTrue(es_una_cedula_valida("1753828696"))
+        self.assertTrue(es_una_cedula_valida("0000000000"))
 
         # Casos inválidos de cédulas ecuatorianas
-        self.assertFalse(es_una_cedula_valida("123456789"))  # Cédula incompleta
-        #self.assertFalse(es_una_cedula_valida("abcdefghij"))  # Cédula no numérica
-        #self.assertFalse(es_una_cedula_valida("123456789X"))  # Cédula con carácter no numérico
-        #self.assertFalse(es_una_cedula_valida("123456789X0"))  # Cédula con carácter no numérico
-        #self.assertFalse(es_una_cedula_valida("0000000000"))  # Cédula con todos los dígitos iguales
-        self.assertFalse(es_una_cedula_valida("9999999999"))  # Cédula con todos los dígitos iguales
-
-        # Otros casos inválidos
-        self.assertFalse(es_una_cedula_valida(""))  # Cadena vacía
-        self.assertFalse(es_una_cedula_valida(" "))  # Espacio en blanco
-
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "123456789"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "abcdefghij"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "123456789X"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "123456789X0"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "9999999999"
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, ""
+        )
+        self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, " "
+        )
 
     def test_es_un_numero_de_telefono_valido(self):
         """Prueba la función es_un_numero_de_telefono_valido.
@@ -62,14 +74,14 @@ class UtilsTestCase(TestCase):
         self.assertTrue(es_un_numero_de_telefono_valido("+593991234567"))
 
         # Casos inválidos de números de teléfono ecuatorianos
-        self.assertFalse(es_un_numero_de_telefono_valido("123456789"))  # Número demasiado corto
-        self.assertFalse(es_un_numero_de_telefono_valido("abcdefghij"))  # Número no numérico
-        self.assertFalse(es_un_numero_de_telefono_valido("098712935"))  # Número sin el dígito de control
-        self.assertFalse(es_un_numero_de_telefono_valido("59398712935"))  # Número sin el dígito de control
-        self.assertFalse(es_un_numero_de_telefono_valido("+59398712935"))  # Número sin el dígito de control
-        self.assertFalse(es_un_numero_de_telefono_valido("09912345678"))  # Número demasiado largo
-        self.assertFalse(es_un_numero_de_telefono_valido("5939912345678"))  # Número demasiado largo
-        self.assertFalse(es_un_numero_de_telefono_valido("+5939912345678"))  # Número demasiado largo
+        self.assertFalse(es_un_numero_de_telefono_valido("123456789"))
+        self.assertFalse(es_un_numero_de_telefono_valido("abcdefghij"))
+        self.assertFalse(es_un_numero_de_telefono_valido("098712935"))
+        self.assertFalse(es_un_numero_de_telefono_valido("59398712935"))
+        self.assertFalse(es_un_numero_de_telefono_valido("+59398712935"))
+        self.assertFalse(es_un_numero_de_telefono_valido("09912345678"))
+        self.assertFalse(es_un_numero_de_telefono_valido("5939912345678"))
+        self.assertFalse(es_un_numero_de_telefono_valido("+5939912345678"))
 
         # Otros casos inválidos
         self.assertFalse(es_un_numero_de_telefono_valido(""))  # Cadena vacía
@@ -84,11 +96,11 @@ class UtilsTestCase(TestCase):
         """
         hoy = date.today()
         # Ayer fue su cumpleaños #18
-        edad_18_1 = hoy.replace(year=(hoy.year - 18)) - timedelta(days=1)
+        edad_18_1 = hoy.replace(hoy.year - 18) - timedelta(days=1)
         # Hoy es el cumpleaños #18
-        edad_18 = hoy.replace(year=(hoy.year - 18))
+        edad_18 = hoy.replace(hoy.year - 18)
         # Mañana será el cumpleaños #18
-        edad_17 = hoy.replace(year=(hoy.year - 18)) + timedelta(days=1)
+        edad_17 = hoy.replace(hoy.year - 18) + timedelta(days=1)
         # Casos válidos de fechas de nacimiento
         self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18_1))
         self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18))
@@ -118,8 +130,8 @@ class ViewsTestCase(TestCase):
             fecha_nacimiento=date(2000, 1, 1),
             telefono='0987654321',
             direccion='Calle Principal',
-            nivel_educacion='Superior',
-            estado_civil='Soltero'
+            nivel_educacion='SUPERIOR',
+            estado_civil='SOLTERO'
         )
         self.api_direcction = '/auth/api/v1/users/'
 
@@ -150,8 +162,8 @@ class ViewsTestCase(TestCase):
             'email': 'johndoe@example.com',
             'telefono': '0987129357',
             'fecha_nacimiento': date(2000, 1, 1),
-            'nivel_educacion': 'Superior',
-            'estado_civil': 'Soltero',
+            'nivel_educacion': 'SUPERIOR',
+            'estado_civil': 'SOLTERO',
             'contrasena': 'password',
             'contrasena2': 'password'
         }

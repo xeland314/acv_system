@@ -9,9 +9,11 @@ Dependencias: django.contrib.auth.models.User, django.db.models
 from datetime import date
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from .exceptions import (
+    CedulaInvalida, FechaDeNacimientoInvalida, TelefonoInvalido
+)
 from .utils import (
     es_un_numero_de_telefono_valido, es_una_cedula_valida,
     es_una_fecha_de_nacimiento_valida,
@@ -29,12 +31,12 @@ def validar_cedula(cedula: str):
         cedula (str): La cédula a validar.
 
     Raises:
-        ValidationError: Si la cédula no es válida.
+        CedulaInvalida: Si la cédula no es válida.
     """
     if not es_una_cedula_valida(cedula):
-        raise ValidationError(
-            _('%(value)s no es una cédula válida'),
-            params={'value': cedula},
+        raise CedulaInvalida(
+            f"{cedula} no es una cédula válida.",
+            params={'value': cedula}
         )
 
 def validar_fecha_de_nacimiento(fecha_nacimiento: date):
@@ -48,13 +50,10 @@ def validar_fecha_de_nacimiento(fecha_nacimiento: date):
         fecha_nacimiento (date): La fecha de nacimiento a validar.
 
     Raises:
-        ValidationError: Si la fecha de nacimiento no es válida.
+        FechaDeNacimientoInvalida: Si la fecha de nacimiento no es válida.
     """
     if not es_una_fecha_de_nacimiento_valida(fecha_nacimiento):
-        raise ValidationError(
-            _('La persona debe ser mayor de edad'),
-            params={'value': fecha_nacimiento},
-        )
+        raise FechaDeNacimientoInvalida(params={'value': fecha_nacimiento})
 
 def validar_numero_de_telefono(telefono: str):
     """Valida si un número de teléfono es válido.
@@ -67,13 +66,10 @@ def validar_numero_de_telefono(telefono: str):
         telefono (str): El número de teléfono a validar.
 
     Raises:
-        ValidationError: Si el número de teléfono no es válido.
+        TelefonoInvalido: Si el número de teléfono no es válido.
     """
     if not es_un_numero_de_telefono_valido(telefono):
-        raise ValidationError(
-            _('%(value)s no es un número de teléfono válido'),
-            params={'value': telefono},
-        )
+        raise TelefonoInvalido(params={'value': telefono})
 
 class Persona(models.Model):
     """Modelo para almacenar información sobre personas.
@@ -98,27 +94,72 @@ class Persona(models.Model):
     """
 
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nombres = models.CharField('Nombres', max_length=150, blank=False)
-    apellidos = models.CharField('Apellidos', max_length=150, blank=False)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        help_text=_("Relación uno a uno con el modelo User de Django.")
+    )
+    nombres = models.CharField(
+        _('Nombres'),
+        max_length=150,
+        blank=False,
+        help_text=_("Nombres de la persona.")
+    )
+    apellidos = models.CharField(
+        _('Apellidos'),
+        max_length=150,
+        blank=False,
+        help_text=_("Apellidos de la persona.")
+    )
     cedula = models.CharField(
-        'Cédula', max_length=10, blank=False, validators=[validar_cedula]
+        _('Cédula'),
+        max_length=10,
+        blank=False,
+        validators=[validar_cedula],
+        help_text=_("Cédula de la persona.")
     )
-    email = models.EmailField('Email', max_length=100, blank=False)
+    email = models.EmailField(
+        _('Email'),
+        max_length=100,
+        blank=False,
+        help_text=_("Email de la persona.")
+    )
     telefono = models.CharField(
-        'Teléfono', max_length=15, blank=False, validators=[validar_numero_de_telefono]
+        _('Teléfono'),
+        max_length=15,
+        blank=False,
+        validators=[validar_numero_de_telefono],
+        help_text=_("Teléfono de la persona.")
     )
-    direccion = models.TextField('Dirección', blank=True)
+    direccion = models.TextField(
+        _('Dirección'),
+        blank=True,
+        help_text=_("Dirección de la persona.")
+    )
     fecha_nacimiento = models.DateField(
-        'Fecha de nacimiento', blank=False, validators=[validar_fecha_de_nacimiento]
+        _('Fecha de nacimiento'),
+        blank=False,
+        validators=[validar_fecha_de_nacimiento],
+        help_text=_("Fecha de nacimiento de la persona.")
     )
     nivel_educacion = models.CharField(
-        'Nivel de educación', max_length=30, choices=NIVELES_EDUCACION
+        _('Nivel de educación'),
+        max_length=30,
+        choices=NIVELES_EDUCACION,
+        help_text=_("Nivel de educación de la persona.")
     )
     estado_civil = models.CharField(
-        'Estado Civil', max_length=20, choices=ESTADOS_CIVILES
+        _('Estado Civil'),
+        max_length=20,
+        choices=ESTADOS_CIVILES,
+        help_text=_("Estado civil de la persona.")
     )
-    fotografia = models.ImageField('Fotografía', null=True, blank=True)
+    fotografia = models.ImageField(
+      _('Fotografía'),
+      null=True,
+      blank=True,
+      help_text=_("Fotografía opcional de la persona.")
+    )
 
     def __str__(self) -> str:
         return f"{self.cedula} - {self.nombres} {self.apellidos}"

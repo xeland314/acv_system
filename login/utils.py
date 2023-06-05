@@ -13,6 +13,8 @@ from datetime import date
 from enum import Enum
 import re
 
+from .exceptions import CedulaInvalida
+
 class EstadoCivil(Enum):
     """
     Clase enumeración para representar los diferentes estados civiles.
@@ -34,10 +36,10 @@ class NivelEducacion(Enum):
     SUPERIOR = "Superior"
 
 # Lista con los valores de la clase enumeración EstadoCivil
-ESTADOS_CIVILES = [(tag.value, tag.name) for tag in EstadoCivil]
+ESTADOS_CIVILES = [(tag.name, tag.value) for tag in EstadoCivil]
 
 # Lista con los valores de la clase enumeración NivelEducacion
-NIVELES_EDUCACION = [(tag.value, tag.name) for tag in NivelEducacion]
+NIVELES_EDUCACION = [(tag.name, tag.value)  for tag in NivelEducacion]
 
 def es_una_cedula_valida(cedula: str) -> bool:
     """Verifica si una cédula ecuatoriana es válida.
@@ -53,11 +55,14 @@ def es_una_cedula_valida(cedula: str) -> bool:
 
     Returns:
         bool: `True` si la cédula es válida, `False` en caso contrario.
-    """
-    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
 
-    if len(cedula) != 10:
-        return False
+    Raises:
+        CedulaInvalida: Si la cédula no cumple con el formato esperado.
+    """
+    if not re.match(r"^[012]\d{9}$", cedula):
+        raise CedulaInvalida()
+
+    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
 
     tercer_digito = int(cedula[2])
     if tercer_digito < 0 or tercer_digito > 5:
@@ -86,18 +91,19 @@ def es_una_fecha_de_nacimiento_valida(fecha_nacimiento: date) -> bool:
         bool: True si la fecha de nacimiento es válida, False en caso contrario.
     """
     hoy = date.today()
-    edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+    edad = hoy.year - fecha_nacimiento.year - (
+        (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
+    )
     if edad >= 18:
         return True
-    elif edad == 17 and hoy.month == fecha_nacimiento.month and hoy.day == fecha_nacimiento.day:
+    if edad == 17 and hoy.month == fecha_nacimiento.month and hoy.day == fecha_nacimiento.day:
         anos_bisiestos = 0
         for year in range(fecha_nacimiento.year, hoy.year):
             if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
                 anos_bisiestos += 1
         dias = (hoy - fecha_nacimiento).days - anos_bisiestos
         return dias >= 365 * 18
-    else:
-        return False
+    return False
 
 def es_un_numero_de_telefono_valido(telefono: str) -> bool:
     """Verifica si un número de teléfono o celular en Ecuador es válido.
