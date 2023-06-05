@@ -16,9 +16,12 @@ from django.utils.translation import gettext_lazy as _
 
 from login.models import Persona
 
+from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida
 from .utils import (
     COMBUSTIBLES, CONDICIONES_VEHICULARES,
-    POSICIONES_LLANTA, TIPOS_LICENCIA
+    POSICIONES_LLANTA, TIPOS_LICENCIA,
+    es_un_codigo_dot_valido,
+    es_una_placa_de_vehiculo_valida
 )
 
 class Licencia(models.Model):
@@ -78,6 +81,25 @@ class Propietario(Persona):
         heredados de Persona.
     """
 
+def validar_placa_vehicular(placa: str):
+    """Valida si una placa vehicular es válida.
+
+    Esta función toma una placa vehicular como argumento y verifica si es válida
+    utilizando la función es_una_placa_vehicular_valida del archivo utils.py.
+    Si la placa no es válida, se lanza una excepción ValidationError.
+
+    Args:
+        placa (str): La placa vehicular a validar.
+
+    Raises:
+        PlacaVehicularInvalida: Si la placa vehicular no es válida.
+    """
+    if not es_una_placa_de_vehiculo_valida(placa):
+        raise PlacaVehicularInvalida(
+            f"{placa} no es una placa vehicular válida.",
+            params={'value': placa}
+        )
+
 class Vehiculo(models.Model):
     """
     Representa un vehículo.
@@ -117,7 +139,8 @@ class Vehiculo(models.Model):
         _('Placa'),
         max_length=10,
         unique=True,
-        help_text=_("La placa del vehículo.")
+        help_text=_("La placa del vehículo."),
+        validators=[validar_placa_vehicular,]
     )
     anio_de_fabricacion = models.PositiveSmallIntegerField(
         _('Año de fabricación'),
@@ -200,6 +223,30 @@ class Matricula(models.Model):
         help_text=_("La fotografía de la matrícula.")
     )
 
+    def __str__(self) -> str:
+        """Devuelve una representación legible del objeto Matricula."""
+        return str(self.matricula)
+
+
+def validar_codigo_dot(codigo_dot: str):
+    """Valida si un código DOT es válido.
+
+    Esta función toma un código DOT como argumento y verifica si es válido
+    utilizando la función es_un_codigo_dot_valido del archivo utils.py.
+    Si el código DOT no es válido, se lanza una excepción ValidationError.
+
+    Args:
+        codigo_dot (str): El código DOT a validar.
+
+    Raises:
+        CodigoDotInvalido: Si el código DOT no es válido.
+    """
+    if not es_un_codigo_dot_valido(codigo_dot):
+        raise CodigoDotInvalido(
+            f"{codigo_dot} no es un código DOT válido.",
+            params={'value': codigo_dot}
+        )
+
 class Llanta(models.Model):
     """
     Representa una llanta de un vehículo.
@@ -219,7 +266,8 @@ class Llanta(models.Model):
     codigo_de_fabricacion = models.CharField(
         _('Código de fabricación'),
         max_length=50,
-        help_text=_("El código de fabricación de la llanta.")
+        help_text=_("El código de fabricación de la llanta."),
+        validators=[validar_codigo_dot,]
     )
     posicion_respecto_al_vehiculo = models.CharField(
         _('Posición respecto al vehículo'),
@@ -227,6 +275,10 @@ class Llanta(models.Model):
         choices=POSICIONES_LLANTA,
         help_text=_("La posición de la llanta respecto al vehículo.")
     )
+
+    def __str__(self) -> str:
+        """Devuelve una representación legible por humanos del objeto Llanta."""
+        return f"Llanta {self.posicion_respecto_al_vehiculo} de {self.vehiculo}"
 
 class Bateria(models.Model):
     """
@@ -248,3 +300,7 @@ class Bateria(models.Model):
         max_length=50,
         help_text=_("El código de fabricación de la batería.")
     )
+
+    def __str__(self) -> str:
+        """Devuelve una representación legible por humanos del objeto Bateria."""
+        return f"Batería de {self.vehiculo}"

@@ -22,7 +22,9 @@ las opciones posibles de cada enumeración:
 - `TIPOS_LICENCIA`: una lista de tuplas con las opciones posibles de tipos de licencia.
 """
 
+from datetime import datetime
 from enum import Enum
+import re
 
 class TipoVehiculo(Enum):
     """
@@ -86,3 +88,62 @@ TIPOS_VEHICULO = [(tag.value, tag.name) for tag in TipoVehiculo]
 CONDICIONES_VEHICULARES = [(tag.value, tag.name) for tag in CondicionVehicular]
 POSICIONES_LLANTA = [(tag.value, tag.name) for tag in PosicionLlanta]
 TIPOS_LICENCIA = [(tag.value, tag.name) for tag in TipoLicencia]
+
+def es_una_placa_de_vehiculo_valida(placa: str) -> bool:
+    """
+    Esta función solo verifica si el formato de la placa es válido.
+    No verifica si la placa está registrada en el SRI o ANT.
+    """
+    patron_vehiculo = r'^[A-Z]{3}\-\d{4}$'
+    patron_moto = r'^[A-Z]{2}\-\d{3}[A-Z]?$'
+    return bool(re.match(patron_vehiculo, placa) or re.match(patron_moto, placa))
+
+def es_un_codigo_dot_valido(codigo: str) -> bool:
+    """
+    Verifica si un código DOT tiene el formato correcto.
+
+    Un código DOT (Departamento de Transporte) se encuentra
+    en el flanco de las llantas de los automóviles y proporciona
+    información sobre la llanta, incluyendo su fecha de fabricación.
+    Un código DOT válido tiene el formato `DOT-XXXX-XXXX-XXXX`,
+    donde `X` puede ser una letra mayúscula o un dígito.
+
+    Args:
+        codigo (str): El código DOT a verificar.
+
+    Returns:
+        bool: True si el código DOT tiene el formato correcto, False en caso contrario.
+    """
+
+    patron = r'^DOT-[A-Z0-9]{4}-[A-Z0-9]{4}-\d{4}$'
+    return bool(re.match(patron, codigo))
+
+def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
+    """
+    Obtiene la fecha de fabricación de una llanta a partir de su código DOT.
+
+    Un código DOT (Departamento de Transporte) se encuentra
+    en el flanco de las llantas de los automóviles y proporciona
+    información sobre la llanta, incluyendo su fecha de fabricación.
+    Los últimos cuatro dígitos del código DOT indican
+    la fecha de fabricación de la llanta: 
+    los primeros dos dígitos indican la semana del año
+    en que fue fabricada y los últimos dos dígitos indican el año.
+
+    Args:
+        codigo_dot (str): El código DOT de la llanta.
+
+    Returns:
+        datetime: La fecha de fabricación de la llanta.
+    """
+    # Extraer la fecha de fabricación del código DOT
+    fecha_fabricacion_str = codigo_dot[-4:]
+    semana_fabricacion = int(fecha_fabricacion_str[:2])
+    anio_fabricacion = int(fecha_fabricacion_str[2:])
+
+    # Calcular la fecha de fabricación
+    fecha_fabricacion = datetime.strptime(
+        f'20{anio_fabricacion}-W{semana_fabricacion}-1', '%Y-W%W-%w'
+    )
+
+    return fecha_fabricacion
