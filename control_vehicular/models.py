@@ -28,13 +28,19 @@ class Licencia(models.Model):
     Atributos:
         tipo (str): El tipo de la licencia (A, B, C, etc.).
         fecha_de_caducidad (date): La fecha de caducidad de la licencia.
-        es_profesional (bool): Indica si la licencia es profesional o no.
 
     Métodos:
         esta_vigente(): Retorna la validez de la licencia en el tiempo.
     """
-    tipo = models.CharField(max_length=2, choices=TIPOS_LICENCIA)
-    fecha_de_caducidad = models.DateField(blank=False)
+    tipo = models.CharField(
+        max_length=2,
+        choices=TIPOS_LICENCIA,
+        help_text=_("El tipo de la licencia (A, B, C, etc.).")
+    )
+    fecha_de_caducidad = models.DateField(
+        blank=False,
+        help_text=_("La fecha de caducidad de la licencia.")
+    )
 
     def __str__(self):
         return f'{self.tipo} - {self.fecha_de_caducidad}'
@@ -85,28 +91,74 @@ class Vehiculo(models.Model):
         - color (str): El color del vehículo.
         - cilindraje (float): El cilindraje del vehículo.
         - tonelaje (float): El tonelaje del vehículo.
-        - unidad_carburaje (float): La unidad de carburaje del vehículo.
+        - unidad_carburante (float): La unidad de carburante del vehículo.
         - combustible (str): El tipo de combustible del vehículo.
         - condicion (str): La condición vehicular del vehículo.
         - fotografia (ImageField): La fotografía del vehículo.
     """
     propietario = models.ForeignKey(
-        Propietario, on_delete=models.CASCADE,
-        related_name='vehiculos', default=1
+        Propietario,
+        on_delete=models.CASCADE,
+        related_name='vehiculos',
+        default=1,
+        help_text=_("El propietario del vehículo.")
     )
-    marca = models.CharField('Marca', max_length=50)
-    modelo = models.CharField('Modelo', max_length=50)
-    placa = models.CharField('Placa', max_length=10, unique=True)
-    anio_de_fabricacion = models.PositiveSmallIntegerField('Año de fabricación')
-    color = models.CharField('Color', max_length=50)
-    cilindraje = models.FloatField('Cilindraje')
-    tonelaje = models.FloatField('Tonelaje')
-    unidad_carburante = models.FloatField('Unidad carburante')
-    combustible = models.CharField('Combustible', max_length=30, choices=COMBUSTIBLES)
+    marca = models.CharField(
+        _('Marca'),
+        max_length=50,
+        help_text=_("La marca del vehículo.")
+    )
+    modelo = models.CharField(
+        _('Modelo'),
+        max_length=50,
+        help_text=_("El modelo del vehículo.")
+    )
+    placa = models.CharField(
+        _('Placa'),
+        max_length=10,
+        unique=True,
+        help_text=_("La placa del vehículo.")
+    )
+    anio_de_fabricacion = models.PositiveSmallIntegerField(
+        _('Año de fabricación'),
+        help_text=_("El año de fabricación del vehículo.")
+    )
+    color = models.CharField(
+        _('Color'),
+        max_length=50,
+        help_text=_("El color del vehículo.")
+    )
+    cilindraje = models.FloatField(
+        _('Cilindraje'),
+        help_text=_("El cilindraje del vehículo.")
+    )
+    tonelaje = models.FloatField(
+        _('Tonelaje'),
+        help_text=_("El tonelaje del vehículo.")
+    )
+    unidad_carburante = models.FloatField(
+        _('Unidad carburante'),
+        help_text=_("La unidad de carburante del vehículo.")
+    )
+    combustible = models.CharField(
+        _('Combustible'),
+        max_length=30,
+        choices=COMBUSTIBLES,
+        help_text=_("El tipo de combustible del vehículo.")
+    )
     condicion = models.CharField(
-        'Condición vehicular', max_length=30, choices=CONDICIONES_VEHICULARES
+        _('Condición vehicular'),
+        max_length=30,
+        choices=CONDICIONES_VEHICULARES,
+        help_text=_("La condición vehicular del vehículo.")
     )
-    fotografia = models.ImageField('Fotografía', upload_to='vehiculos', null=True, blank=True)
+    fotografia = models.ImageField(
+        _('Fotografía'),
+        upload_to='vehiculos',
+        null=True,
+        blank=True,
+        help_text=_("La fotografía del vehículo.")
+    )
 
 class Matricula(models.Model):
     """
@@ -119,12 +171,31 @@ class Matricula(models.Model):
         - foto (ImageField): La fotografía de la matrícula.
     """
 
-    propietario = models.ForeignKey(Propietario, on_delete=models.SET_NULL, null=True)
-    vehiculo = models.OneToOneField(
-        Vehiculo, on_delete=models.CASCADE, related_name='matricula'
+    propietario = models.ForeignKey(
+        Propietario,
+        on_delete=models.SET_NULL,
+        null=True,
+        help_text=_("El propietario de la matrícula.")
     )
-    matricula = models.CharField('Matrícula', max_length=50, unique=True)
-    foto = models.ImageField('Fotografía', upload_to='matriculas', null=True, blank=True)
+    vehiculo = models.OneToOneField(
+        Vehiculo,
+        on_delete=models.CASCADE,
+        related_name='matricula',
+        help_text=_("El vehículo al que pertenece la matrícula.")
+    )
+    matricula = models.CharField(
+        _('Matrícula'),
+        max_length=50,
+        unique=True,
+        help_text=_("El número de la matrícula.")
+    )
+    foto = models.ImageField(
+        _('Fotografía'),
+        upload_to='matriculas',
+        null=True,
+        blank=True,
+        help_text=_("La fotografía de la matrícula.")
+    )
 
 class Llanta(models.Model):
     """
@@ -136,10 +207,22 @@ class Llanta(models.Model):
         - posicion_respecto_al_vehiculo (str): La posición de la llanta respecto al vehículo.
     """
 
-    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, related_name='llantas')
-    codigo_de_fabricacion = models.CharField('Código de fabricación', max_length=50)
+    vehiculo = models.ForeignKey(
+        Vehiculo,
+        on_delete=models.CASCADE,
+        related_name='llantas',
+        help_text=_("El vehículo al que pertenece la llanta.")
+    )
+    codigo_de_fabricacion = models.CharField(
+        _('Código de fabricación'),
+        max_length=50,
+        help_text=_("El código de fabricación de la llanta.")
+    )
     posicion_respecto_al_vehiculo = models.CharField(
-        'Posición respecto al vehículo', max_length=50, choices=POSICIONES_LLANTA
+        _('Posición respecto al vehículo'),
+        max_length=50,
+        choices=POSICIONES_LLANTA,
+        help_text=_("La posición de la llanta respecto al vehículo.")
     )
 
 class Bateria(models.Model):
@@ -151,5 +234,14 @@ class Bateria(models.Model):
         - codigo_de_fabricacion (str): El código de fabricación de la batería.
     """
 
-    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, related_name='baterias')
-    codigo_de_fabricacion = models.CharField('Código de fabricación', max_length=50)
+    vehiculo = models.ForeignKey(
+        Vehiculo,
+        on_delete=models.CASCADE,
+        related_name='baterias',
+        help_text=_("El vehículo al que pertenece la batería.")
+    )
+    codigo_de_fabricacion = models.CharField(
+        _('Código de fabricación'),
+        max_length=50,
+        help_text=_("El código de fabricación de la batería.")
+    )

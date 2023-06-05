@@ -5,9 +5,15 @@ Autor: Christopher Villamarín (@xeland314)
 """
 
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from login.serializers import PersonaSerializer
-from .models import Bateria, Licencia, Conductor, Propietario, Vehiculo, Matricula, Llanta
+from .models import (
+    Bateria, Licencia,
+    Conductor, Propietario,
+    Vehiculo, Matricula,
+    Llanta
+)
 
 class LicenciaSerializer(serializers.ModelSerializer):
     """
@@ -27,7 +33,9 @@ class ConductorSerializer(PersonaSerializer):
     """
     Serializador para el modelo Conductor.
     """
-    licencia = LicenciaSerializer()
+    licencia = LicenciaSerializer(
+        help_text=_("Licencia del conductor.")
+    )
 
     class Meta:
         model = Conductor
@@ -37,7 +45,7 @@ class ConductorSerializer(PersonaSerializer):
             'estado_civil', 'contrasena', 'contrasena2', 'fotografia',
             'licencia'
         )
-        verbose_name_plural = 'Conductores'
+        verbose_name_plural = _('Conductores')
 
     def create(self, validated_data: dict):
         """Crea una nueva instancia del modelo Persona a partir de los datos validados.
@@ -92,40 +100,61 @@ class VehiculoSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Vehiculo.
     """
-    propietario = PropietarioSerializer()
-    matricula = serializers.CharField(source='matricula.matricula', read_only=True)
-
+    propietario = PropietarioSerializer(
+        help_text=_("Propietario del vehículo.")
+    )
+    matricula = serializers.CharField(
+        source='matricula.matricula',
+        read_only=True,
+        help_text=_("Matrícula del vehículo.")
+    )
     class Meta:
         model = Vehiculo
-        fields = '__all__'
+        fields = (
+            'propietario', 'matricula', 'marca', 'modelo',
+            'placa', 'anio_de_fabricacion', 'color',
+            'cilindraje', 'unidad_carburante', 'combustible',
+            'condicion', 'fotografia'
+        )
 
 class MatriculaSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Matricula.
     """
-    propietario = PropietarioSerializer()
-    vehiculo = VehiculoSerializer()
+    propietario = PropietarioSerializer(
+        help_text=_("Propietario de la matrícula.")
+    )
+    vehiculo = VehiculoSerializer(
+        help_text=_("Vehículo al que pertenece la matrícula.")
+    )
 
     class Meta:
         model = Matricula
-        fields = '__all__'
+        fields = (
+            'propietario', 'vehiculo', 'matricula', 'foto'
+        )
 
 class LlantaSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Llanta.
     """
-    vehiculo = VehiculoSerializer()
+    vehiculo = VehiculoSerializer(
+        help_text=_("Vehículo al que pertenece la llanta.")
+    )
 
     class Meta:
         model = Llanta
-        fields = '__all__'
+        fields = (
+            'vehiculo', 'codigo_de_fabricacion',
+            'posicion_respecto_al_vehiculo'
+        )
 
 class BateriaSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Batería.
     """
-    vehiculo = VehiculoSerializer()
+    vehiculo = VehiculoSerializer(help_text=_("Vehículo al que pertenece la batería."))
 
     class Meta:
         model = Bateria
-        fields = '__all__'
+        fields = ('vehiculo', 'codigo_de_fabricacion')
