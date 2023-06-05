@@ -92,7 +92,8 @@ WSGI_APPLICATION = 'administracion_vehicular.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3'
+        default='postgresql://postgres:postgres@localhost:5432/mysite',
+        conn_max_age=600
     )
 }
 
