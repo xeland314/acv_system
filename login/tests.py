@@ -33,9 +33,9 @@ class UtilsTestCase(TestCase):
         """
         # Casos válidos de cédulas ecuatorianas
         self.assertTrue(es_una_cedula_valida("1753828696"))
+        self.assertTrue(es_una_cedula_valida("0000000000"))
 
         # Casos inválidos de cédulas ecuatorianas
-        self.assertTrue(es_una_cedula_valida("0000000000"))
         self.assertRaises(
             CedulaInvalida, es_una_cedula_valida, "123456789"
         )
@@ -74,14 +74,14 @@ class UtilsTestCase(TestCase):
         self.assertTrue(es_un_numero_de_telefono_valido("+593991234567"))
 
         # Casos inválidos de números de teléfono ecuatorianos
-        self.assertFalse(es_un_numero_de_telefono_valido("123456789"))  # Número demasiado corto
-        self.assertFalse(es_un_numero_de_telefono_valido("abcdefghij"))  # Número no numérico
-        self.assertFalse(es_un_numero_de_telefono_valido("098712935"))  # Número sin el dígito de control
-        self.assertFalse(es_un_numero_de_telefono_valido("59398712935"))  # Número sin el dígito de control
-        self.assertFalse(es_un_numero_de_telefono_valido("+59398712935"))  # Número sin el dígito de control
-        self.assertFalse(es_un_numero_de_telefono_valido("09912345678"))  # Número demasiado largo
-        self.assertFalse(es_un_numero_de_telefono_valido("5939912345678"))  # Número demasiado largo
-        self.assertFalse(es_un_numero_de_telefono_valido("+5939912345678"))  # Número demasiado largo
+        self.assertFalse(es_un_numero_de_telefono_valido("123456789"))
+        self.assertFalse(es_un_numero_de_telefono_valido("abcdefghij"))
+        self.assertFalse(es_un_numero_de_telefono_valido("098712935"))
+        self.assertFalse(es_un_numero_de_telefono_valido("59398712935"))
+        self.assertFalse(es_un_numero_de_telefono_valido("+59398712935"))
+        self.assertFalse(es_un_numero_de_telefono_valido("09912345678"))
+        self.assertFalse(es_un_numero_de_telefono_valido("5939912345678"))
+        self.assertFalse(es_un_numero_de_telefono_valido("+5939912345678"))
 
         # Otros casos inválidos
         self.assertFalse(es_un_numero_de_telefono_valido(""))  # Cadena vacía
@@ -96,11 +96,11 @@ class UtilsTestCase(TestCase):
         """
         hoy = date.today()
         # Ayer fue su cumpleaños #18
-        edad_18_1 = hoy.replace(year=(hoy.year - 18)) - timedelta(days=1)
+        edad_18_1 = hoy.replace(hoy.year - 18) - timedelta(days=1)
         # Hoy es el cumpleaños #18
-        edad_18 = hoy.replace(year=(hoy.year - 18))
+        edad_18 = hoy.replace(hoy.year - 18)
         # Mañana será el cumpleaños #18
-        edad_17 = hoy.replace(year=(hoy.year - 18)) + timedelta(days=1)
+        edad_17 = hoy.replace(hoy.year - 18) + timedelta(days=1)
         # Casos válidos de fechas de nacimiento
         self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18_1))
         self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18))

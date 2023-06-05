@@ -12,10 +12,19 @@ Dependencias: django.contrib.auth.models.User,
 """
 
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from .models import Persona
-from .utils import es_una_cedula_valida, es_un_numero_de_telefono_valido
+from .exceptions import (
+    CedulaInvalida,
+    ErrorDeConfirmacionDeContrasena,
+    TelefonoInvalido
+)
+from .utils import (
+    es_una_cedula_valida,
+    es_un_numero_de_telefono_valido
+)
 
 class PersonaSerializer(serializers.ModelSerializer):
     """Serializer para serializar y deserializar instancias del modelo Persona.
@@ -31,10 +40,16 @@ class PersonaSerializer(serializers.ModelSerializer):
     """
 
     contrasena = serializers.CharField(
-        write_only=True, required=True, style={'input_type': 'password'}
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'},
+        help_text=_("Contraseña del usuario.")
     )
     contrasena2 = serializers.CharField(
-        write_only=True, required=True, style={'input_type': 'password'}
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'},
+        help_text=_("Campo para confirmar la contraseña del usuario.")
     )
 
     class Meta:
@@ -43,6 +58,8 @@ class PersonaSerializer(serializers.ModelSerializer):
         Atributos:
             - model: Modelo a serializar.
             - fields: Campos del modelo a serializar.
+            - read_only_fields: Campos de solo lectura.
+            - default_error_messages: Mensajes de error personalizados.
         """
 
         model = Persona
@@ -51,6 +68,11 @@ class PersonaSerializer(serializers.ModelSerializer):
             'telefono', 'fecha_nacimiento', 'nivel_educacion',
             'estado_civil', 'contrasena', 'contrasena2', 'fotografia'
         )
+        read_only_fields = ('id',)
+        default_error_messages = {
+            'invalid': _('Datos inválidos.'),
+            'required': _('Este campo es obligatorio.'),
+        }
 
     def create(self, validated_data: dict):
         """Crea una nueva instancia del modelo Persona a partir de los datos validados.
@@ -87,15 +109,15 @@ class PersonaSerializer(serializers.ModelSerializer):
 
         cedula = attrs.get('cedula')
         if not es_una_cedula_valida(cedula):
-            raise serializers.ValidationError('Es una cédula inválida.')
+            raise CedulaInvalida('Es una cédula inválida.', params={'value': cedula})
 
         telefono = attrs.get('telefono')
         if not es_un_numero_de_telefono_valido(telefono):
-            raise serializers.ValidationError('Número de teléfono inválido')
+            raise TelefonoInvalido(params={'value': telefono})
 
         password1 = attrs.get('contrasena')
         password2 = attrs.pop('contrasena2', None)
         if password1 and password1 != password2:
-            raise serializers.ValidationError("Las contraseñas no coinciden.")
+            raise ErrorDeConfirmacionDeContrasena()
 
         return attrs

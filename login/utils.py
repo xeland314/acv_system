@@ -91,7 +91,9 @@ def es_una_fecha_de_nacimiento_valida(fecha_nacimiento: date) -> bool:
         bool: True si la fecha de nacimiento es válida, False en caso contrario.
     """
     hoy = date.today()
-    edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+    edad = hoy.year - fecha_nacimiento.year - (
+        (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
+    )
     if edad >= 18:
         return True
     if edad == 17 and hoy.month == fecha_nacimiento.month and hoy.day == fecha_nacimiento.day:
