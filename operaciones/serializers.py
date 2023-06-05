@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from login.serializers import PersonaSerializer
 from .models import (
-    Administrador, OrdenMovimiento,
+    Administrador, AperturaOrdenMovimiento, CierreOrdenMovimiento,
     OrdenTrabajo, Responsable
 )
 
@@ -34,7 +34,8 @@ class AdministradorSerializer(PersonaSerializer):
             validated_data: Diccionario con los datos validados.
 
         Returns:
-            Administrador: Nueva instancia del modelo Persona creada a partir de los datos validados.
+            Administrador: Nueva instancia del modelo Persona creada
+            a partir de los datos validados.
         """
         password = validated_data.pop('contrasena')
         username = validated_data.get('cedula')
@@ -65,7 +66,8 @@ class ResponsableSerializer(PersonaSerializer):
             validated_data: Diccionario con los datos validados.
 
         Returns:
-            Administrador: Nueva instancia del modelo Persona creada a partir de los datos validados.
+            Administrador: Nueva instancia del modelo Persona
+            creada a partir de los datos validados.
         """
         password = validated_data.pop('contrasena')
         username = validated_data.get('cedula')
@@ -75,23 +77,35 @@ class ResponsableSerializer(PersonaSerializer):
         usuario = Responsable.objects.create(**validated_data)
         return usuario
 
+class AperturaOrdenMovimientoSerializer(serializers.ModelSerializer):
+    """
+    Serializador de las aperturas de órdenes de movimiento.
+    """
+    class Meta:
+        model = AperturaOrdenMovimiento
+        fields = (
+            'id', 'vehiculo', 'kilometraje_salida', 'fecha_de_emision_orden',
+            'fecha_salida_vehiculo', 'itinerario', 'conductor', 'detalle_comision'
+        )
+
+class CierreOrdenMovimientoSerializer(serializers.ModelSerializer):
+    """
+    Serializador de los cierres de órdenes de movimiento.
+    """
+    class Meta:
+        model = CierreOrdenMovimiento
+        fields = (
+            'id', 'apertura', 'fecha_retorno_vehiculo', 'fecha_de_cierre_orden',
+            'kilometraje_retorno', 'cumplimiento'
+        )
+
 class OrdenTrabajoSerializer(serializers.ModelSerializer):
+    """
+    Serializador de las órdenes de trabajo.
+    """
     class Meta:
         model = OrdenTrabajo
         fields = (
             'id', 'fecha_emision', 'responsable', 'vehiculo',
             'tipo_mantenimiento', 'tipo_trabajo', 'cumplimiento'
         )
-        verbose_name = _("Orden de trabajo")
-        verbose_name_plural = _("Órdenes de trabajo")
-
-class OrdenMovimientoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrdenMovimiento
-        fields = (
-            'id', 'fecha_emision', 'vehiculo', 'conductor',
-            'itineario', 'detalle_comision', 'fecha_retorno',
-            'km_retorno', 'km_actual', 'cumplimiento'
-        )
-        verbose_name = _("Orden de movimiento")
-        verbose_name_plural = _("Órdenes de movimiento")

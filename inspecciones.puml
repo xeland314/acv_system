@@ -1,0 +1,33 @@
+@startuml inpecciones
+
+class Kilometraje {
+    - kilometros
+    - horas
+    - se_mide_por_kilometros
+    - se_mide_por_horas
+}
+
+class ControlVehicular {
+    - fecha_inspeccion: Date
+    - vehiculo: Vehiculo
+    - supervisor: Supervisor
+    
+}
+
+class ControlVehicularPorKilometraje {
+
+}
+
+class ControlVehicularPorHoras {
+
+}
+
+class ControlVehicularPorCalendario {
+
+}
+
+ControlVehicularPorKilometraje --|> ControlVehicular
+ControlVehicularPorHoras --|> ControlVehicular
+ControlVehicularPorCalendario --|> ControlVehicular
+
+@enduml

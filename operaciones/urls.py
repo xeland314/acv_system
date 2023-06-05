@@ -8,13 +8,22 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (
-    AdministradorView, OrdenMovimientoView,
-    OrdenTrabajoView, ResponsableView
+    AdministradorView, AperturaOrdenMovimientoView,
+    CierreOrdenMovimientoView, OrdenTrabajoView, ResponsableView
 )
 
 router = routers.DefaultRouter()
 router.register(r'administradores', AdministradorView, basename='administradores')
-router.register(r'ordenes_movimiento', OrdenMovimientoView, basename='ordenes_movimiento')
+router.register(
+    r'apertura_ordenes_movimiento',
+    AperturaOrdenMovimientoView,
+    basename='apertura_ordenes_movimiento'
+)
+router.register(
+    r'cierre_ordenes_movimiento',
+    CierreOrdenMovimientoView,
+    basename='cierre_ordenes_movimiento'
+)
 router.register(r'ordenes_trabajo', OrdenTrabajoView, basename='ordenes_trabajo')
 router.register(r'responsables', ResponsableView, basename='responsables')
 

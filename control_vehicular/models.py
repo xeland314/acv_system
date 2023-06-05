@@ -160,6 +160,9 @@ class Vehiculo(models.Model):
         help_text=_("La fotografía del vehículo.")
     )
 
+    def __str__(self) -> str:
+        return f'{self.marca} - {self.placa} - {self.propietario}'
+
 class Matricula(models.Model):
     """
     Representa la matrícula de un vehículo.

@@ -1,2 +1,2 @@
 [TYPECHECK]
-ignored-classes=Administrador, Bateria, Conductor, Licencia, Llanta, Matricula, OrdenTrabajo, OrdenMovimiento, Persona, Propietario, Responsable, Token, Vehiculo
+ignored-classes=Administrador, AperturaOrdenMovimiento, Bateria, CierreOrdenMovimiento, Conductor, Licencia, Llanta, Matricula, OrdenTrabajo, OrdenMovimiento, Persona, Propietario, Responsable, Token, Vehiculo

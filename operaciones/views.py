@@ -1,10 +1,11 @@
 from rest_framework import viewsets
 from .serializers import (
-    AdministradorSerializer, OrdenMovimientoSerializer,
-    OrdenTrabajoSerializer, ResponsableSerializer
+    AdministradorSerializer, AperturaOrdenMovimientoSerializer,
+    CierreOrdenMovimientoSerializer, OrdenTrabajoSerializer,
+    ResponsableSerializer
 )
 from .models import (
-    Administrador, OrdenMovimiento,
+    Administrador, AperturaOrdenMovimiento, CierreOrdenMovimiento,
     OrdenTrabajo, Responsable
 )
 
@@ -15,20 +16,28 @@ class AdministradorView(viewsets.ModelViewSet):
     queryset = Administrador.objects.all()
     serializer_class = AdministradorSerializer
 
+class AperturaOrdenMovimientoView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar
+    y crear las aperturas de órdenes de movimiento.
+    """
+    queryset = AperturaOrdenMovimiento.objects.all()
+    serializer_class = AperturaOrdenMovimientoSerializer
+
+class CierreOrdenMovimientoView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar
+    y crear los cierres de las órdenes de movimiento.
+    """
+    queryset = CierreOrdenMovimiento.objects.all()
+    serializer_class = CierreOrdenMovimientoSerializer
+
 class OrdenTrabajoView(viewsets.ModelViewSet):
     """
     Clase que define la vista para listar y crear ordenes de trabajo.
     """
     queryset = OrdenTrabajo.objects.all()
     serializer_class = OrdenTrabajoSerializer
-
-class OrdenMovimientoView(viewsets.ModelViewSet):
-    """
-    Clase que define la vista para listar y crear ordenes de movimiento.
-    """
-    queryset = OrdenMovimiento.objects.all()
-    serializer_class = OrdenMovimientoSerializer
-
 
 class ResponsableView(viewsets.ModelViewSet):
     """

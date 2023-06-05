@@ -1,10 +1,11 @@
 from django.contrib import admin
 from .models import (
-    Administrador, OrdenMovimiento, OrdenTrabajo,
-    Responsable
+    Administrador, AperturaOrdenMovimiento, CierreOrdenMovimiento,
+    OrdenTrabajo, Responsable
 )
 
 admin.site.register(Administrador)
-admin.site.register(OrdenMovimiento)
+admin.site.register(AperturaOrdenMovimiento)
+admin.site.register(CierreOrdenMovimiento)
 admin.site.register(OrdenTrabajo)
 admin.site.register(Responsable)
