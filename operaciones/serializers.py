@@ -51,7 +51,7 @@ class ResponsableSerializer(PersonaSerializer):
     """
 
     class Meta:
-        model = Administrador
+        model = Responsable
         fields = (
             'nombres', 'apellidos', 'cedula', 'email', 'direccion',
             'telefono', 'fecha_nacimiento', 'nivel_educacion',
