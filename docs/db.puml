@@ -1,0 +1,66 @@
+@startuml DB
+
+class Persona {
+    +cedula: str
+    +nombres: str
+    +apellidos: str
+    +fecha_nacimiento: date
+    +correo_electronico: str
+    +direccion: str
+}
+
+class Propietario {
+    -persona_ptr: int
+    +vehiculos
+}
+
+class Conductor {
+    -persona_ptr: int
+    +licencia
+}
+
+class Vehiculo {
+    +propietario
+    +marca: str
+    +modelo: str
+    +placa: str
+    +anio_de_fabricacion: int
+    +color: str
+    +cilindraje: float
+    +tonelaje: float
+    +unidad_carburaje: float
+    +combustible: str
+    +condicion: str
+    +fotografia
+    +matricula
+    +llantas
+}
+
+class Licencia {
+    +tipo: str
+    +fecha_de_caducidad: date
+    +es_profesional: bool
+    +esta_vigente()
+}
+
+class Matricula {
+    +propietario
+    +vehiculo
+    +matricula: str
+    +foto
+}
+
+class Llanta {
+    +vehiculo
+    +codigo_de_fabricacion: str
+    +posicion_respecto_al_vehiculo: str
+}
+
+Persona <|-- Propietario
+Persona <|-- Conductor
+Propietario *-- Vehiculo
+Conductor --> "1" Licencia
+Vehiculo *-- Matricula
+Vehiculo *-- Llanta
+
+@enduml
