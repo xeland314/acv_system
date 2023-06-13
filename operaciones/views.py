@@ -45,4 +45,3 @@ class ResponsableView(viewsets.ModelViewSet):
     """
     queryset = Responsable.objects.all()
     serializer_class = ResponsableSerializer
-

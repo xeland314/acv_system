@@ -111,15 +111,20 @@ class AperturaOrdenMovimiento(models.Model):
         - itinerario (TextField): El itinerario o viaje asociado con la OrdenMovimiento.
         - detalle_comision (TextField): Detalles sobre la comisión asociada con la OrdenMovimiento.
     """
-    vehiculo = models.ForeignKey(
-        Vehiculo,
+    responsable = models.ForeignKey(
+        Responsable,
         on_delete=models.PROTECT,
-        help_text=_("El vehículo del cual se abre la orden de movimiento.")
+        help_text=_("Responsable de la orden de trabajo")
     )
     conductor = models.ForeignKey(
         Conductor,
         on_delete=models.PROTECT,
         help_text=_("El conductor que va a conducir el vehículo de la orden de apertura.")
+    )
+    vehiculo = models.ForeignKey(
+        Vehiculo,
+        on_delete=models.PROTECT,
+        help_text=_("El vehículo del cual se abre la orden de movimiento.")
     )
     kilometraje_salida = models.IntegerField(
         help_text=_("Kilometraje del vehículo al momento de la salida")

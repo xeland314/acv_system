@@ -19,6 +19,14 @@ class Conductor {
     +licencia
 }
 
+class Encargado {
+
+}
+
+class Administrador {
+
+}
+
 class Vehiculo {
     +propietario
     +marca: str
@@ -58,9 +66,17 @@ class Llanta {
 
 Persona <|-- Propietario
 Persona <|-- Conductor
+Persona <|-- Encargado
+Persona <|-- Administrador
 Propietario *-- Vehiculo
 Conductor --> "1" Licencia
+Conductor --> "conduce" Vehiculo
 Vehiculo *-- Matricula
 Vehiculo *-- Llanta
+
+Encargado --> "*" OrdenTrabajo
+Encargado --> "*" OrdenMovimiento
+
+OrdenMovimiento -left-> "1" Conductor
 
 @enduml
