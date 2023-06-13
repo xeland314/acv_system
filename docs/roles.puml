@@ -2,7 +2,7 @@
 
 left to right direction
 
-class Persona <<Model>> {
+abstract class Persona <<Model>> {
     - nombreCompleto: String
     - cedula: String
     - fechaDeNacimiento: Fecha

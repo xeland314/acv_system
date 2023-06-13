@@ -51,6 +51,34 @@ class Responsable(Persona):
         verbose_name = _("Responsable")
         verbose_name_plural = _("Responsables")
 
+class Orden(models.Model):
+    """
+    Clase abstracta que representa una orden genérica.
+
+    Atributos:
+        - responsable (ForeignKey): La persona responsable de la orden.
+        - vehiculo (ForeignKey): El vehículo asociado con la orden.
+        - fecha_de_emision_orden (DateField): La fecha en que se emitió la orden.
+    """
+    responsable = models.ForeignKey(
+        Responsable,
+        on_delete=models.PROTECT,
+        help_text=_("Responsable de la orden")
+    )
+    vehiculo = models.ForeignKey(
+        Vehiculo,
+        on_delete=models.PROTECT,
+        help_text=_("Vehículo asociado con la orden")
+    )
+    fecha_de_emision_orden = models.DateField(
+        auto_now=True,
+        blank=False,
+        help_text=_("Fecha de emisión de la orden")
+    )
+
+    class Meta:
+        abstract = True
+
 class OrdenTrabajo(models.Model):
     """
     Representa una orden de trabajo para el mantenimiento de vehículos.

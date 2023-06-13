@@ -1,12 +1,24 @@
 @startuml DB
 
-class Persona {
+class Empresa {
+
+}
+
+abstract class Persona {
     +cedula: str
     +nombres: str
     +apellidos: str
     +fecha_nacimiento: date
     +correo_electronico: str
     +direccion: str
+}
+
+class Encargado {
+    + ruc
+}
+
+class Trabajador {
+
 }
 
 class Propietario {
@@ -20,10 +32,6 @@ class Conductor {
 }
 
 class Encargado {
-
-}
-
-class Administrador {
 
 }
 
@@ -64,18 +72,22 @@ class Llanta {
     +posicion_respecto_al_vehiculo: str
 }
 
+Trabajador --|> Persona
+Encargado --|> Persona
+Empresa o--> "*" Trabajador
+Empresa o--> "*" Encargado
+
 Persona <|-- Propietario
-Persona <|-- Conductor
-Persona <|-- Encargado
-Persona <|-- Administrador
-Propietario *-- Vehiculo
+Trabajador <|-- Conductor
+Trabajador <|-- Responsable
+Propietario *--> "1" Vehiculo
 Conductor --> "1" Licencia
 Conductor --> "conduce" Vehiculo
 Vehiculo *-- Matricula
 Vehiculo *-- Llanta
 
-Encargado --> "*" OrdenTrabajo
-Encargado --> "*" OrdenMovimiento
+Responsable --> "*" OrdenTrabajo
+Responsable --> "*" OrdenMovimiento
 
 OrdenMovimiento -left-> "1" Conductor
 
