@@ -1,0 +1,25 @@
+@startuml
+skinparam style strict
+
+entity Subscription {
+    + id: int <<PK>>
+    --
+    type: varchar
+    duration: int
+}
+
+entity Feature {
+    + id: int <<PK>>
+    --
+    name: varchar
+}
+
+entity SubscriptionFeature {
+    + subscription_id: int <<FK>>
+    + feature_id: int <<FK>>
+}
+
+Subscription ||--o{ SubscriptionFeature
+SubscriptionFeature }o--|| Feature
+
+@enduml

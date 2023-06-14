@@ -1,20 +1,14 @@
 from rest_framework import viewsets
 from .serializers import (
-    AdministradorSerializer, AperturaOrdenMovimientoSerializer,
-    CierreOrdenMovimientoSerializer, OrdenTrabajoSerializer,
-    ResponsableSerializer
+    AperturaOrdenMovimientoSerializer,
+    CierreOrdenMovimientoSerializer,
+    OrdenTrabajoSerializer
 )
 from .models import (
-    Administrador, AperturaOrdenMovimiento, CierreOrdenMovimiento,
-    OrdenTrabajo, Responsable
+    AperturaOrdenMovimiento,
+    CierreOrdenMovimiento,
+    OrdenTrabajo
 )
-
-class AdministradorView(viewsets.ModelViewSet):
-    """
-    Clase que define la vista para listar y crear administradores.
-    """
-    queryset = Administrador.objects.all()
-    serializer_class = AdministradorSerializer
 
 class AperturaOrdenMovimientoView(viewsets.ModelViewSet):
     """
@@ -38,10 +32,3 @@ class OrdenTrabajoView(viewsets.ModelViewSet):
     """
     queryset = OrdenTrabajo.objects.all()
     serializer_class = OrdenTrabajoSerializer
-
-class ResponsableView(viewsets.ModelViewSet):
-    """
-    Clase que define la vista para listar y crear administradores.
-    """
-    queryset = Responsable.objects.all()
-    serializer_class = ResponsableSerializer

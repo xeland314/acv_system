@@ -17,67 +17,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from control_vehicular.models import Vehiculo, Conductor
+
 from login.models import Persona
+
 from .utils import (
     ESTADOS_CUMPLIMIENTO, TIPOS_MANTENIMIENTO
 )
-
-class Administrador(Persona):
-    """
-    Representa a un administrador.
-
-    Este modelo hereda del modelo Persona y representa a un administrador.
-    Tiene todos los campos y atributos del modelo Persona.
-
-    Atributos:
-        Hereda todos los atributos del modelo Persona.
-    """
-    class Meta:
-        verbose_name = _("Administrador")
-        verbose_name_plural = _("Administradores")
-
-class Responsable(Persona):
-    """
-    Representa a una persona responsable de una orden de trabajo.
-
-    Este modelo hereda del modelo Persona y representa a una
-    persona responsable de una orden de trabajo.
-    Tiene todos los campos y atributos del modelo Persona.
-
-    Atributos:
-        Hereda todos los atributos del modelo Persona.
-    """
-    class Meta:
-        verbose_name = _("Responsable")
-        verbose_name_plural = _("Responsables")
-
-class Orden(models.Model):
-    """
-    Clase abstracta que representa una orden genérica.
-
-    Atributos:
-        - responsable (ForeignKey): La persona responsable de la orden.
-        - vehiculo (ForeignKey): El vehículo asociado con la orden.
-        - fecha_de_emision_orden (DateField): La fecha en que se emitió la orden.
-    """
-    responsable = models.ForeignKey(
-        Responsable,
-        on_delete=models.PROTECT,
-        help_text=_("Responsable de la orden")
-    )
-    vehiculo = models.ForeignKey(
-        Vehiculo,
-        on_delete=models.PROTECT,
-        help_text=_("Vehículo asociado con la orden")
-    )
-    fecha_de_emision_orden = models.DateField(
-        auto_now=True,
-        blank=False,
-        help_text=_("Fecha de emisión de la orden")
-    )
-
-    class Meta:
-        abstract = True
 
 class OrdenTrabajo(models.Model):
     """
@@ -97,8 +42,8 @@ class OrdenTrabajo(models.Model):
         blank=False,
         help_text=_("Fecha de emisión de la orden de trabajo")
     )
-    responsable = models.ForeignKey(
-        Responsable,
+    persona = models.ForeignKey(
+        Persona,
         on_delete=models.PROTECT,
         help_text=_("Responsable de la orden de trabajo")
     )
@@ -139,15 +84,16 @@ class AperturaOrdenMovimiento(models.Model):
         - itinerario (TextField): El itinerario o viaje asociado con la OrdenMovimiento.
         - detalle_comision (TextField): Detalles sobre la comisión asociada con la OrdenMovimiento.
     """
-    responsable = models.ForeignKey(
-        Responsable,
+    persona = models.ForeignKey(
+        Persona,
         on_delete=models.PROTECT,
         help_text=_("Responsable de la orden de trabajo")
     )
     conductor = models.ForeignKey(
         Conductor,
         on_delete=models.PROTECT,
-        help_text=_("El conductor que va a conducir el vehículo de la orden de apertura.")
+        help_text=_("El conductor que va a conducir el vehículo de la orden de apertura."),
+        related_name='aperturas_conductor'
     )
     vehiculo = models.ForeignKey(
         Vehiculo,

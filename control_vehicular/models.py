@@ -73,14 +73,6 @@ class Conductor(Persona):
     def __str__(self):
         return f'{self.cedula} - {self.nombres} {self.apellidos} - {self.licencia}'
 
-class Propietario(Persona):
-    """
-    Representa un propietario de un vehículo.
-
-    Atributos:
-        heredados de Persona.
-    """
-
 def validar_placa_vehicular(placa: str):
     """Valida si una placa vehicular es válida.
 
@@ -119,7 +111,7 @@ class Vehiculo(models.Model):
         - fotografia (ImageField): La fotografía del vehículo.
     """
     propietario = models.ForeignKey(
-        Propietario,
+        Persona,
         on_delete=models.CASCADE,
         related_name='vehiculos',
         default=1,
@@ -198,7 +190,7 @@ class Matricula(models.Model):
     """
 
     propietario = models.ForeignKey(
-        Propietario,
+        Persona,
         on_delete=models.SET_NULL,
         null=True,
         help_text=_("El propietario de la matrícula.")

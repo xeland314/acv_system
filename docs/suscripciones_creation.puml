@@ -1,0 +1,36 @@
+@startuml suscripcion2
+
+skinparam style strict
+
+class Subscription {
+    - type: String
+    - duration: int
+    - features: List<String>
+    + Subscription()
+}
+
+interface SubscriptionBuilder {
+    + {abstract} setType(type: String)
+    + {abstract} setDuration(duration: int)
+    + {abstract} setFeatures(features: List<String>)
+    + {abstract} build(): Subscription
+}
+
+class SubscriptionBuilderImpl {
+    - subscription: Subscription
+    + SubscriptionBuilderImpl()
+    + setType(type: String)
+    + setDuration(duration: int)
+    + setFeatures(features: List<String>)
+    + build(): Subscription
+}
+
+class Director {
+    + buildSubscription(builder: SubscriptionBuilder, type: String, duration: int, features: List<String>): Subscription
+}
+
+SubscriptionBuilderImpl --|> SubscriptionBuilder
+Director -left-> SubscriptionBuilder
+SubscriptionBuilderImpl -right-> Subscription
+
+@enduml

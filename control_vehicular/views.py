@@ -2,12 +2,11 @@ from rest_framework import viewsets
 from .serializers import (
     BateriaSerializer, ConductorSerializer,
     LicenciaSerializer, LlantaSerializer,
-    MatriculaSerializer, PropietarioSerializer,
-    VehiculoSerializer
+    MatriculaSerializer, VehiculoSerializer
 )
 from .models import (
     Bateria, Conductor, Licencia, Llanta,
-    Matricula, Propietario, Vehiculo
+    Matricula, Vehiculo
 )
 
 class BateriaView(viewsets.ModelViewSet):
@@ -44,13 +43,6 @@ class MatriculaView(viewsets.ModelViewSet):
     """
     queryset = Matricula.objects.all()
     serializer_class = MatriculaSerializer
-
-class PropietarioView(viewsets.ModelViewSet):
-    """
-    Clase que define la vista para listar y crear propietarios.
-    """
-    queryset = Propietario.objects.all()
-    serializer_class = PropietarioSerializer
 
 class VehiculoView(viewsets.ModelViewSet):
     """

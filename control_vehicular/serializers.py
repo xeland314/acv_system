@@ -10,9 +10,8 @@ from rest_framework import serializers
 from login.serializers import PersonaSerializer
 from .models import (
     Bateria, Licencia,
-    Conductor, Propietario,
-    Vehiculo, Matricula,
-    Llanta
+    Conductor,Vehiculo,
+    Matricula, Llanta
 )
 
 class LicenciaSerializer(serializers.ModelSerializer):
@@ -67,40 +66,11 @@ class ConductorSerializer(PersonaSerializer):
         usuario = Conductor.objects.create(**validated_data)
         return usuario
 
-class PropietarioSerializer(PersonaSerializer):
-    """
-    Serializador para el modelo Propietario.
-    """
-    class Meta:
-        model = Propietario
-        fields = (
-            'nombres', 'apellidos', 'cedula', 'email', 'direccion',
-            'telefono', 'fecha_nacimiento', 'nivel_educacion',
-            'estado_civil', 'contrasena', 'contrasena2', 'fotografia'
-        )
-
-    def create(self, validated_data: dict):
-        """Crea una nueva instancia del modelo Persona a partir de los datos validados.
-
-        Args:
-            validated_data: Diccionario con los datos validados.
-
-        Returns:
-            Conductor: Nueva instancia del modelo Persona creada a partir de los datos validados.
-        """
-        password = validated_data.pop('contrasena')
-        username = validated_data.get('cedula')
-        email = validated_data.get('email')
-        user = User.objects.create_user(username, email, password)
-        validated_data['user'] = user
-        usuario = Propietario.objects.create(**validated_data)
-        return usuario
-
 class VehiculoSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Vehiculo.
     """
-    propietario = PropietarioSerializer(
+    propietario = PersonaSerializer(
         help_text=_("Propietario del vehículo.")
     )
     matricula = serializers.CharField(
@@ -121,7 +91,7 @@ class MatriculaSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Matricula.
     """
-    propietario = PropietarioSerializer(
+    propietario = PersonaSerializer(
         help_text=_("Propietario de la matrícula.")
     )
     vehiculo = VehiculoSerializer(

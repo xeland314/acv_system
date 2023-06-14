@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'login',
     'control_vehicular',
-    'operaciones'
+    'operaciones',
+    'suscripciones'
 ]
 
 MIDDLEWARE = [

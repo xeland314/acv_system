@@ -22,7 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api_generate_token/', views.obtain_auth_token),
     path('auth/', include('login.urls')),
-    path('', include('control_vehicular.urls')),
-    path('', include('operaciones.urls')),
+    path('vehiculos/', include('control_vehicular.urls')),
+    path('operaciones/', include('operaciones.urls')),
+    path('suscripciones/', include('suscripciones.urls')),
     path('docs/', include_docs_urls(title='Users API')),
 ]
