@@ -65,7 +65,7 @@ class SubscripcionSerializer(serializers.ModelSerializer):
             - default_error_messages: Mensajes de error personalizados.
         """
         model = Subscripcion
-        fields = ('id', 'tipo', 'duracion', 'features', 'created_by')
+        fields = ('id', 'tipo', 'duracion', 'funcionalidades', 'created_by')
         read_only_fields = ('id', 'created_by')
         default_error_messages = {
             'invalid': _('Datos inválidos.'),
@@ -94,7 +94,7 @@ class EmpresaSerializer(serializers.ModelSerializer):
         model = Empresa
         fields = (
             'id', 'nombre_comercial', 'ruc', 'representante_legal',
-            'subscripcion', 'direccion', 'correo', 'telefono'
+            'suscripcion', 'direccion', 'correo', 'telefono'
         )
         read_only_fields = ('id',)
         default_error_messages = {
