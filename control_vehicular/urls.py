@@ -9,7 +9,7 @@ from rest_framework import routers
 
 from .views import (
     BateriaView, ConductorView, LicenciaView, LlantaView,
-    MatriculaView, VehiculoView
+    MatriculaView, VehiculoView, OdometroView
 )
 
 router = routers.DefaultRouter()
@@ -19,6 +19,7 @@ router.register(r'conductores', ConductorView, basename='conductores')
 router.register(r'licencias', LicenciaView, basename='licencias')
 router.register(r'llantas', LlantaView, basename='llantas')
 router.register(r'matriculas', MatriculaView, basename='matriculas')
+router.register(r'odometros', OdometroView, basename='odometros')
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),

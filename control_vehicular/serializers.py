@@ -11,7 +11,8 @@ from login.serializers import PersonaSerializer
 from .models import (
     Bateria, Licencia,
     Conductor,Vehiculo,
-    Matricula, Llanta
+    Matricula, Llanta,
+    Odometro
 )
 
 class LicenciaSerializer(serializers.ModelSerializer):
@@ -86,6 +87,11 @@ class VehiculoSerializer(serializers.ModelSerializer):
             'cilindraje', 'unidad_carburante', 'combustible',
             'condicion', 'fotografia'
         )
+
+class OdometroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Odometro
+        fields = ['id', 'vehiculo', 'kilometraje', 'unidad', 'fecha_inicial']
 
 class MatriculaSerializer(serializers.ModelSerializer):
     """

@@ -10,32 +10,13 @@ El módulo `utils.py` incluye las siguientes clases enumeradas:
 - `CondicionVehicular`: enumera las diferentes condiciones vehiculares.
 - `PosicionLlanta`: enumera las diferentes posiciones de las llantas.
 - `TipoLicencia`: enumera los diferentes tipos de licencias.
-
-También se incluyen las siguientes variables que contienen
-las opciones posibles de cada enumeración:
-
-- `COMBUSTIBLES`: una lista de tuplas con las opciones posibles de combustible.
-- `TIPOS_VEHICULO`: una lista de tuplas con las opciones posibles de tipo de vehículo.
-- `CONDICIONES_VEHICULARES`: una lista de tuplas con las opciones
-    posibles de condiciones vehiculares.
-- `POSICIONES_LLANTA`: una lista de tuplas con las opciones posibles de posiciones de llantas.
-- `TIPOS_LICENCIA`: una lista de tuplas con las opciones posibles de tipos de licencia.
+- `UnidadOdometro`: enumera las diferentes unidades que puede utilizar un odómetro.
 """
 
 from datetime import datetime
 from enum import Enum
 import re
-
-class TipoVehiculo(Enum):
-    """
-    Enumeración de los diferentes tipos de vehículos.
-    """
-    CAMION = "Camión"
-    CAMIONETA = "Camioneta"
-    AUTOMOVIL = "Automóvil"
-    MOTOCICLETA = "Motocicleta"
-    BUS = "Bus"
-    TRACTOR = "Tractor"
+from typing import List, Tuple
 
 class Combustible(Enum):
     """
@@ -46,6 +27,20 @@ class Combustible(Enum):
     GAS = "Gas"
     ELECTRICO = "Eléctrico"
 
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los tipos de combustibles.
+
+        Cada tupla contiene el valor y el nombre de un tipo de combustible.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los tipos de combustibles.
+        """
+        return [(key.value, key.name) for key in cls]
+
 class CondicionVehicular(Enum):
     """
     Enumeración de las diferentes condiciones vehiculares.
@@ -53,6 +48,20 @@ class CondicionVehicular(Enum):
     OPERABLE = "Operable"
     NO_OPERABLE = "No operable"
     EN_MANTENIMIENTO = "En mantenimiento"
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de las condiciones vehiculares.
+
+        Cada tupla contiene el valor y el nombre de una condición vehicular.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de las condiciones vehiculares.
+        """
+        return [(key.value, key.name) for key in cls]
 
 class PosicionLlanta(Enum):
     """
@@ -67,6 +76,20 @@ class PosicionLlanta(Enum):
     IZQUIERDO_POSTERIOR_EXTERIOR = "Izquierdo posterior exterior"
     IZQUIERDO_POSTERIOR_INTERIOR = "Izquierdo posterior interior"
     REPUESTO = "Respuesto"
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de las posiciones de las llantas.
+
+        Cada tupla contiene el valor y el nombre de una posición de llanta.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de las posiciones de las llantas.
+        """
+        return [(key.value, key.name) for key in cls]
 
 class TipoLicencia(Enum):
     """
@@ -83,11 +106,40 @@ class TipoLicencia(Enum):
     E = 'E'
     E1 = 'E1'
 
-COMBUSTIBLES = [(tag.value, tag.name) for tag in Combustible]
-TIPOS_VEHICULO = [(tag.value, tag.name) for tag in TipoVehiculo]
-CONDICIONES_VEHICULARES = [(tag.value, tag.name) for tag in CondicionVehicular]
-POSICIONES_LLANTA = [(tag.value, tag.name) for tag in PosicionLlanta]
-TIPOS_LICENCIA = [(tag.value, tag.name) for tag in TipoLicencia]
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los tipos de licencias.
+
+        Cada tupla contiene el valor y el nombre de un tipo de licencia.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los tipos de licencias.
+        """
+        return [(key.value, key.name) for key in cls]
+
+class UnidadOdometro(Enum):
+    """
+    Enumeración de las diferentes unidades para medir un kilometraje.
+    """
+    KILOMETROS = 'km'
+    MILLAS = 'mi'
+    DIAS = 'días'
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de las unidades.
+
+        Cada tupla contiene el valor y el nombre de una unidad.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores y nombres de las unidades.
+        """
+        return [(key.value, key.name) for key in cls]
 
 def es_una_placa_de_vehiculo_valida(placa: str) -> bool:
     """

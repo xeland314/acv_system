@@ -18,8 +18,9 @@ from login.models import Persona
 
 from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida
 from .utils import (
-    COMBUSTIBLES, CONDICIONES_VEHICULARES,
-    POSICIONES_LLANTA, TIPOS_LICENCIA,
+    Combustible, CondicionVehicular,
+    PosicionLlanta, TipoLicencia,
+    UnidadOdometro,
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida
 )
@@ -37,7 +38,7 @@ class Licencia(models.Model):
     """
     tipo = models.CharField(
         max_length=2,
-        choices=TIPOS_LICENCIA,
+        choices=TipoLicencia.choices(),
         help_text=_("El tipo de la licencia (A, B, C, etc.).")
     )
     fecha_de_caducidad = models.DateField(
@@ -158,13 +159,13 @@ class Vehiculo(models.Model):
     combustible = models.CharField(
         _('Combustible'),
         max_length=30,
-        choices=COMBUSTIBLES,
+        choices=Combustible.choices(),
         help_text=_("El tipo de combustible del vehículo.")
     )
     condicion = models.CharField(
         _('Condición vehicular'),
         max_length=30,
-        choices=CONDICIONES_VEHICULARES,
+        choices=CondicionVehicular.choices(),
         help_text=_("La condición vehicular del vehículo.")
     )
     fotografia = models.ImageField(
@@ -177,6 +178,42 @@ class Vehiculo(models.Model):
 
     def __str__(self) -> str:
         return f'{self.marca} - {self.placa} - {self.propietario}'
+
+class Odometro(models.Model):
+    """
+    Representa el odómetro de un vehículo.
+
+    Atributos:
+        - vehiculo (Vehiculo): El vehículo al que pertenece el odómetro.
+        - kilometraje (float): El kilometraje recorrido por el vehículo.
+        - unidad (str): La unidad de medida del kilometraje.
+        - fecha_inicial (DateField): La fecha inicial de uso del vehículo.
+    """
+    vehiculo = models.OneToOneField(
+        Vehiculo,
+        on_delete=models.PROTECT,
+        related_name='odometro',
+        help_text=_("El vehículo al que pertenece el odómetro.")
+    )
+    kilometraje = models.DecimalField(
+        _('Kilometraje'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("El kilometraje recorrido por el vehículo.")
+    )
+    unidad = models.CharField(
+        _('Unidad'),
+        max_length=10,
+        blank=False,
+        choices=UnidadOdometro.choices(),
+        help_text=_("La unidad de medida del kilometraje.")
+    )
+    fecha_inicial = models.DateField(
+        _('Fecha inicial'),
+        blank=False,
+        help_text=_("La fecha inicial de uso del vehículo.")
+    )
 
 class Matricula(models.Model):
     """
@@ -264,7 +301,7 @@ class Llanta(models.Model):
     posicion_respecto_al_vehiculo = models.CharField(
         _('Posición respecto al vehículo'),
         max_length=50,
-        choices=POSICIONES_LLANTA,
+        choices=PosicionLlanta.choices(),
         help_text=_("La posición de la llanta respecto al vehículo.")
     )
 

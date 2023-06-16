@@ -2,11 +2,12 @@ from rest_framework import viewsets
 from .serializers import (
     BateriaSerializer, ConductorSerializer,
     LicenciaSerializer, LlantaSerializer,
-    MatriculaSerializer, VehiculoSerializer
+    MatriculaSerializer, OdometroSerializer,
+    VehiculoSerializer
 )
 from .models import (
     Bateria, Conductor, Licencia, Llanta,
-    Matricula, Vehiculo
+    Matricula, Vehiculo, Odometro
 )
 
 class BateriaView(viewsets.ModelViewSet):
@@ -43,6 +44,10 @@ class MatriculaView(viewsets.ModelViewSet):
     """
     queryset = Matricula.objects.all()
     serializer_class = MatriculaSerializer
+
+class OdometroView(viewsets.ModelViewSet):
+    queryset = Odometro.objects.all()
+    serializer_class = OdometroSerializer
 
 class VehiculoView(viewsets.ModelViewSet):
     """
