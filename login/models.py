@@ -17,7 +17,7 @@ from .exceptions import (
 from .utils import (
     es_un_numero_de_telefono_valido, es_una_cedula_valida,
     es_una_fecha_de_nacimiento_valida,
-    NIVELES_EDUCACION, ESTADOS_CIVILES
+    EstadoCivil, NivelEducacion
 )
 
 def validar_cedula(cedula: str):
@@ -145,13 +145,13 @@ class Persona(models.Model):
     nivel_educacion = models.CharField(
         _('Nivel de educación'),
         max_length=30,
-        choices=NIVELES_EDUCACION,
+        choices=NivelEducacion.choices(),
         help_text=_("Nivel de educación de la persona.")
     )
     estado_civil = models.CharField(
         _('Estado Civil'),
         max_length=20,
-        choices=ESTADOS_CIVILES,
+        choices=EstadoCivil.choices(),
         help_text=_("Estado civil de la persona.")
     )
     fotografia = models.ImageField(
