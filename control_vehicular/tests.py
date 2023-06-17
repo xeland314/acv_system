@@ -11,15 +11,21 @@ from django.test import TestCase
 
 from .exceptions import (
     CodigoDotInvalido,
-    PlacaVehicularInvalida
+    PlacaVehicularInvalida,
+    FechaFabricacionInvalida,
+    CodigoBateriaInvalido
 )
 from .models import (
     validar_codigo_dot,
-    validar_placa_vehicular
+    validar_placa_vehicular,
+    validar_anio_fabricacion,
+    validar_codigo_bateria
 )
 from .utils import (
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
+    es_un_anio_de_fabricacion_valido,
+    es_un_codigo_bateria_valido,
     obtener_fecha_fabricacion
 )
 
@@ -76,6 +82,28 @@ class UtilsTestCase(TestCase):
         self.assertEqual(fecha_fabricacion.year, 2023)
         self.assertEqual(fecha_fabricacion.month, 2)
         self.assertEqual(fecha_fabricacion.day, 20)
+
+    def test_es_anio_fabricacion(self) -> None:
+        self.assertTrue(es_un_anio_de_fabricacion_valido(1992))
+        self.assertTrue(es_un_anio_de_fabricacion_valido(2000))
+        self.assertFalse(es_un_anio_de_fabricacion_valido(2099))
+        self.assertRaises(
+            FechaFabricacionInvalida, validar_anio_fabricacion, 1500
+        )
+        self.assertRaises(
+            FechaFabricacionInvalida, validar_anio_fabricacion, 2025
+        )
+        
+    def test_es_codigo_bateria(self) -> None:
+        self.assertTrue(es_un_codigo_bateria_valido("POWR2022"))
+        self.assertTrue(es_un_codigo_bateria_valido("MAXPOWER99"))
+        self.assertFalse(es_un_codigo_bateria_valido("BATERIA"))
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "PW120"
+        )
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "1283944"
+        )
 
 class TestSuite(TestCase):
     """

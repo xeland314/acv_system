@@ -50,3 +50,26 @@ class PlacaVehicularInvalida(ValidationError):
         if detail is None:
             detail = "La placa vehicular no cumple con el formato esperado."
         super().__init__(_(detail), params)
+
+class FechaFabricacionInvalida(ValidationError):
+    """ Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "La año de fabricación no cumple con el formato esperado."
+        super().__init__(_(detail), params)
+
+class CodigoBateriaInvalido(ValidationError):
+    """ Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "El código de bateria no cumple con el formato esperado."
+        super().__init__(_(detail), params)
+

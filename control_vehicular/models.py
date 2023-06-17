@@ -9,6 +9,7 @@ Dependencias:
     - El módulo utils.py para definir constantes TIPOS_LICENCIA,
         COMBUSTIBLES, CONDICIONES_VEHICULARES y POSICIONES_LLANTA.
 """
+import datetime
 
 from datetime import date
 from django.db import models
@@ -16,12 +17,14 @@ from django.utils.translation import gettext_lazy as _
 
 from login.models import Persona
 
-from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida
+from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, FechaFabricacionInvalida, CodigoBateriaInvalido
 from .utils import (
     COMBUSTIBLES, CONDICIONES_VEHICULARES,
     POSICIONES_LLANTA, TIPOS_LICENCIA,
     es_un_codigo_dot_valido,
-    es_una_placa_de_vehiculo_valida
+    es_una_placa_de_vehiculo_valida,
+    es_un_anio_de_fabricacion_valido,
+    es_un_codigo_bateria_valido
 )
 
 class Licencia(models.Model):
@@ -92,6 +95,25 @@ def validar_placa_vehicular(placa: str):
             params={'value': placa}
         )
 
+def validar_anio_fabricacion(anio: int):
+    """Valida si una placa vehicular es válida.
+
+    Esta función toma una placa vehicular como argumento y verifica si es válida
+    utilizando la función es_una_placa_vehicular_valida del archivo utils.py.
+    Si la placa no es válida, se lanza una excepción ValidationError.
+
+    Args:
+        placa (str): La placa vehicular a validar.
+
+    Raises:
+        PlacaVehicularInvalida: Si la placa vehicular no es válida.
+    """
+    if not es_un_anio_de_fabricacion_valido (anio):
+        raise FechaFabricacionInvalida(
+            f"{anio} no es un año de fabricación válido.",
+            params={'value': anio}
+        )
+
 class Vehiculo(models.Model):
     """
     Representa un vehículo.
@@ -134,9 +156,11 @@ class Vehiculo(models.Model):
         help_text=_("La placa del vehículo."),
         validators=[validar_placa_vehicular,]
     )
-    anio_de_fabricacion = models.PositiveSmallIntegerField(
+    anio_de_fabricacion = models.IntegerField(
         _('Año de fabricación'),
-        help_text=_("El año de fabricación del vehículo.")
+        help_text=_("El año de fabricación del vehículo."),
+        validators=[validar_anio_fabricacion,]
+
     )
     color = models.CharField(
         _('Color'),
@@ -177,6 +201,8 @@ class Vehiculo(models.Model):
 
     def __str__(self) -> str:
         return f'{self.marca} - {self.placa} - {self.propietario}'
+
+
 
 class Matricula(models.Model):
     """
@@ -280,7 +306,24 @@ class Bateria(models.Model):
         - vehiculo (Vehiculo): El vehículo al que pertenece la batería.
         - codigo_de_fabricacion (str): El código de fabricación de la batería.
     """
+def validar_codigo_bateria(codigo_bateria: str):
+    """Valida si una placa vehicular es válida.
 
+    Esta función toma una placa vehicular como argumento y verifica si es válida
+    utilizando la función es_una_placa_vehicular_valida del archivo utils.py.
+    Si la placa no es válida, se lanza una excepción ValidationError.
+
+    Args:
+        placa (str): La placa vehicular a validar.
+
+    Raises:
+        PlacaVehicularInvalida: Si la placa vehicular no es válida.
+    """
+    if not es_un_codigo_bateria_valido (codigo_bateria):
+        raise CodigoBateriaInvalido(
+            f"{codigo_bateria} no es un código de batería válido.",
+            params={'value': codigo_bateria}
+        )
     vehiculo = models.ForeignKey(
         Vehiculo,
         on_delete=models.CASCADE,
@@ -290,7 +333,8 @@ class Bateria(models.Model):
     codigo_de_fabricacion = models.CharField(
         _('Código de fabricación'),
         max_length=50,
-        help_text=_("El código de fabricación de la batería.")
+        help_text=_("El código de fabricación de la batería."),
+        validators=[validar_codigo_bateria,]
     )
 
     def __str__(self) -> str:
