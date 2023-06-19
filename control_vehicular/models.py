@@ -17,15 +17,32 @@ from django.utils.translation import gettext_lazy as _
 
 from login.models import Persona
 
-from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, FechaFabricacionInvalida, CodigoBateriaInvalido
+from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, FechaFabricacionInvalida, CodigoBateriaInvalido, LicenciaCaducada
 from .utils import (
     COMBUSTIBLES, CONDICIONES_VEHICULARES,
     POSICIONES_LLANTA, TIPOS_LICENCIA,
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
     es_un_anio_de_fabricacion_valido,
-    es_un_codigo_bateria_valido
+    es_un_codigo_bateria_valido,
+    ha_caducado_la_licencia
 )
+
+def validar_vigencia_licencia(fechaCaducidad):
+    """
+    Valida la vigencia de una licencia en función de su fecha de caducidad.
+
+    Argumentos:
+    fechaCaducidad (str): La fecha de caducidad de la licencia en formato 'YYYY-MM-DD'.
+
+    Lanza:
+    LicenciaCaducada: Si la licencia ha caducado.
+    """
+    if not ha_caducado_la_licencia(fechaCaducidad):
+        raise LicenciaCaducada(
+            f"{fechaCaducidad} no es una fecha vigente",
+            params={'value': fechaCaducidad}
+        )
 
 class Licencia(models.Model):
     """
@@ -45,7 +62,8 @@ class Licencia(models.Model):
     )
     fecha_de_caducidad = models.DateField(
         blank=False,
-        help_text=_("La fecha de caducidad de la licencia.")
+        help_text=_("La fecha de caducidad de la licencia."),
+        validators=[validar_vigencia_licencia,]
     )
 
     def __str__(self):
@@ -244,6 +262,7 @@ class Matricula(models.Model):
     def __str__(self) -> str:
         """Devuelve una representación legible del objeto Matricula."""
         return str(self.matricula)
+
 
 
 def validar_codigo_dot(codigo_dot: str):

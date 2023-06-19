@@ -13,20 +13,23 @@ from .exceptions import (
     CodigoDotInvalido,
     PlacaVehicularInvalida,
     FechaFabricacionInvalida,
-    CodigoBateriaInvalido
+    CodigoBateriaInvalido,
+    LicenciaCaducada
 )
 from .models import (
     validar_codigo_dot,
     validar_placa_vehicular,
     validar_anio_fabricacion,
-    validar_codigo_bateria
+    validar_codigo_bateria,
+    validar_vigencia_licencia
 )
 from .utils import (
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
     es_un_anio_de_fabricacion_valido,
     es_un_codigo_bateria_valido,
-    obtener_fecha_fabricacion
+    obtener_fecha_fabricacion,
+    ha_caducado_la_licencia
 )
 
 class UtilsTestCase(TestCase):
@@ -103,6 +106,23 @@ class UtilsTestCase(TestCase):
         )
         self.assertRaises(
             CodigoBateriaInvalido, validar_codigo_bateria, "1283944"
+        )
+
+    def test_vigencia_licencia(self) -> None:
+        """
+        Prueba la función es_un_codigo_dot_valido con diferentes entradas.
+
+        Verifica que la función devuelve True para códigos DOT válidos y False para
+        códigos DOT con formatos inválidos.
+        """
+        self.assertTrue(ha_caducado_la_licencia('2025-08-19'))
+        self.assertFalse(ha_caducado_la_licencia('2005-12-19'))
+        self.assertFalse(ha_caducado_la_licencia('2022-04-15'))
+        self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, '2019-11-29'
+        )
+        self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, '2015-09-08'
         )
 
 class TestSuite(TestCase):

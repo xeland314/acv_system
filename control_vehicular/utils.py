@@ -179,5 +179,14 @@ def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
 
     return fecha_fabricacion
 
+
+def ha_caducado_la_licencia(fechaCaducidad):
+    # Obtener la fecha actual
+    fecha_actual = datetime.now().date()
+    # Convertir la fecha de caducidad a objeto de fecha
+    fecha_caducidad = datetime.strptime(fechaCaducidad, '%Y-%m-%d').date()
+    # Comparar la fecha de caducidad con la fecha actual
+    return fecha_caducidad > fecha_actual
+
     
 

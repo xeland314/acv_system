@@ -73,3 +73,13 @@ class CodigoBateriaInvalido(ValidationError):
             detail = "El código de bateria no cumple con el formato esperado."
         super().__init__(_(detail), params)
 
+class LicenciaCaducada(ValidationError):
+    """Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "La licencia está caducada."
+        super().__init__(_(detail), params)
