@@ -5,6 +5,7 @@ Este módulo define los tests para control_vehicular.
 
 Autor: Christopher Villamarín (@xeland314)
 """
+import random
 import unittest
 
 from django.test import TestCase
@@ -21,7 +22,8 @@ from .models import (
     validar_placa_vehicular,
     validar_anio_fabricacion,
     validar_codigo_bateria,
-    validar_vigencia_licencia
+    validar_vigencia_licencia,
+
 )
 from .utils import (
     es_un_codigo_dot_valido,
@@ -124,6 +126,18 @@ class UtilsTestCase(TestCase):
         self.assertRaises(
             LicenciaCaducada, validar_vigencia_licencia, '2015-09-08'
         )
+
+    def testAleatorio_vigencia_licencia(self) -> None:
+        for i in range(101):
+            aleatorioAnio = random.randint(1990, 2022)
+            aleatorioMes = random.randint(1, 12)
+            aleatorioDia = random.randint(1, 25)
+
+            self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, str(aleatorioAnio) +
+              "-" +str(aleatorioMes) + "-" + str(aleatorioDia)
+        )
+
 
 class TestSuite(TestCase):
     """

@@ -9,6 +9,7 @@ Dependencias: django.test.TestCase, django.contrib.auth.models.User,
     .utils.es_un_numero_de_telefono_valido
 """
 from datetime import date, timedelta
+import random
 import unittest
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -57,6 +58,14 @@ class UtilsTestCase(TestCase):
         self.assertRaises(
             CedulaInvalida, es_una_cedula_valida, " "
         )
+
+    def testAleatorio_es_una_cedula_valida(self):
+        for i in range(101):
+            numero_aleatorio = random.randint(10000, 99999)
+            self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida, "1789"+str(numero_aleatorio)
+        )
+            
 
     def test_es_un_numero_de_telefono_valido(self):
         """Prueba la función es_un_numero_de_telefono_valido.
