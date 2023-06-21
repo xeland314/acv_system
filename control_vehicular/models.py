@@ -93,6 +93,42 @@ def validar_placa_vehicular(placa: str):
             params={'value': placa}
         )
 
+class Odometro(models.Model):
+    """
+    Representa el odómetro de un vehículo.
+
+    Atributos:
+        - vehiculo (Vehiculo): El vehículo al que pertenece el odómetro.
+        - kilometraje (float): El kilometraje recorrido por el vehículo.
+        - unidad (str): La unidad de medida del kilometraje.
+        - fecha_inicial (DateField): La fecha inicial de uso del vehículo.
+    """
+    kilometraje = models.DecimalField(
+        _('Kilometraje'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("El kilometraje recorrido por el vehículo.")
+    )
+    unidad = models.CharField(
+        _('Unidad'),
+        max_length=10,
+        blank=False,
+        choices=UnidadOdometro.choices(),
+        help_text=_("La unidad de medida del kilometraje.")
+    )
+    fecha_inicial = models.DateField(
+        _('Fecha inicial'),
+        blank=False,
+        help_text=_("La fecha inicial de uso del vehículo.")
+    )
+    vehiculo = models.ForeignKey(
+        'Vehiculo',
+        related_name='bitacora_kilometraje',
+        on_delete=models.CASCADE,
+        help_text=_("El vehículo al que pertenece el odómetro.")
+    )
+
 class Vehiculo(models.Model):
     """
     Representa un vehículo.
@@ -176,31 +212,61 @@ class Vehiculo(models.Model):
         help_text=_("La fotografía del vehículo.")
     )
 
+    def agregar_kilometraje(self, valor, unidad):
+        """
+        Agrega un nuevo registro de kilometraje al odómetro del vehículo.
+
+        Args:
+            valor (float): El valor del kilometraje a agregar.
+            unidad (str): La unidad de medida del kilometraje.
+        """
+        Odometro.objects.create(valor=valor, unidad=unidad, vehiculo=self)
+
+    @property
+    def bitacora(self):
+        """
+        Retorna la bitácora de kilometraje del vehículo ordenada por fecha.
+
+        Returns:
+            QuerySet: La bitácora de kilometraje del vehículo ordenada por fecha.
+        """
+        return self.bitacora_kilometraje.order_by('-fecha')
+
     def __str__(self) -> str:
         return f'{self.marca} - {self.placa} - {self.propietario}'
 
-class Odometro(models.Model):
+class Operacion(models.Model):
     """
-    Representa el odómetro de un vehículo.
+    Representa una operación de mantenimiento.
 
     Atributos:
-        - vehiculo (Vehiculo): El vehículo al que pertenece el odómetro.
-        - kilometraje (float): El kilometraje recorrido por el vehículo.
-        - unidad (str): La unidad de medida del kilometraje.
-        - fecha_inicial (DateField): La fecha inicial de uso del vehículo.
+        - tarea (str): La tarea a realizar en la operación.
+        - sistema (str): El sistema del vehículo al que pertenece la operación.
+        - sub_sistema (str): El sub-sistema del vehículo al que pertenece la operación.
+        - frecuencia (float): La frecuencia en el que se debe realizar la operación.
+        - unidad (str): La unidad de medida de la frecuencia: horas, km, etc.
     """
-    vehiculo = models.OneToOneField(
-        Vehiculo,
-        on_delete=models.PROTECT,
-        related_name='odometro',
-        help_text=_("El vehículo al que pertenece el odómetro.")
+    tarea = models.CharField(
+        _('Tarea'),
+        max_length=50,
+        help_text=_("La tarea a realizar en la operación.")
     )
-    kilometraje = models.DecimalField(
-        _('Kilometraje'),
+    sistema = models.CharField(
+        _('Sistema'),
+        max_length=50,
+        help_text=_("El sistema del vehículo al que pertenece la operación.")
+    )
+    sub_sistema = models.CharField(
+        _('Sub-sistema'),
+        max_length=50,
+        help_text=_("El sub-sistema del vehículo al que pertenece la operación.")
+    )
+    frecuencia = models.DecimalField(
+        _('Frecuencia'),
         max_digits=10,
         decimal_places=2,
         blank=False,
-        help_text=_("El kilometraje recorrido por el vehículo.")
+        help_text=_("El kilometraje/tiempo en el que se debe realizar la operación.")
     )
     unidad = models.CharField(
         _('Unidad'),
@@ -209,10 +275,23 @@ class Odometro(models.Model):
         choices=UnidadOdometro.choices(),
         help_text=_("La unidad de medida del kilometraje.")
     )
-    fecha_inicial = models.DateField(
-        _('Fecha inicial'),
-        blank=False,
-        help_text=_("La fecha inicial de uso del vehículo.")
+
+class HojaMantenimiento(models.Model):
+    """
+    Representa una hoja de mantenimiento para un vehículo.
+
+    Atributos:
+        - vehiculo (Vehiculo): El vehículo al que pertenece la hoja de mantenimiento.
+        - operaciones (list[Operacion]): Las operaciones de mantenimiento a realizar en el vehículo.
+    """
+    vehiculo = models.OneToOneField(
+        Vehiculo,
+        on_delete=models.CASCADE,
+        help_text=_("El vehículo al que pertenece la hoja de mantenimiento.")
+    )
+    operaciones = models.ManyToManyField(
+        Operacion,
+        help_text=_("Las operaciones de mantenimiento a realizar en el vehículo.")
     )
 
 class Matricula(models.Model):

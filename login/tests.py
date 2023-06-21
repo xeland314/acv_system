@@ -162,8 +162,8 @@ class ViewsTestCase(TestCase):
             'email': 'johndoe@example.com',
             'telefono': '0987129357',
             'fecha_nacimiento': date(2000, 1, 1),
-            'nivel_educacion': 'SUPERIOR',
-            'estado_civil': 'SOLTERO',
+            'nivel_educacion': 'Superior',
+            'estado_civil': 'Soltero',
             'contrasena': 'password',
             'contrasena2': 'password'
         }

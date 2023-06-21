@@ -12,7 +12,8 @@ from .models import (
     Bateria, Licencia,
     Conductor,Vehiculo,
     Matricula, Llanta,
-    Odometro
+    Odometro, HojaMantenimiento,
+    Operacion
 )
 
 class LicenciaSerializer(serializers.ModelSerializer):
@@ -134,3 +135,15 @@ class BateriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bateria
         fields = ('vehiculo', 'codigo_de_fabricacion')
+
+class OperacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operacion
+        fields = ('tarea', 'sistema', 'sub_sistema', 'frecuencia', 'unidad')
+
+class HojaMantenimientoSerializer(serializers.ModelSerializer):
+    operaciones = OperacionSerializer(many=True)
+
+    class Meta:
+        model = HojaMantenimiento
+        fields = ('vehiculo', 'operaciones')

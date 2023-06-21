@@ -3,11 +3,13 @@ from .serializers import (
     BateriaSerializer, ConductorSerializer,
     LicenciaSerializer, LlantaSerializer,
     MatriculaSerializer, OdometroSerializer,
-    VehiculoSerializer
+    VehiculoSerializer, HojaMantenimientoSerializer,
+    OperacionSerializer
 )
 from .models import (
     Bateria, Conductor, Licencia, Llanta,
-    Matricula, Vehiculo, Odometro
+    Matricula, Vehiculo, Odometro, Operacion,
+    HojaMantenimiento
 )
 
 class BateriaView(viewsets.ModelViewSet):
@@ -46,8 +48,25 @@ class MatriculaView(viewsets.ModelViewSet):
     serializer_class = MatriculaSerializer
 
 class OdometroView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear odometros.
+    """
     queryset = Odometro.objects.all()
     serializer_class = OdometroSerializer
+
+class OperacionViewSet(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear Operaciones.
+    """
+    queryset = Operacion.objects.all()
+    serializer_class = OperacionSerializer
+
+class HojaMantenimientoViewSet(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear hojas de mantenimiento.
+    """
+    queryset = HojaMantenimiento.objects.all()
+    serializer_class = HojaMantenimientoSerializer
 
 class VehiculoView(viewsets.ModelViewSet):
     """
