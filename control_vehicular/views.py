@@ -2,14 +2,15 @@ from rest_framework import viewsets
 from .serializers import (
     BateriaSerializer, ConductorSerializer,
     LicenciaSerializer, LlantaSerializer,
-    MatriculaSerializer, OdometroSerializer,
+    KilometrajeSerializer,
     VehiculoSerializer, HojaMantenimientoSerializer,
-    OperacionSerializer
+    OperacionMantenimientoSerializer,
+    PropietarioSerializer
 )
 from .models import (
     Bateria, Conductor, Licencia, Llanta,
-    Matricula, Vehiculo, Odometro, Operacion,
-    HojaMantenimiento
+    Vehiculo, Kilometraje, OperacionMantenimiento,
+    HojaMantenimiento, Propietario
 )
 
 class BateriaView(viewsets.ModelViewSet):
@@ -40,28 +41,28 @@ class LlantaView(viewsets.ModelViewSet):
     queryset = Llanta.objects.all()
     serializer_class = LlantaSerializer
 
-class MatriculaView(viewsets.ModelViewSet):
+class PropietarioView(viewsets.ModelViewSet):
     """
-    Clase que define la vista para listar y crear matriculas.
+    Clase que define la vista para listar y crear conductores.
     """
-    queryset = Matricula.objects.all()
-    serializer_class = MatriculaSerializer
+    queryset = Propietario.objects.all()
+    serializer_class = PropietarioSerializer
 
-class OdometroView(viewsets.ModelViewSet):
+class KilometrajeView(viewsets.ModelViewSet):
     """
     Clase que define la vista para listar y crear odometros.
     """
-    queryset = Odometro.objects.all()
-    serializer_class = OdometroSerializer
+    queryset = Kilometraje.objects.all()
+    serializer_class = KilometrajeSerializer
 
-class OperacionViewSet(viewsets.ModelViewSet):
+class OperacionMatenimientoView(viewsets.ModelViewSet):
     """
     Clase que define la vista para listar y crear Operaciones.
     """
-    queryset = Operacion.objects.all()
-    serializer_class = OperacionSerializer
+    queryset = OperacionMantenimiento.objects.all()
+    serializer_class = OperacionMantenimientoSerializer
 
-class HojaMantenimientoViewSet(viewsets.ModelViewSet):
+class HojaMantenimientoView(viewsets.ModelViewSet):
     """
     Clase que define la vista para listar y crear hojas de mantenimiento.
     """

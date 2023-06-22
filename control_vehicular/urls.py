@@ -9,20 +9,28 @@ from rest_framework import routers
 
 from .views import (
     BateriaView, ConductorView, LicenciaView, LlantaView,
-    MatriculaView, VehiculoView, OdometroView, OperacionViewSet,
-    HojaMantenimientoViewSet
+    VehiculoView, KilometrajeView, OperacionMatenimientoView,
+    HojaMantenimientoView, PropietarioView
 )
 
 router = routers.DefaultRouter()
 router.register(r'baterias', BateriaView, basename='baterias')
-router.register(r'vehiculos', VehiculoView, basename='vehiculos')
 router.register(r'conductores', ConductorView, basename='conductores')
+router.register(r'kilometrajes', KilometrajeView, basename='kilometrajes')
 router.register(r'licencias', LicenciaView, basename='licencias')
 router.register(r'llantas', LlantaView, basename='llantas')
-router.register(r'matriculas', MatriculaView, basename='matriculas')
-router.register(r'odometros', OdometroView, basename='odometros')
-router.register(r'operaciones', OperacionViewSet)
-router.register(r'hojas-mantenimiento', HojaMantenimientoViewSet)
+router.register(r'propietarios', PropietarioView, basename='propietarios')
+router.register(r'vehiculos', VehiculoView, basename='vehiculos')
+router.register(
+    r'operaciones-matenimiento',
+    OperacionMatenimientoView,
+    basename='operaciones_mantenimiento'
+)
+router.register(
+    r'hojas-mantenimiento',
+    HojaMantenimientoView,
+    basename='hojas_mantenimiento'
+)
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),
