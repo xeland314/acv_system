@@ -146,7 +146,7 @@ def es_un_codigo_bateria_valido(codigo_bateria: str):
     # Comprobar si el código de batería coincide con el patrón
     coincidencia = re.match(patron, codigo_bateria)
     # Devolver True si hay coincidencia, False si no hay coincidencia
-    return coincidencia is not None
+    return bool(coincidencia)
 
     
 def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
@@ -180,7 +180,16 @@ def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     return fecha_fabricacion
 
 
-def ha_caducado_la_licencia(fechaCaducidad):
+def ha_caducado_la_licencia(fechaCaducidad: str):
+    """
+    Verifica si una licencia ha caducado en base a la fecha de caducidad proporcionada.
+
+    Args:
+        fechaCaducidad (str): Fecha de caducidad en formato 'YYYY-MM-DD'.
+
+    Returns:
+        bool: True si la licencia ha caducado, False en caso contrario.
+    """
     # Obtener la fecha actual
     fecha_actual = datetime.now().date()
     # Convertir la fecha de caducidad a objeto de fecha

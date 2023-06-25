@@ -59,11 +59,11 @@ class UtilsTestCase(TestCase):
             CedulaInvalida, es_una_cedula_valida, " "
         )
 
-    def testAleatorio_es_una_cedula_valida(self):
+    def test_aleatorio_es_una_cedula_valida(self):
         for i in range(101):
             numero_aleatorio = random.randint(10000, 99999)
             self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, "1789"+str(numero_aleatorio)
+            CedulaInvalida, es_una_cedula_valida,  f"1789{numero_aleatorio}"
         )
             
 

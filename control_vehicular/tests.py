@@ -112,10 +112,12 @@ class UtilsTestCase(TestCase):
 
     def test_vigencia_licencia(self) -> None:
         """
-        Prueba la función es_un_codigo_dot_valido con diferentes entradas.
+        Prueba la funcionalidad de vigencia de la licencia.
 
-        Verifica que la función devuelve True para códigos DOT válidos y False para
-        códigos DOT con formatos inválidos.
+        Realiza una serie de pruebas para verificar si la función ha_caducado_la_licencia y la excepción LicenciaCaducada funcionan correctamente.
+
+        Returns:
+        None
         """
         self.assertTrue(ha_caducado_la_licencia('2025-08-19'))
         self.assertFalse(ha_caducado_la_licencia('2005-12-19'))
@@ -127,15 +129,15 @@ class UtilsTestCase(TestCase):
             LicenciaCaducada, validar_vigencia_licencia, '2015-09-08'
         )
 
-    def testAleatorio_vigencia_licencia(self) -> None:
+    def test_aleatorio_vigencia_licencia(self) -> None:
         for i in range(101):
-            aleatorioAnio = random.randint(1990, 2022)
-            aleatorioMes = random.randint(1, 12)
-            aleatorioDia = random.randint(1, 25)
+            anio_aleatorio = random.randint(1990, 2022)
+            mes_aleatorio = random.randint(1, 12)
+            dia_aleatorio = random.randint(1, 25)
 
             self.assertRaises(
-            LicenciaCaducada, validar_vigencia_licencia, str(aleatorioAnio) +
-              "-" +str(aleatorioMes) + "-" + str(aleatorioDia)
+            LicenciaCaducada, validar_vigencia_licencia, str(anio_aleatorio) +
+              "-" +str(mes_aleatorio) + "-" + str(dia_aleatorio)
         )
 
 

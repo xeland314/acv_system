@@ -113,22 +113,20 @@ def validar_placa_vehicular(placa: str):
             params={'value': placa}
         )
 
-def validar_anio_fabricacion(anio: int):
-    """Valida si una placa vehicular es válida.
+def validar_anio_fabricacion(anio: int) -> None:
+    """
+    Valida si un año de fabricación es válido.
 
-    Esta función toma una placa vehicular como argumento y verifica si es válida
-    utilizando la función es_una_placa_vehicular_valida del archivo utils.py.
-    Si la placa no es válida, se lanza una excepción ValidationError.
+    Parámetros:
+    - anio (int): El año de fabricación a validar.
 
-    Args:
-        placa (str): La placa vehicular a validar.
+    Excepciones:
+    - FechaFabricacionInvalida: Si el año de fabricación no es válido.
 
-    Raises:
-        PlacaVehicularInvalida: Si la placa vehicular no es válida.
     """
     if not es_un_anio_de_fabricacion_valido (anio):
         raise FechaFabricacionInvalida(
-            f"{anio} no es un año de fabricación válido.",
+            f"El año {anio} de fabricación está fuera de los límites.",
             params={'value': anio}
         )
 
@@ -325,20 +323,19 @@ class Bateria(models.Model):
         - vehiculo (Vehiculo): El vehículo al que pertenece la batería.
         - codigo_de_fabricacion (str): El código de fabricación de la batería.
     """
-def validar_codigo_bateria(codigo_bateria: str):
-    """Valida si una placa vehicular es válida.
-
-    Esta función toma una placa vehicular como argumento y verifica si es válida
-    utilizando la función es_una_placa_vehicular_valida del archivo utils.py.
-    Si la placa no es válida, se lanza una excepción ValidationError.
-
-    Args:
-        placa (str): La placa vehicular a validar.
-
-    Raises:
-        PlacaVehicularInvalida: Si la placa vehicular no es válida.
+def validar_codigo_bateria(codigo_bateria: str) -> None:
     """
-    if not es_un_codigo_bateria_valido (codigo_bateria):
+    Valida si un código de batería es válido.
+
+    Parámetros:
+    - codigo_bateria (str): El código de batería a validar.
+
+    Excepciones:
+    - CodigoBateriaInvalido: Si el código de batería no es válido.
+
+    """
+
+    if not es_un_codigo_bateria_valido(codigo_bateria):
         raise CodigoBateriaInvalido(
             f"{codigo_bateria} no es un código de batería válido.",
             params={'value': codigo_bateria}
