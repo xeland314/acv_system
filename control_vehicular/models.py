@@ -11,17 +11,21 @@ Dependencias:
 """
 
 from datetime import date
+import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from login.models import Persona
 
-from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida
+from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, Fecha_Fabricacion_Invalida,CodigoBateriaInvalido
 from .utils import (
     COMBUSTIBLES, CONDICIONES_VEHICULARES,
     POSICIONES_LLANTA, TIPOS_LICENCIA,
     es_un_codigo_dot_valido,
-    es_una_placa_de_vehiculo_valida
+    es_una_placa_de_vehiculo_valida,
+    es_un_anio_de_fabricacion_valido,
+    es_un_codigo_bateria_valido
+    
 )
 
 class Licencia(models.Model):
@@ -92,6 +96,24 @@ def validar_placa_vehicular(placa: str):
             params={'value': placa}
         )
 
+
+def validar_anio_fabricacion(anio:int):
+    """
+        Verifica si un año de fabricación es válido.
+
+    Parámetros:
+    - anio: Entero que representa el año de fabricación.
+
+    Retorna:
+    - True si el año de fabricación es válido.
+    - False si el año de fabricación no es válido.
+        """
+
+    if not es_un_anio_de_fabricacion_valido (anio):
+        raise Fecha_Fabricacion_Invalida(
+            f"{anio} no es un año de fabricacion valido.",
+            params={'value':anio}
+        )
 class Vehiculo(models.Model):
     """
     Representa un vehículo.
@@ -109,7 +131,8 @@ class Vehiculo(models.Model):
         - combustible (str): El tipo de combustible del vehículo.
         - condicion (str): La condición vehicular del vehículo.
         - fotografia (ImageField): La fotografía del vehículo.
-    """
+    """   
+
     propietario = models.ForeignKey(
         Persona,
         on_delete=models.CASCADE,
@@ -134,9 +157,10 @@ class Vehiculo(models.Model):
         help_text=_("La placa del vehículo."),
         validators=[validar_placa_vehicular,]
     )
-    anio_de_fabricacion = models.PositiveSmallIntegerField(
+    anio_de_fabricacion = models.IntegerField(
         _('Año de fabricación'),
-        help_text=_("El año de fabricación del vehículo.")
+        help_text=_("El año de fabricación del vehículo."),
+        validators=[validar_anio_fabricacion,]
     )
     color = models.CharField(
         _('Color'),
@@ -177,6 +201,8 @@ class Vehiculo(models.Model):
 
     def __str__(self) -> str:
         return f'{self.marca} - {self.placa} - {self.propietario}'
+    
+    
 
 class Matricula(models.Model):
     """
@@ -272,6 +298,22 @@ class Llanta(models.Model):
         """Devuelve una representación legible por humanos del objeto Llanta."""
         return f"Llanta {self.posicion_respecto_al_vehiculo} de {self.vehiculo}"
 
+def validar_codigo_bateria(codigo_bateria: str):
+    """
+    Valida si un código de batería cumple con los requisitos establecidos.
+
+    Args:
+        codigo_bateria (str): El código de batería a validar.
+
+    Returns:
+        bool: True si el código de batería es válido, False en caso contrario.
+    """
+    if not es_un_codigo_bateria_valido(codigo_bateria):
+        raise CodigoBateriaInvalido(
+            f"{codigo_bateria} no es un código de bateria válido.",
+            params={'value': codigo_bateria}
+        )
+
 class Bateria(models.Model):
     """
     Representa una batería de un vehículo.
@@ -280,6 +322,8 @@ class Bateria(models.Model):
         - vehiculo (Vehiculo): El vehículo al que pertenece la batería.
         - codigo_de_fabricacion (str): El código de fabricación de la batería.
     """
+
+
 
     vehiculo = models.ForeignKey(
         Vehiculo,
@@ -290,7 +334,8 @@ class Bateria(models.Model):
     codigo_de_fabricacion = models.CharField(
         _('Código de fabricación'),
         max_length=50,
-        help_text=_("El código de fabricación de la batería.")
+        help_text=_("El código de fabricación de la batería."),
+        validators=[validar_codigo_bateria,]
     )
 
     def __str__(self) -> str:

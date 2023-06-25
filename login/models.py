@@ -12,11 +12,11 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .exceptions import (
-    CedulaInvalida, FechaDeNacimientoInvalida, TelefonoInvalido
+    CedulaInvalida, FechaDeNacimientoInvalida, TelefonoInvalido, NombreInvalido,
 )
 from .utils import (
     es_un_numero_de_telefono_valido, es_una_cedula_valida,
-    es_una_fecha_de_nacimiento_valida,
+    es_una_fecha_de_nacimiento_valida, es_un_nombre_valido,
     NIVELES_EDUCACION, ESTADOS_CIVILES
 )
 
@@ -70,6 +70,21 @@ def validar_numero_de_telefono(telefono: str):
     """
     if not es_un_numero_de_telefono_valido(telefono):
         raise TelefonoInvalido(params={'value': telefono})
+    
+
+def validar_nombres_apellidos(nombres:str):
+    """
+    Valida los nombres o apellidos según ciertos criterios.
+
+    Args:
+        nombres (str): Los nombres o apellidos a validar.
+
+    Raises:
+        NombreInvalido: Si el nombre o apellido no es válido.
+    """
+
+    if not es_un_nombre_valido(nombres):
+        raise NombreInvalido(params={'value': nombres})
 
 class Persona(models.Model):
     """Modelo para almacenar información sobre personas.
@@ -103,7 +118,8 @@ class Persona(models.Model):
         _('Nombres'),
         max_length=150,
         blank=False,
-        help_text=_("Nombres de la persona.")
+        help_text=_("Nombres de la persona."),
+        validators=[validar_nombres_apellidos]
     )
     apellidos = models.CharField(
         _('Apellidos'),

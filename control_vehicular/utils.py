@@ -147,3 +147,42 @@ def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     )
 
     return fecha_fabricacion
+
+def es_un_anio_de_fabricacion_valido(anio:int):
+        """
+        Verifica si un año de fabricación es válido.
+
+    Parámetros:
+    - anio: Entero que representa el año de fabricación.
+
+    Retorna:
+    - True si el año de fabricación es válido.
+    - False si el año de fabricación no es válido.
+        """
+
+        anio_actual = datetime.now().year
+        return anio > 1900 and anio <= anio_actual
+            
+        
+def es_un_codigo_bateria_valido(codigo_bateria: str):
+    """
+    Valida si un código de batería cumple con los requisitos establecidos.
+
+    Args:
+        codigo_bateria (str): El código de batería a validar.
+
+    Returns:
+        bool: True si el código de batería es válido, False en caso contrario.
+    """
+    # Expresión regular para validar el código de batería
+    patron = r'^(?=.*\d)(?=.*[a-zA-Z])[\w\d]{8,}$'
+    # Comprobar si el código de batería coincide con el patrón
+    coincidencia = re.match(patron, codigo_bateria)
+    # Devolver True si hay coincidencia, False si no hay coincidencia
+    return coincidencia is not None
+
+
+    
+
+
+
