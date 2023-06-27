@@ -1,153 +1,82 @@
-@startuml clases
+@startuml vehiculos
 
-skinparam groupInheritance 3
-left to right direction
-
-class Empresa {
-
+class Persona {
+    - cedula: str
+    - nombres: str
+    - apellidos: str
+    - fecha_de_nacimiento: date
 }
 
-package DatosPersonales {
-    class NumeroDeTelefono {
-        - numeroDeTelefono: String
-    }
-    class Correo {
-        - email: String
-    }
-    class Direccion {
-        - direccion: String
-        - ciudad: String
-        - provincia: String
-    }
-    enum NivelDeEducacion {
-        + GeneralBasica
-        + Bachillerato
-        + Superior
-    }
-    enum EstadoCivil {
-        + SOLTERO
-        + CASADO
-        + DIVORCIADO
-        + UNION_LIBRE
-        + VIUDO
-    }
-}
-
-package DatosVehiculares {
-    enum TipoLicencia {
-        + A
-        + B
-        + F
-        + A1
-        + C
-        + C1
-        + D
-        + D1
-        + E
-        + E1
-    }
-    class Licencia {
-        - tipo: String
-        - permisos: String
-        - fechaDeCaducidad: Fecha
-        - esProfesional: Boolean
-    }
-    class Matricula {
-        - matricula: String
-        - foto: Foto
-    }
-    enum TipoDeVehículo {
-        + CAMIONETA
-        + CAMION
-        + AUTO
-        + TRACTOR
-        + FURGONETA
-        + BUS
-        + TRAILER
-        + VOLQUETA
-    }
-    enum Combustible {
-        + GASOLINA
-        + DIESEL
-    }
-    enum CondicionVehicular {
-        + OPERABLE
-        + NO_OPERABLE
-        + EN_MANTENIMIENTO
-    }
-    enum PosicionLlanta {
-        + DERECHO_DELANTERO
-        + DERECHO_POSTERIOR
-        + DERECHO_POSTERIOR_EXTERIOR
-        + DERECHO_POSTERIOR_INTERIOR
-        + IZQUIERDO_DELANTERO
-        + IZQUIERDO_POSTERIOR
-        + IZQUIERDO_POSTERIOR_EXTERIOR
-        + IZQUIERDO_POSTERIOR_INTERIOR
-        + REPUESTO
-    }
-    class Llanta {
-        - codigoDeFabricacion: String
-        - posicionRespectoAlVehiculo: PosicionLlanta
-    }
-    class Bateria {
-        - codigoBateria: String
-    }
-}
-
-abstract class Trabajador {
-    - nombreCompleto: String
-    - cedula: String
-    - fechaDeNacimiento: Fecha
-    - estadoCivil: EstadoCivil
-    - instruccion: NivelDeEducacion
-    - direccion: Direccion
-    - telefono: NumeroDeTelefono
-    - correo: Correo
-    - foto: Foto
-}
-
-class Encargado {
-
-}
-
-class RevisorVehicular {
-
+class Licencia {
+    - tipo: str
+    - fecha_de_emision: date
+    - fecha_de_caducidad: date
+    - puntos: int
+    + esta_vigente(): bool
 }
 
 class Conductor {
+    - licencia: Licencia
+}
 
+class Kilometraje {
+    - vehiculo: Vehiculo
+    - kilometraje: float
+    - unidad: str
+    - fecha: date
+}
+
+class Vehiculo {
+    - propietario: Propietario
+    - cilindraje: float
+    - tonelaje: float
+    - unidad_carburante: float
+    - combustible: str
+    - condicion: str
+    - fotografia: ImageField
+    - marca: str
+    - modelo: str
+    - placa: str
+    - anio_de_fabricacion: int
+    - color: str
+    - numero_de_chasis: str
+    - foto: ImageField
+    + agregar_kilometraje(valor: float, unidad: str): void
+    + bitacora: QuerySet
 }
 
 class Propietario {
 
 }
 
-Empresa --> "*" Trabajador: - empleados
-Trabajador *--> DatosPersonales
-Encargado --|> Trabajador
-RevisorVehicular --|> Trabajador
-Conductor --|> Trabajador
-Propietario --|> Trabajador
-
-Conductor *--> "1" Licencia
-
-class Vehiculo {
-    - marca: String
-    - modelo: String
-    - placa: String
-    - añoDeFabricacion: Fecha
-    - color: Color
-    - cilindraje: float
-    - tonelaje: float
-    - unidadCarburaje: float
-    - combustible: Combustible
-    - condicion: CondicionVehicular
-    - fotografia: Foto
+class OperacionMantenimiento {
+    - tarea: str
+    - sistema: str
+    - sub_sistema: str
+    - frecuencia: float
+    - unidad: str
 }
 
-Vehiculo --> "2..*" Llanta: - llantas
-Vehiculo --> "1" Matricula: - matricula
-Vehiculo --> "1" Propietario: - propietario
-Vehiculo --> "1..*" Bateria: - baterias
+class HojaMantenimiento {
+    - vehiculo: Vehiculo
+    - operaciones: list[OperacionMantenimiento]
+    - frecuencia_minima: float
+    - final_ciclo: float
+}
+
+class Llanta {
+    - vehiculo: Vehiculo
+    - codigo_de_fabricacion: str
+    - posicion_respecto_al_vehiculo: str
+}
+
+Persona <|-- Conductor
+Persona <|-- Propietario
+Conductor "1" --> "1" Licencia
+Vehiculo o--> "*" Kilometraje : - bitacora
+Vehiculo o--> "*" Llanta
+Vehiculo o--> "1" HojaMantenimiento
+HojaMantenimiento --> "*" OperacionMantenimiento
+Propietario --> "*" Vehiculo
+
 @enduml

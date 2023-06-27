@@ -2,34 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from login.models import (
-    Persona,
-    validar_numero_de_telefono
-)
-
-class Representante(Persona):
-    """Modelo para almacenar información sobre representantes.
-
-    Este modelo hereda de la clase Persona y agrega un campo adicional para almacenar
-    el RUC del representante.
-
-    Atributos:
-        - ruc: RUC del representante.
-    """
-    ruc = models.CharField(
-        _('RUC'),
-        max_length=13,
-        blank=False,
-        help_text=_("RUC del representante.")
-    )
-
-    class Meta:
-        verbose_name = _("Representante")
-        verbose_name_plural = _("Representantes")
-
-    def __str__(self) -> str:
-        return f"{self.cedula} - {self.nombres} {self.apellidos}"
-
 class Funcionalidad(models.Model):
     """Modelo para almacenar información sobre funcionalidades.
 
@@ -86,14 +58,20 @@ class Subscripcion(models.Model):
         blank=False,
         help_text=_("Fecha de emisión de la suscripción")
     )
-    duracion = models.IntegerField(
-        _('Duración'),
+    fecha_caducidad = models.DateField(
+        _('Fecha de caducidad'),
         blank=False,
-        help_text=_("Duración de la suscripción en días.")
+        help_text=_("Fecha de caducidad de la suscripción")
     )
     funcionalidades = models.ManyToManyField(
         Funcionalidad,
         help_text=_("Funcionalidades de la suscripción.")
+    )
+    precio = models.DecimalField(
+        _("Precio de la suscripción"),
+        max_digits=10,
+        decimal_places=2,
+        help_text=_("Precio de la suscripción")
     )
     created_by = models.ForeignKey(
         User,
@@ -106,89 +84,4 @@ class Subscripcion(models.Model):
         verbose_name_plural = _("Suscripciones")
 
     def __str__(self) -> str:
-        return f"{self.tipo} ({self.duracion} días)"
-
-class Empresa(models.Model):
-    """Modelo para almacenar información sobre empresas.
-
-    Este modelo define varios campos para almacenar información sobre una empresa,
-    como su nombre comercial, RUC, dirección, correo electrónico y teléfono. También
-    tiene campos para almacenar relaciones con otros modelos, como el representante legal
-    de la empresa y la suscripción de la empresa.
-
-    Atributos:
-        - id: Clave primaria del modelo.
-        - nombre_comercial: Nombre comercial de la empresa.
-        - ruc: RUC de la empresa.
-        - representante_legal: Relación uno a uno con el modelo Representante.
-        - suscripcion: Relación uno a uno con el modelo Subscripcion.
-        - direccion: Dirección de la empresa.
-        - correo: Correo electrónico de la empresa.
-        - telefono: Teléfono de la empresa.
-    """
-    nombre_comercial = models.CharField(
-        _('Nombre comercial'),
-        max_length=255,
-        blank=False,
-        help_text=_("Nombre comercial de la empresa.")
-    )
-    representante_legal = models.OneToOneField(
-        Representante,
-        on_delete=models.CASCADE,
-        help_text=_("Representante legal de la empresa.")
-    )
-    suscripcion = models.OneToOneField(
-        Subscripcion,
-        on_delete=models.CASCADE,
-        help_text=_("Suscripción de la empresa.")
-    )
-    ruc = models.CharField(
-        _('RUC'),
-        max_length=13,
-        blank=False,
-        help_text=_("RUC de la empresa.")
-    )
-    direccion = models.CharField(
-        _('Dirección'),
-        max_length=200,
-        blank=False,
-        help_text=_("Dirección de la empresa.")
-    )
-    correo = models.EmailField(
-        _('Correo electrónico'),
-        max_length=100,
-        blank=False,
-        help_text=_("Correo electrónico de la empresa.")
-    )
-    telefono = models.CharField(
-        _('Teléfono'),
-        max_length=15,
-        blank=False,
-        validators=[validar_numero_de_telefono],
-        help_text=_("Teléfono de la empresa.")
-    )
-
-    class Meta:
-        verbose_name = _("Empresa")
-        verbose_name_plural = _("Empresas")
-
-    def __str__(self) -> str:
-        return f"{self.nombre_comercial} ({self.ruc})"
-
-class Trabajador(Persona):
-    """Modelo para almacenar información sobre trabajadores.
-
-    Este modelo hereda de la clase Persona y agrega una relación de clave foránea
-    con el modelo Empresa para asociar a un trabajador con una y solo una empresa.
-
-    Atributos:
-        - empresa: Relación de clave foránea con el modelo Empresa.
-    """
-    empresa = models.ForeignKey(
-        Empresa,
-        on_delete=models.PROTECT,
-        help_text=_("Empresa a la que está asociado el trabajador.")
-    )
-
-    def __str__(self) -> str:
-        return f"{self.cedula} - {self.nombres} {self.apellidos}"
+        return f"{self.tipo} - (Desde {self.fecha_emision} hasta {self.fecha_caducidad})"

@@ -9,11 +9,26 @@ Dependencias: enum.Enum
 """
 
 from enum import Enum
+from typing import List, Tuple
 
 class EstadoCumplimiento(Enum):
     """Clase enumeración para representar el cumplimiento de una inspección."""
     PENDIENTE = "Pendiente"
     CUMPLIDO = "Cumplido"
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los estados de cumplimiento.
+
+        Cada tupla contiene el valor y el nombre de un estado de cumplimiento.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los estados de cumplimiento.
+        """
+        return [(key.value, key.name) for key in cls]
 
 class TipoMantenimiento(Enum):
     """
@@ -25,8 +40,16 @@ class TipoMantenimiento(Enum):
     CORRECTIVO = "Correctivo"
     RESTAURATIVO = "Restaurativo"
 
-# Lista con los valores de la clase enumeración EstadoCumplimiento
-ESTADOS_CUMPLIMIENTO = [(tag.name, tag.value) for tag in EstadoCumplimiento]
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los tipos de mantenimiento.
 
-# Lista con los valores de la clase enumeración TipoMantenimiento
-TIPOS_MANTENIMIENTO = [(tag.name, tag.value) for tag in TipoMantenimiento]
+        Cada tupla contiene el valor y el nombre de un tipo de mantenimiento.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los tipos de mantenimiento.
+        """
+        return [(key.value, key.name) for key in cls]
