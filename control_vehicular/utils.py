@@ -1,4 +1,5 @@
-"""utils.py
+"""
+utils.py
 
 El módulo `utils.py` define varias clases enumeradas
 que se utilizan en el módulo `models.py` para representar diferentes tipos de datos.
@@ -148,7 +149,7 @@ def es_una_placa_de_vehiculo_valida(placa: str) -> bool:
     """
     patron_vehiculo = r'^[A-Z]{3}\-\d{3,4}$'
     patron_moto = r'^[A-Z]{2}\-\d{3}[A-Z]?$'
-    return bool(re.match(patron_vehiculo, placa)) or bool (re.match(patron_moto, placa))
+    return bool(re.match(patron_vehiculo, placa)) or bool(re.match(patron_moto, placa))
 
 def es_un_codigo_dot_valido(codigo: str) -> bool:
     """
@@ -170,6 +171,36 @@ def es_un_codigo_dot_valido(codigo: str) -> bool:
     patron = r'^DOT-[A-Z0-9]{4}-[A-Z0-9]{4}-\d{4}$'
     return bool(re.match(patron, codigo))
 
+def es_un_anio_de_fabricacion_valido(anio: int):
+    """
+    Valida si el año de fabricación de un vehículo es válido.
+
+    Args:
+    anio (int): El año de fabricación a validar.
+
+    Returns:
+    bool: True si el año de fabricación es válido, False en caso contrario.
+    """
+    anio_actual = datetime.now().year
+    return anio > 1900 and anio <= anio_actual
+
+    
+def es_un_codigo_bateria_valido(codigo_bateria: str):
+    """
+    Verifica si un código de batería es válido.
+    Args:
+        codigo_bateria (str): El código de batería a verificar.
+    Returns:
+        bool: True si el código de batería es válido, False en caso contrario.
+    """
+    # Expresión regular para validar el código de batería
+    patron = r'^(?=.*\d)(?=.*[a-zA-Z])[\w\d]{8,}$'
+    # Comprobar si el código de batería coincide con el patrón
+    coincidencia = re.match(patron, codigo_bateria)
+    # Devolver True si hay coincidencia, False si no hay coincidencia
+    return bool(coincidencia)
+
+    
 def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     """
     Obtiene la fecha de fabricación de una llanta a partir de su código DOT.
@@ -199,3 +230,20 @@ def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     )
 
     return fecha_fabricacion
+
+def ha_caducado_la_licencia(fechaCaducidad: str):
+    """
+    Verifica si una licencia ha caducado en base a la fecha de caducidad proporcionada.
+
+    Args:
+        fechaCaducidad (str): Fecha de caducidad en formato 'YYYY-MM-DD'.
+
+    Returns:
+        bool: True si la licencia ha caducado, False en caso contrario.
+    """
+    # Obtener la fecha actual
+    fecha_actual = datetime.now().date()
+    # Convertir la fecha de caducidad a objeto de fecha
+    fecha_caducidad = datetime.strptime(fechaCaducidad, '%Y-%m-%d').date()
+    # Comparar la fecha de caducidad con la fecha actual
+    return fecha_caducidad > fecha_actual

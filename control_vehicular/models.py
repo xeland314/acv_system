@@ -9,6 +9,7 @@ Dependencias:
     - El módulo utils.py para definir constantes TIPOS_LICENCIA,
         COMBUSTIBLES, CONDICIONES_VEHICULARES y POSICIONES_LLANTA.
 """
+import datetime
 
 from datetime import date
 from django.db import models
@@ -16,14 +17,33 @@ from django.utils.translation import gettext_lazy as _
 
 from login.models import Trabajador
 
-from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida
+from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, FechaFabricacionInvalida, CodigoBateriaInvalido, LicenciaCaducada
 from .utils import (
     Combustible, CondicionVehicular,
     PosicionLlanta, TipoLicencia,
     UnidadOdometro,
     es_un_codigo_dot_valido,
-    es_una_placa_de_vehiculo_valida
+    es_una_placa_de_vehiculo_valida,
+    es_un_anio_de_fabricacion_valido,
+    es_un_codigo_bateria_valido,
+    ha_caducado_la_licencia
 )
+
+def validar_vigencia_licencia(fechaCaducidad):
+    """
+    Valida la vigencia de una licencia en función de su fecha de caducidad.
+
+    Argumentos:
+    fechaCaducidad (str): La fecha de caducidad de la licencia en formato 'YYYY-MM-DD'.
+
+    Lanza:
+    LicenciaCaducada: Si la licencia ha caducado.
+    """
+    if not ha_caducado_la_licencia(fechaCaducidad):
+        raise LicenciaCaducada(
+            f"{fechaCaducidad} no es una fecha vigente",
+            params={'value': fechaCaducidad}
+        )
 
 class Licencia(models.Model):
     """
@@ -47,7 +67,8 @@ class Licencia(models.Model):
     )
     fecha_de_caducidad = models.DateField(
         blank=False,
-        help_text=_("La fecha de caducidad de la licencia.")
+        help_text=_("La fecha de caducidad de la licencia."),
+        validators=[validar_vigencia_licencia,]
     )
     puntos = models.PositiveSmallIntegerField(
         blank=False,
@@ -99,6 +120,23 @@ def validar_placa_vehicular(placa: str):
         raise PlacaVehicularInvalida(
             f"{placa} no es una placa vehicular válida.",
             params={'value': placa}
+        )
+
+def validar_anio_fabricacion(anio: int) -> None:
+    """
+    Valida si un año de fabricación es válido.
+
+    Parámetros:
+    - anio (int): El año de fabricación a validar.
+
+    Excepciones:
+    - FechaFabricacionInvalida: Si el año de fabricación no es válido.
+
+    """
+    if not es_un_anio_de_fabricacion_valido (anio):
+        raise FechaFabricacionInvalida(
+            f"El año {anio} de fabricación está fuera de los límites.",
+            params={'value': anio}
         )
 
 class Kilometraje(models.Model):
@@ -187,9 +225,28 @@ class Vehiculo(models.Model):
         related_name='vehiculos',
         help_text=_("El propietario del vehículo.")
     )
+    marca = models.CharField(
+        _('Marca'),
+        max_length=50,
+        help_text=_("La marca del vehículo.")
+    )
+    modelo = models.CharField(
+        _('Modelo'),
+        max_length=50,
+        help_text=_("El modelo del vehículo.")
+    )
+    placa = models.CharField(
+        _('Placa'),
+        max_length=10,
+        unique=True,
+        help_text=_("La placa del vehículo."),
+        validators=[validar_placa_vehicular,]
+    )
     anio_de_fabricacion = models.PositiveIntegerField(
         _('Año de fabricación'),
-        help_text=_("El año de fabricación del vehículo.")
+        help_text=_("El año de fabricación del vehículo."),
+        validators=[validar_anio_fabricacion,]
+
     )
     cilindraje = models.DecimalField(
         _('Cilindraje'),
@@ -290,6 +347,7 @@ class Vehiculo(models.Model):
 
     def __str__(self) -> str:
         return f"Vehículo #{self.id}: {self.placa} - {self.modelo} - {self.anio_de_fabricacion}"
+
 
 class HojaMantenimiento(models.Model):
     """
@@ -396,6 +454,7 @@ class OperacionMantenimiento(models.Model):
     def __str__(self):
         return f'{self.tarea}: {self.sub_sistema} cada {self.frecuencia} {self.unidad}'
 
+
 def validar_codigo_dot(codigo_dot: str):
     """Valida si un código DOT es válido.
 
@@ -447,12 +506,31 @@ class Llanta(models.Model):
         """Devuelve una representación legible por humanos del objeto Llanta."""
         return f"Llanta {self.posicion_respecto_al_vehiculo} de {self.vehiculo}"
 
+def validar_codigo_bateria(codigo_bateria: str) -> None:
+    """
+    Valida si un código de batería es válido.
+
+    Parámetros:
+    - codigo_bateria (str): El código de batería a validar.
+
+    Excepciones:
+    - CodigoBateriaInvalido: Si el código de batería no es válido.
+
+    """
+
+    if not es_un_codigo_bateria_valido(codigo_bateria):
+        raise CodigoBateriaInvalido(
+            f"{codigo_bateria} no es un código de batería válido.",
+            params={'value': codigo_bateria}
+        )
+
 class Bateria(models.Model):
     """
     Representa una batería de un vehículo.
 
     Atributos:
         - vehiculo (Vehiculo): El vehículo al que pertenece la batería.
+        
         - codigo_de_fabricacion (str): El código de fabricación de la batería.
     """
     vehiculo = models.ForeignKey(
@@ -464,7 +542,8 @@ class Bateria(models.Model):
     codigo_de_fabricacion = models.CharField(
         _('Código de fabricación'),
         max_length=50,
-        help_text=_("El código de fabricación de la batería.")
+        help_text=_("El código de fabricación de la batería."),
+        validators=[validar_codigo_bateria,]
     )
 
     def __str__(self) -> str:

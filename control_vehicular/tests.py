@@ -5,22 +5,33 @@ Este módulo define los tests para control_vehicular.
 
 Autor: Christopher Villamarín (@xeland314)
 """
+import random
 import unittest
 
 from django.test import TestCase
 
 from .exceptions import (
     CodigoDotInvalido,
-    PlacaVehicularInvalida
+    PlacaVehicularInvalida,
+    FechaFabricacionInvalida,
+    CodigoBateriaInvalido,
+    LicenciaCaducada
 )
 from .models import (
     validar_codigo_dot,
-    validar_placa_vehicular
+    validar_placa_vehicular,
+    validar_anio_fabricacion,
+    validar_codigo_bateria,
+    validar_vigencia_licencia,
+
 )
 from .utils import (
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
-    obtener_fecha_fabricacion
+    es_un_anio_de_fabricacion_valido,
+    es_un_codigo_bateria_valido,
+    obtener_fecha_fabricacion,
+    ha_caducado_la_licencia
 )
 
 class UtilsTestCase(TestCase):
@@ -76,6 +87,59 @@ class UtilsTestCase(TestCase):
         self.assertEqual(fecha_fabricacion.year, 2023)
         self.assertEqual(fecha_fabricacion.month, 2)
         self.assertEqual(fecha_fabricacion.day, 20)
+
+    def test_es_anio_fabricacion(self) -> None:
+        self.assertTrue(es_un_anio_de_fabricacion_valido(1992))
+        self.assertTrue(es_un_anio_de_fabricacion_valido(2000))
+        self.assertFalse(es_un_anio_de_fabricacion_valido(2099))
+        self.assertRaises(
+            FechaFabricacionInvalida, validar_anio_fabricacion, 1500
+        )
+        self.assertRaises(
+            FechaFabricacionInvalida, validar_anio_fabricacion, 2025
+        )
+        
+    def test_es_codigo_bateria(self) -> None:
+        self.assertTrue(es_un_codigo_bateria_valido("POWR2022"))
+        self.assertTrue(es_un_codigo_bateria_valido("MAXPOWER99"))
+        self.assertFalse(es_un_codigo_bateria_valido("BATERIA"))
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "PW120"
+        )
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "1283944"
+        )
+
+    def test_vigencia_licencia(self) -> None:
+        """
+        Prueba la funcionalidad de vigencia de la licencia.
+
+        Realiza una serie de pruebas para verificar si la función ha_caducado_la_licencia y la excepción LicenciaCaducada funcionan correctamente.
+
+        Returns:
+        None
+        """
+        self.assertTrue(ha_caducado_la_licencia('2025-08-19'))
+        self.assertFalse(ha_caducado_la_licencia('2005-12-19'))
+        self.assertFalse(ha_caducado_la_licencia('2022-04-15'))
+        self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, '2019-11-29'
+        )
+        self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, '2015-09-08'
+        )
+
+    def test_aleatorio_vigencia_licencia(self) -> None:
+        for i in range(101):
+            anio_aleatorio = random.randint(1990, 2022)
+            mes_aleatorio = random.randint(1, 12)
+            dia_aleatorio = random.randint(1, 25)
+
+            self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, str(anio_aleatorio) +
+              "-" +str(mes_aleatorio) + "-" + str(dia_aleatorio)
+        )
+
 
 class TestSuite(TestCase):
     """

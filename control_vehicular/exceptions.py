@@ -50,3 +50,46 @@ class PlacaVehicularInvalida(ValidationError):
         if detail is None:
             detail = "La placa vehicular no cumple con el formato esperado."
         super().__init__(_(detail), params)
+
+class FechaFabricacionInvalida(ValidationError):
+    """ Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "La fecha de fabricación está por fuera de los límites definidos."
+        super().__init__(_(detail), params)
+
+class CodigoBateriaInvalido(ValidationError):
+    """ Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "El código de bateria no cumple con el formato esperado."
+        super().__init__(_(detail), params)
+
+class LicenciaCaducada(ValidationError):
+    """
+    Representa una excepción que se produce cuando la licencia ha caducado.
+
+    Args:
+        detail (str): Detalle opcional que describe el error de la fecha de caducidad de la licencia.
+        params (dict): Parámetros opcionales adicionales para el error.
+    """
+
+    def __init__(self, detail=None, params=None):
+        """
+        Inicializa una instancia de la excepción LicenciaCaducada.
+
+        Args:
+            detail (str): Detalle opcional que describe el error de la fecha de caducidad de la licencia.
+            params (dict): Parámetros opcionales adicionales para el error.
+        """
+        if detail is None:
+            detail = "La licencia está caducada."
+        super().__init__(_(detail), params)
