@@ -147,7 +147,7 @@ class EmpresaSerializer(serializers.ModelSerializer):
         """
         model = Empresa
         fields = (
-            'id', 'nombre_comercial', 'ruc', 'representante_legal',
+            'id', 'nombre_comercial', 'ruc',
             'suscripcion', 'direccion', 'correo', 'telefono'
         )
         read_only_fields = ('id',)

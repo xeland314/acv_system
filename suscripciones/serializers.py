@@ -53,8 +53,8 @@ class SubscripcionSerializer(serializers.ModelSerializer):
             - default_error_messages: Mensajes de error personalizados.
         """
         model = Subscripcion
-        fields = ('id', 'tipo', 'duracion', 'funcionalidades', 'created_by')
-        read_only_fields = ('id', 'created_by')
+        fields = ('id', 'tipo', 'fecha_emision', 'fecha_caducidad', 'funcionalidades',)
+        read_only_fields = ('id',)
         default_error_messages = {
             'invalid': _('Datos inválidos.'),
             'required': _('Este campo es obligatorio.'),

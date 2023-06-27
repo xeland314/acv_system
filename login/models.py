@@ -17,7 +17,7 @@ from .exceptions import (
 )
 from .utils import (
     es_un_numero_de_telefono_valido, es_una_cedula_valida,
-    es_una_fecha_de_nacimiento_valida, es_un_nombre_valido,
+    es_mayor_de_edad, es_un_nombre_valido,
     EstadoCivil, NivelEducacion
 )
 
@@ -53,7 +53,7 @@ def validar_fecha_de_nacimiento(fecha_nacimiento: date):
     Raises:
         FechaDeNacimientoInvalida: Si la fecha de nacimiento no es válida.
     """
-    if not es_una_fecha_de_nacimiento_valida(fecha_nacimiento):
+    if not es_mayor_de_edad(fecha_nacimiento):
         raise FechaDeNacimientoInvalida(params={'value': fecha_nacimiento})
 
 def validar_numero_de_telefono(telefono: str):
@@ -91,8 +91,8 @@ class Empresa(models.Model):
 
     Este modelo define varios campos para almacenar información sobre una empresa,
     como su nombre comercial, RUC, dirección, correo electrónico y teléfono. También
-    tiene campos para almacenar relaciones con otros modelos, como el representante legal
-    de la empresa y la suscripción de la empresa.
+    tiene campos para almacenar relaciones con otros modelos,
+    como la suscripción de la empresa.
 
     Atributos:
         - id: Clave primaria del modelo.
@@ -104,10 +104,11 @@ class Empresa(models.Model):
         - correo: Correo electrónico de la empresa.
         - telefono: Teléfono de la empresa.
     """
+    id = models.AutoField(primary_key=True)
     nombre_comercial = models.CharField(
         _('Nombre comercial'),
-        max_length=255,
         blank=False,
+        max_length=255,
         help_text=_("Nombre comercial de la empresa.")
     )
     suscripcion = models.OneToOneField(

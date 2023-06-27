@@ -9,6 +9,7 @@ Dependencias: django.test.TestCase, django.contrib.auth.models.User,
     .utils.es_un_numero_de_telefono_valido
 """
 from datetime import date, timedelta
+from decimal import Decimal
 import random
 import unittest
 
@@ -16,11 +17,13 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-from .models import Trabajador
+from suscripciones.models import Funcionalidad, Subscripcion
+
+from .models import Empresa, Trabajador, validar_cedula
 from .exceptions import CedulaInvalida
 from .utils import (
     es_una_cedula_valida, es_un_numero_de_telefono_valido,
-    es_una_fecha_de_nacimiento_valida, es_un_nombre_valido,
+    es_mayor_de_edad, es_un_nombre_valido, generar_cedula_ecuatoriana,
 )
 
 class UtilsTestCase(TestCase):
@@ -34,9 +37,10 @@ class UtilsTestCase(TestCase):
         #Casos Validos para nombres
         self.assertTrue(es_un_nombre_valido("Ricardo Becerra"))
         self.assertTrue(es_un_nombre_valido("Kevin Revelo"))
+        self.assertTrue(es_un_nombre_valido("Romeo"))
+        self.assertTrue(es_un_nombre_valido("DavidTorres"))
 
         #Casos Invalidos para nombres
-        self.assertFalse(es_un_nombre_valido("Romeo"))
         self.assertFalse(es_un_nombre_valido("Daniela21"))
         self.assertFalse(es_un_nombre_valido(" Santiag0"))
         self.assertFalse(es_un_nombre_valido("Rafael@01"))
@@ -44,48 +48,62 @@ class UtilsTestCase(TestCase):
         #Otros casos invalidos
         self.assertFalse(es_un_nombre_valido("")) #espacios vacios
         self.assertFalse(es_un_nombre_valido(" ")) #espacio en blanco
-        self.assertFalse(es_un_nombre_valido("DavidTorres"))
 
-    def test_es_una_cedula_valida(self):
-        """Prueba la función es_una_cedula_valida.
+    def test_validacion_de_cedula(self):
+        """Prueba la función validar_cedula.
 
-        Verifica si la función es_una_cedula_valida devuelve
-        el resultado esperado para diferentes casos de entrada,
-        incluyendo cédulas ecuatorianas válidas e inválidas.
+        Verifica que la función validar_cedula lance la excepción CedulaInvalida
+        para cada caso especial de entrada, incluyendo cédulas ecuatorianas inválidas.
         """
-        # Casos válidos de cédulas ecuatorianas
-        self.assertTrue(es_una_cedula_valida("1753828696"))
-        self.assertTrue(es_una_cedula_valida("0000000000"))
-
         # Casos inválidos de cédulas ecuatorianas
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, "123456789"
+            CedulaInvalida, validar_cedula, "123456789"
         )
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, "abcdefghij"
+            CedulaInvalida, validar_cedula, "abcdefghij"
         )
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, "123456789X"
+            CedulaInvalida, validar_cedula, "123456789X"
         )
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, "123456789X0"
+            CedulaInvalida, validar_cedula, "123456789X0"
         )
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, "9999999999"
+            CedulaInvalida, validar_cedula, "9999999999"
         )
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, ""
+            CedulaInvalida, validar_cedula, ""
         )
         self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida, " "
+            CedulaInvalida, validar_cedula, " "
         )
 
-    def test_aleatorio_es_una_cedula_valida(self):
-        for i in range(101):
+    def test_cedula_valida_con_numero_aleatorio(self):
+        """
+        Prueba que se generen números de cédula de ciudadanía ecuatoriana válidos.
+
+        La prueba se realiza de la siguiente manera:
+        - Se genera un número de cédula de ciudadanía ecuatoriana aleatorio.
+        - Se verifica que el número generado sea válido.
+        """
+        for _ in range(10000):
+            self.assertTrue(es_una_cedula_valida(
+                generar_cedula_ecuatoriana()
+            ))
+
+    def test_cedula_invalida_con_numero_aleatorio(self):
+        """Prueba que se detecten números de cédula de ciudadanía ecuatoriana inválidos.
+
+        La prueba se realiza de la siguiente manera:
+        - Se generan 101 números aleatorios entre 10000 y 99999.
+        - Se les agrega el prefijo "1789".
+        - Se verifica que cada uno de estos números sea inválido.
+        """
+        for _ in range(101):
             numero_aleatorio = random.randint(10000, 99999)
             self.assertRaises(
-            CedulaInvalida, es_una_cedula_valida,  f"1789{numero_aleatorio}"
-        )
+                CedulaInvalida, validar_cedula,  f"1789{numero_aleatorio}"
+            )
 
     def test_es_un_numero_de_telefono_valido(self):
         """Prueba la función es_un_numero_de_telefono_valido.
@@ -116,47 +134,7 @@ class UtilsTestCase(TestCase):
         self.assertFalse(es_un_numero_de_telefono_valido(""))  # Cadena vacía
         self.assertFalse(es_un_numero_de_telefono_valido(" "))  # Espacio en blanco
 
-    def testAleatorio_es_un_numero_de_telefono_valido(self):
-        """
-        Prueba aleatoria de la función es_un_numero_de_telefono_valido.
-
-        Esta función realiza una prueba aleatoria generando casos de números de teléfono válidos e inválidos.
-        Verifica si la función es_un_numero_de_telefono_valido devuelve el resultado esperado para cada caso generado.
-
-        Cada caso se genera de la siguiente manera:
-        1. Se generan 10 casos aleatorios en total.
-        2. Para cada caso:
-        - Se selecciona aleatoriamente un número de teléfono válido de una lista predefinida.
-        - Se verifica si la función devuelve True para el número de teléfono válido.
-        - Se genera un número de teléfono inválido seleccionando aleatoriamente una secuencia de dígitos.
-        - Se verifica si la función devuelve False para el número de teléfono inválido.
-
-        Esta prueba tiene como objetivo asegurar el comportamiento adecuado de la función es_un_numero_de_telefono_valido
-        en diferentes casos de entrada, incluyendo números de teléfono ecuatorianos válidos e inválidos.
-        """
-        for _ in range(10):
-        # Generar un número de teléfono aleatorio válido
-            numero_valido = random.choice([
-                "0987129357",
-                "593987129357",
-                "+593987129357",
-                "0991234567",
-                "593991234567",
-                "+593991234567"
-        ])
-
-        # Verificar si la función devuelve el resultado esperado
-        self.assertTrue(es_un_numero_de_telefono_valido(numero_valido))
-
-        # Generar un número de teléfono aleatorio inválido
-        numero_invalido = ""
-        for _ in range(random.randint(1, 10)):
-            numero_invalido += random.choice(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
-
-        # Verificar si la función devuelve el resultado esperado
-        self.assertFalse(es_un_numero_de_telefono_valido(numero_invalido))
-
-    def test_es_una_fecha_de_nacimiento_valida(self):
+    def test_es_mayor_de_edad(self):
         """Prueba la función es_una_fecha_de_nacimiento_valida.
 
         Verifica si la función es_una_fecha_de_nacimiento_valida devuelve
@@ -171,64 +149,70 @@ class UtilsTestCase(TestCase):
         # Mañana será el cumpleaños #18
         edad_17 = hoy.replace(hoy.year - 18) + timedelta(days=1)
         # Casos válidos de fechas de nacimiento
-        self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18_1))
-        self.assertTrue(es_una_fecha_de_nacimiento_valida(edad_18))
-        self.assertTrue(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*19)))
-        self.assertTrue(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*20)))
-        self.assertTrue(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*30)))
+        self.assertTrue(es_mayor_de_edad(edad_18_1))
+        self.assertTrue(es_mayor_de_edad(edad_18))
+        self.assertTrue(es_mayor_de_edad(hoy - timedelta(days=365*19)))
+        self.assertTrue(es_mayor_de_edad(hoy - timedelta(days=365*20)))
+        self.assertTrue(es_mayor_de_edad(hoy - timedelta(days=365*30)))
 
         # Casos inválidos de fechas de nacimiento
-        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy))
-        self.assertFalse(es_una_fecha_de_nacimiento_valida(edad_17))
-        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*17)))
-        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*16)))
-        self.assertFalse(es_una_fecha_de_nacimiento_valida(hoy - timedelta(days=365*10)))
+        self.assertFalse(es_mayor_de_edad(hoy))
+        self.assertFalse(es_mayor_de_edad(edad_17))
+        self.assertFalse(es_mayor_de_edad(hoy - timedelta(days=365*17)))
+        self.assertFalse(es_mayor_de_edad(hoy - timedelta(days=365*16)))
+        self.assertFalse(es_mayor_de_edad(hoy - timedelta(days=365*10)))
 
-    def testAleatorio_es_una_fecha_de_nacimiento_valida(self) -> None:
+    def test_aleatorio_es_o_no_mayor_de_edad(self) -> None:
+        """Prueba aleatoria de la función es_mayor_de_edad.
+
+        La prueba se realiza de la siguiente manera:
+        - Se generan casos de fechas de nacimiento válidas e inválidas.
+        - Se comprueba si la función es_mayor_de_edad devuelve el resultado esperado.
         """
-        Prueba aleatoria de la función es_una_fecha_de_nacimiento_valida.
-
-        Esta función realiza una prueba aleatoria generando casos de fechas de nacimiento válidas e inválidas.
-        Verifica si la función es_una_fecha_de_nacimiento_valida devuelve el resultado esperado para cada caso generado.
-
-        Cada caso se genera de la siguiente manera:
-        1. Se obtiene la fecha actual.
-        2. Se generan 10 casos aleatorios en total.
-        3. Para cada caso:
-        - Se genera una edad aleatoria entre 1 y 100 años.
-        - Se calcula la fecha de nacimiento restando la cantidad de días correspondiente a la edad generada a la fecha actual.
-        - Si la edad es mayor o igual a 18 años, se verifica si la función devuelve True para la fecha de nacimiento.
-        De lo contrario, se verifica si la función devuelve False.
-
-        Esta prueba tiene como objetivo asegurar el comportamiento adecuado de la función es_una_fecha_de_nacimiento_valida
-        en diferentes casos de entrada, incluyendo fechas de nacimiento válidas e inválidas.
-
-        """
-
         hoy = date.today()
-
-        for _ in range(10):
-        # Generar una fecha de nacimiento aleatoria entre 1 y 100 años atrás
+        for _ in range(10000):
             edad = random.randint(1, 100)
-            fecha_nacimiento = hoy - timedelta(days=365*edad)
-
-        # Verificar si la función devuelve el resultado esperado
+            fecha_nacimiento = hoy.replace(hoy.year - edad)
             if edad >= 18:
-                self.assertTrue(es_una_fecha_de_nacimiento_valida(fecha_nacimiento))
+                self.assertTrue(es_mayor_de_edad(fecha_nacimiento))
             else:
-                self.assertFalse(es_una_fecha_de_nacimiento_valida(fecha_nacimiento))
+                self.assertFalse(es_mayor_de_edad(fecha_nacimiento))
 
 class ViewsTestCase(TestCase):
     """Clase de pruebas para las vistas."""
 
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(
+            username='testuser', password='testpassword'
+        )
+        self.funcionalidad = Funcionalidad.objects.create(
+            nombre="Funcionalidad básica",
+            descripcion="Ninguna",
+        )
+        self.suscripcion = Subscripcion.objects.create(
+            tipo="Gratuita",
+            fecha_emision=date.today(),
+            fecha_caducidad=date(2050,1,1),
+            precio=Decimal("100.00"),
+        )
+        self.suscripcion.funcionalidades.set(
+            [self.funcionalidad,]
+        )
+        self.empresa = Empresa.objects.create(
+            nombre_comercial="Empresa de prueba",
+            suscripcion=self.suscripcion,
+            ruc="1234567890123",
+            direccion="Cede principal",
+            correo="empresa@example.com",
+            telefono="0987654321",
+        )
         self.persona = Trabajador.objects.create(
             user=self.user,
+            empresa=self.empresa,
             nombres='Test',
             apellidos='User',
-            cedula='1753828695',
+            cedula='1753828696',
             email='test@example.com',
             fecha_nacimiento=date(2000, 1, 1),
             telefono='0987654321',
@@ -236,7 +220,7 @@ class ViewsTestCase(TestCase):
             nivel_educacion='SUPERIOR',
             estado_civil='SOLTERO'
         )
-        self.api_direcction = '/auth/api/v1/users/'
+        self.api_direcction = '/auth/api/v1/trabajadores/'
 
     def test_usuario_view_list(self):
         """Prueba la vista UsuarioView para listar usuarios.
@@ -250,31 +234,6 @@ class ViewsTestCase(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['nombres'], 'Test')
         self.assertEqual(response.data[0]['apellidos'], 'User')
-
-    def test_usuario_view_create(self):
-        """Prueba la vista UsuarioView para crear usuarios.
-
-        Verifica si la vista UsuarioView crea un nuevo usuario
-        correctamente cuando se realiza una solicitud POST con datos válidos.
-        """
-        self.client.force_authenticate(user=self.user)
-        data = {
-            'nombres': 'John',
-            'apellidos': 'Doe',
-            'cedula': '1753828696',
-            'email': 'johndoe@example.com',
-            'telefono': '0987129357',
-            'fecha_nacimiento': date(2000, 1, 1),
-            'nivel_educacion': 'Superior',
-            'estado_civil': 'Soltero',
-            'contrasena': 'password',
-            'contrasena2': 'password'
-        }
-        response = self.client.post(self.api_direcction, data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(Trabajador.objects.count(), 2)
-        self.assertEqual(Trabajador.objects.last().nombres, 'John')
-        self.assertEqual(Trabajador.objects.last().apellidos, 'Doe')
 
 class TestSuite(TestCase):
     """

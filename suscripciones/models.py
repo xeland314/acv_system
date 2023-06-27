@@ -73,11 +73,6 @@ class Subscripcion(models.Model):
         decimal_places=2,
         help_text=_("Precio de la suscripción")
     )
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        help_text=_("Usuario que creó la suscripción.")
-    )
 
     class Meta:
         verbose_name = _("Suscripción")
