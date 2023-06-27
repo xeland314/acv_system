@@ -60,49 +60,38 @@ class UtilsTestCase(TestCase):
         )
     
     def test_aleatorio_es_una_placa_de_vehiculo_valida(self) -> None:
+        """Prueba aleatoria de la función es_una_placa_de_vehiculo_valida.
+
+        Esta función prueba la validez de la función es_una_placa_de_vehiculo_valida
+        en diferentes casos de entrada, verificando el formato de la placa.
+        Se generan 1000 casos aleatorios de placas de vehículos y motos válidas e inválidas.
+        Para cada caso, se verifica si la función devuelve el resultado esperado.
         """
-        Prueba aleatoria de la función es_una_placa_de_vehiculo_valida.
-
-        Esta función realiza una prueba aleatoria generando casos de placas de vehículos y motos válidas e inválidas.
-        Verifica si la función es_una_placa_de_vehiculo_valida devuelve el resultado esperado para cada caso generado.
-
-        Cada caso se genera de la siguiente manera:
-        1. Se generan 100 casos aleatorios en total.
-        2. Para cada caso:
-        - Se genera una placa aleatoria utilizando una combinación de letras mayúsculas y números.
-        - Se verifica si la longitud de la placa es válida (3 letras y 3 o 4 números).
-        - Se verifica si la función devuelve True para la placa válida.
-        - Se genera una placa aleatoria inválida cambiando aleatoriamente una letra o un número en la placa válida.
-        - Se verifica si la función devuelve False para la placa inválida.
-
-        Esta prueba tiene como objetivo asegurar el comportamiento adecuado de la función es_una_placa_de_vehiculo_valida
-        en diferentes casos de entrada, verificando la validez del formato de la placa.
-
-        """
-
-        for _ in range(100):
-        # Generar una placa de vehículo aleatoria válida
-            letras = random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=3)
-            numeros = random.choices("0123456789", k=random.choice([3, 4]))
+        LETRAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        NUMEROS = "0123456789"
+        for _ in range(1000):
+            # Generar una placa de vehículo aleatoria válida
+            letras = random.choices(LETRAS, k=3)
+            numeros = random.choices(NUMEROS, k=random.choice([3, 4]))
             placa_valida = "".join(letras) + "-" + "".join(numeros)
 
-        # Verificar la longitud de la placa válida
-        self.assertTrue(len(placa_valida) == 7 or len(placa_valida) == 8)
+            # Verificar la longitud de la placa válida
+            self.assertTrue(len(placa_valida) == 7 or len(placa_valida) == 8)
 
-        # Verificar si la función devuelve el resultado esperado para la placa válida
-        self.assertTrue(es_una_placa_de_vehiculo_valida(placa_valida))
+            # Verificar si la función devuelve el resultado esperado para la placa válida
+            self.assertTrue(es_una_placa_de_vehiculo_valida(placa_valida))
 
-        # Generar una placa de vehículo aleatoria inválida cambiando una letra o un número en la placa válida
-        posicion = random.randint(0, len(placa_valida) - 1)
-        if placa_valida[posicion].isalpha():
-            # Cambiar una letra por un número
-            placa_invalida = placa_valida[:posicion] + random.choice("0123456789") + placa_valida[posicion + 1:]
-        else:
-            # Cambiar un número por una letra
-            placa_invalida = placa_valida[:posicion] + random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + placa_valida[posicion + 1:]
+            # Generar una placa de vehículo aleatoria inválida cambiando una letra o un número en la placa válida
+            posicion = random.randint(0, len(placa_valida) - 1)
+            if placa_valida[posicion].isalpha():
+                # Cambiar una letra por un número
+                placa_invalida = placa_valida[:posicion] + random.choice(NUMEROS) + placa_valida[posicion + 1:]
+            else:
+                # Cambiar un número por una letra
+                placa_invalida = placa_valida[:posicion] + random.choice(LETRAS) + placa_valida[posicion + 1:]
 
-        # Verificar si la función devuelve el resultado esperado para la placa inválida
-        self.assertFalse(es_una_placa_de_vehiculo_valida(placa_invalida))
+            # Verificar si la función devuelve el resultado esperado para la placa inválida
+            self.assertFalse(es_una_placa_de_vehiculo_valida(placa_invalida))
 
     def test_es_un_codigo_dot_valido(self) -> None:
         """
@@ -165,13 +154,11 @@ class UtilsTestCase(TestCase):
         )
 
     def test_vigencia_licencia(self) -> None:
-        """
-        Prueba la funcionalidad de vigencia de la licencia.
+        """Prueba la funcionalidad de vigencia de la licencia.
 
-        Realiza una serie de pruebas para verificar si la función ha_caducado_la_licencia y la excepción LicenciaCaducada funcionan correctamente.
-
-        Returns:
-        None
+        Realiza una serie de pruebas para verificar si la función
+        ha_caducado_la_licencia y la excepción LicenciaCaducada 
+        funcionan correctamente.
         """
         self.assertTrue(ha_caducado_la_licencia('2025-08-19'))
         self.assertFalse(ha_caducado_la_licencia('2005-12-19'))
@@ -184,15 +171,23 @@ class UtilsTestCase(TestCase):
         )
 
     def test_aleatorio_vigencia_licencia(self) -> None:
-        for i in range(101):
+        """Prueba aleatoria de la función validar_vigencia_licencia.
+
+        Esta función prueba la excepción LicenciaCaducada
+        generada por la función validar_vigencia_licencia.
+        
+        Se generan 1000 casos aleatorios de fechas de licencias de
+        conducir caducadas y se verifica si la función
+        genera la excepción esperada para cada caso.
+        """
+        for _ in range(1000):
             anio_aleatorio = random.randint(1990, 2022)
             mes_aleatorio = random.randint(1, 12)
             dia_aleatorio = random.randint(1, 25)
-
             self.assertRaises(
-            LicenciaCaducada, validar_vigencia_licencia, str(anio_aleatorio) +
-              "-" +str(mes_aleatorio) + "-" + str(dia_aleatorio)
-        )
+                LicenciaCaducada, validar_vigencia_licencia, 
+                f"{anio_aleatorio}-{mes_aleatorio}-{dia_aleatorio}"
+            )
 
 class TestSuite(TestCase):
     """

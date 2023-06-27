@@ -184,21 +184,16 @@ def es_un_anio_de_fabricacion_valido(anio: int):
     return anio > 1900 and anio <= anio_actual
     
 def es_un_codigo_bateria_valido(codigo_bateria: str):
-    """
-    Verifica si un código de batería es válido.
-    Args:
-        codigo_bateria (str): El código de batería a verificar.
-    Returns:
-        bool: True si el código de batería es válido, False en caso contrario.
-    """
-    # Expresión regular para validar el código de batería
-    patron = r'^(?=.*\d)(?=.*[a-zA-Z])[\w\d]{8,}$'
-    # Comprobar si el código de batería coincide con el patrón
-    coincidencia = re.match(patron, codigo_bateria)
-    # Devolver True si hay coincidencia, False si no hay coincidencia
-    return bool(coincidencia)
+    """Verifica si un código de batería es válido.
 
-    
+    Args:
+        - codigo_bateria (str): El código de batería a verificar.
+    Returns:
+        - bool: True si el código de batería es válido, False en caso contrario.
+    """
+    patron = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
+    return bool(re.match(patron, codigo_bateria))
+
 def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     """
     Obtiene la fecha de fabricación de una llanta a partir de su código DOT.
