@@ -167,7 +167,6 @@ def es_un_codigo_dot_valido(codigo: str) -> bool:
     Returns:
         bool: True si el código DOT tiene el formato correcto, False en caso contrario.
     """
-
     patron = r'^DOT-[A-Z0-9]{4}-[A-Z0-9]{4}-\d{4}$'
     return bool(re.match(patron, codigo))
 
@@ -183,7 +182,6 @@ def es_un_anio_de_fabricacion_valido(anio: int):
     """
     anio_actual = datetime.now().year
     return anio > 1900 and anio <= anio_actual
-
     
 def es_un_codigo_bateria_valido(codigo_bateria: str):
     """
@@ -228,7 +226,6 @@ def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     fecha_fabricacion = datetime.strptime(
         f'20{anio_fabricacion}-W{semana_fabricacion}-1', '%Y-W%W-%w'
     )
-
     return fecha_fabricacion
 
 def ha_caducado_la_licencia(fechaCaducidad: str):

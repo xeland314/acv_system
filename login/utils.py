@@ -143,3 +143,21 @@ def es_un_numero_de_telefono_valido(telefono: str) -> bool:
     """
     patron = r"^(593|\+593|0)9\d{8}$"
     return bool(re.match(patron, telefono))
+
+def es_un_nombre_valido(nombres:str) -> bool:
+    """
+    Verifica si un nombre es válido según ciertos criterios.
+
+    Args:
+        nombres (str): El nombre a validar.
+
+    Returns:
+        bool: True si el nombre es válido, False en caso contrario.
+    """
+
+    if re.match("^[a-zA-Z\s]+$", nombres):
+        palabras = nombres.split()
+        if len(palabras) >= 2:
+            return True
+    
+    return False

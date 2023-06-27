@@ -87,3 +87,16 @@ class FechaDeNacimientoInvalida(ValidationError):
         if detail is None:
             detail = "La persona debe ser mayor de edad."
         super().__init__(_(detail), params)
+
+class NombreInvalido(ValidationError):
+    """
+    Initializes a custom exception instance.
+
+    Args:
+        detail (str, optional): The detail message describing the exception. Defaults to None.
+        params (dict, optional): Additional parameters associated with the exception. Defaults to None.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "El nombre introducido no cumple con el formato esperado."
+        super().__init__(_(detail), params)

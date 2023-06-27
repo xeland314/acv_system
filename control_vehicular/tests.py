@@ -5,6 +5,7 @@ Este módulo define los tests para control_vehicular.
 
 Autor: Christopher Villamarín (@xeland314)
 """
+
 import random
 import unittest
 
@@ -23,7 +24,6 @@ from .models import (
     validar_anio_fabricacion,
     validar_codigo_bateria,
     validar_vigencia_licencia,
-
 )
 from .utils import (
     es_un_codigo_dot_valido,
@@ -58,6 +58,51 @@ class UtilsTestCase(TestCase):
         self.assertRaises(
             PlacaVehicularInvalida, validar_placa_vehicular, 'AB-123CD'
         )
+    
+    def test_aleatorio_es_una_placa_de_vehiculo_valida(self) -> None:
+        """
+        Prueba aleatoria de la función es_una_placa_de_vehiculo_valida.
+
+        Esta función realiza una prueba aleatoria generando casos de placas de vehículos y motos válidas e inválidas.
+        Verifica si la función es_una_placa_de_vehiculo_valida devuelve el resultado esperado para cada caso generado.
+
+        Cada caso se genera de la siguiente manera:
+        1. Se generan 100 casos aleatorios en total.
+        2. Para cada caso:
+        - Se genera una placa aleatoria utilizando una combinación de letras mayúsculas y números.
+        - Se verifica si la longitud de la placa es válida (3 letras y 3 o 4 números).
+        - Se verifica si la función devuelve True para la placa válida.
+        - Se genera una placa aleatoria inválida cambiando aleatoriamente una letra o un número en la placa válida.
+        - Se verifica si la función devuelve False para la placa inválida.
+
+        Esta prueba tiene como objetivo asegurar el comportamiento adecuado de la función es_una_placa_de_vehiculo_valida
+        en diferentes casos de entrada, verificando la validez del formato de la placa.
+
+        """
+
+        for _ in range(100):
+        # Generar una placa de vehículo aleatoria válida
+            letras = random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=3)
+            numeros = random.choices("0123456789", k=random.choice([3, 4]))
+            placa_valida = "".join(letras) + "-" + "".join(numeros)
+
+        # Verificar la longitud de la placa válida
+        self.assertTrue(len(placa_valida) == 7 or len(placa_valida) == 8)
+
+        # Verificar si la función devuelve el resultado esperado para la placa válida
+        self.assertTrue(es_una_placa_de_vehiculo_valida(placa_valida))
+
+        # Generar una placa de vehículo aleatoria inválida cambiando una letra o un número en la placa válida
+        posicion = random.randint(0, len(placa_valida) - 1)
+        if placa_valida[posicion].isalpha():
+            # Cambiar una letra por un número
+            placa_invalida = placa_valida[:posicion] + random.choice("0123456789") + placa_valida[posicion + 1:]
+        else:
+            # Cambiar un número por una letra
+            placa_invalida = placa_valida[:posicion] + random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + placa_valida[posicion + 1:]
+
+        # Verificar si la función devuelve el resultado esperado para la placa inválida
+        self.assertFalse(es_una_placa_de_vehiculo_valida(placa_invalida))
 
     def test_es_un_codigo_dot_valido(self) -> None:
         """
@@ -103,6 +148,15 @@ class UtilsTestCase(TestCase):
         self.assertTrue(es_un_codigo_bateria_valido("POWR2022"))
         self.assertTrue(es_un_codigo_bateria_valido("MAXPOWER99"))
         self.assertFalse(es_un_codigo_bateria_valido("BATERIA"))
+        self.assertTrue(es_un_codigo_bateria_valido('POWR2022'))
+        self.assertTrue(es_un_codigo_bateria_valido('MAXPOWER99'))
+        self.assertFalse(es_un_codigo_bateria_valido('BATERIA'))
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "AS123"
+        )
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "2023125"
+        )
         self.assertRaises(
             CodigoBateriaInvalido, validar_codigo_bateria, "PW120"
         )
@@ -139,7 +193,6 @@ class UtilsTestCase(TestCase):
             LicenciaCaducada, validar_vigencia_licencia, str(anio_aleatorio) +
               "-" +str(mes_aleatorio) + "-" + str(dia_aleatorio)
         )
-
 
 class TestSuite(TestCase):
     """

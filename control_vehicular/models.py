@@ -12,6 +12,7 @@ Dependencias:
 import datetime
 
 from datetime import date
+import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -24,7 +25,7 @@ from .utils import (
     UnidadOdometro,
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
-    es_un_anio_de_fabricacion_valido,
+    es_un_anio_de_fabricacion_valido,    
     es_un_codigo_bateria_valido,
     ha_caducado_la_licencia
 )
@@ -348,7 +349,6 @@ class Vehiculo(models.Model):
     def __str__(self) -> str:
         return f"Vehículo #{self.id}: {self.placa} - {self.modelo} - {self.anio_de_fabricacion}"
 
-
 class HojaMantenimiento(models.Model):
     """
     Representa una hoja de mantenimiento para un vehículo.
@@ -517,7 +517,6 @@ def validar_codigo_bateria(codigo_bateria: str) -> None:
     - CodigoBateriaInvalido: Si el código de batería no es válido.
 
     """
-
     if not es_un_codigo_bateria_valido(codigo_bateria):
         raise CodigoBateriaInvalido(
             f"{codigo_bateria} no es un código de batería válido.",

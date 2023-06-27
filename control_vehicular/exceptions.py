@@ -33,7 +33,6 @@ class CodigoDotInvalido(ValidationError):
             detail = "El código DOT no cumple con el formato esperado."
         super().__init__(_(detail), params)
 
-
 class PlacaVehicularInvalida(ValidationError):
     """Raised when a vehicle license plate is invalid.
 
@@ -49,6 +48,22 @@ class PlacaVehicularInvalida(ValidationError):
     def __init__(self, detail=None, params=None):
         if detail is None:
             detail = "La placa vehicular no cumple con el formato esperado."
+        super().__init__(_(detail), params)
+
+class CodigoBateriaInvalido(ValidationError):
+    """
+    Valida si un código de batería cumple con los requisitos establecidos.
+
+    Args:
+        codigo_bateria (str): El código de batería a validar.
+
+    Returns:
+        bool: True si el código de batería es válido, False en caso contrario.
+    """
+
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "El año de codigo de bateria no cumple con el formato esperado."
         super().__init__(_(detail), params)
 
 class FechaFabricacionInvalida(ValidationError):
