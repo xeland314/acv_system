@@ -33,7 +33,6 @@ class CodigoDotInvalido(ValidationError):
             detail = "El código DOT no cumple con el formato esperado."
         super().__init__(_(detail), params)
 
-
 class PlacaVehicularInvalida(ValidationError):
     """Raised when a vehicle license plate is invalid.
 
@@ -49,23 +48,6 @@ class PlacaVehicularInvalida(ValidationError):
     def __init__(self, detail=None, params=None):
         if detail is None:
             detail = "La placa vehicular no cumple con el formato esperado."
-        super().__init__(_(detail), params)
-
-class Fecha_Fabricacion_Invalida(ValidationError):
-    """
-    Initializes the exception instance.
-
-    Parameters:
-    - detail: Optional. A string specifying the detail message for the exception.
-     If not provided, the default message "El año de fabricacion no cumple con el formato esperado."
-              will be used.
-    - params: Optional. A dictionary of additional parameters to be included with the exception.
-
-    """
-
-    def __init__(self, detail=None, params=None):
-        if detail is None:
-            detail = "El año de fabricacion no cumple con el formato esperado."
         super().__init__(_(detail), params)
 
 class CodigoBateriaInvalido(ValidationError):
@@ -84,5 +66,45 @@ class CodigoBateriaInvalido(ValidationError):
             detail = "El año de codigo de bateria no cumple con el formato esperado."
         super().__init__(_(detail), params)
 
-        
+class FechaFabricacionInvalida(ValidationError):
+    """ Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "La fecha de fabricación está por fuera de los límites definidos."
+        super().__init__(_(detail), params)
 
+class CodigoBateriaInvalido(ValidationError):
+    """ Inicializa una instancia de la excepción.
+        Args:
+            detail (str): Detalle opcional que describe el error de fecha de fabricación.
+            params (dict): Parámetros opcionales adicionales para el error.
+    """
+    def __init__(self, detail=None, params=None):
+        if detail is None:
+            detail = "El código de bateria no cumple con el formato esperado."
+        super().__init__(_(detail), params)
+
+class LicenciaCaducada(ValidationError):
+    """
+    Representa una excepción que se produce cuando la licencia ha caducado.
+
+    Args:
+        detail (str): Detalle opcional que describe el error de la fecha de caducidad de la licencia.
+        params (dict): Parámetros opcionales adicionales para el error.
+    """
+
+    def __init__(self, detail=None, params=None):
+        """
+        Inicializa una instancia de la excepción LicenciaCaducada.
+
+        Args:
+            detail (str): Detalle opcional que describe el error de la fecha de caducidad de la licencia.
+            params (dict): Parámetros opcionales adicionales para el error.
+        """
+        if detail is None:
+            detail = "La licencia está caducada."
+        super().__init__(_(detail), params)

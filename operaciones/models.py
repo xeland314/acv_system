@@ -18,10 +18,10 @@ from django.utils.translation import gettext_lazy as _
 
 from control_vehicular.models import Vehiculo, Conductor
 
-from login.models import Persona
+from login.models import Trabajador
 
 from .utils import (
-    ESTADOS_CUMPLIMIENTO, TIPOS_MANTENIMIENTO
+    EstadoCumplimiento, TipoMantenimiento
 )
 
 class OrdenTrabajo(models.Model):
@@ -43,7 +43,7 @@ class OrdenTrabajo(models.Model):
         help_text=_("Fecha de emisión de la orden de trabajo")
     )
     persona = models.ForeignKey(
-        Persona,
+        Trabajador,
         on_delete=models.PROTECT,
         help_text=_("Responsable de la orden de trabajo")
     )
@@ -54,13 +54,13 @@ class OrdenTrabajo(models.Model):
     )
     tipo_mantenimiento = models.CharField(
         max_length=30,
-        choices=TIPOS_MANTENIMIENTO,
+        choices=TipoMantenimiento.choices(),
         help_text=_("Tipo de mantenimiento a realizar")
     )
     tipo_trabajo = models.TextField(help_text=_("Descripción del trabajo a realizar"))
     cumplimiento = models.CharField(
         max_length=20,
-        choices=ESTADOS_CUMPLIMIENTO,
+        choices=EstadoCumplimiento.choices(),
         help_text=_("Estado de cumplimiento de la orden de trabajo")
     )
 
@@ -85,7 +85,7 @@ class AperturaOrdenMovimiento(models.Model):
         - detalle_comision (TextField): Detalles sobre la comisión asociada con la OrdenMovimiento.
     """
     persona = models.ForeignKey(
-        Persona,
+        Trabajador,
         on_delete=models.PROTECT,
         help_text=_("Responsable de la orden de trabajo")
     )
@@ -149,7 +149,7 @@ class CierreOrdenMovimiento(models.Model):
     )
     cumplimiento = models.CharField(
         max_length=20,
-        choices=ESTADOS_CUMPLIMIENTO,
+        choices=EstadoCumplimiento.choices(),
         help_text=_("Estado de cumplimiento de la orden de movimiento")
     )
 

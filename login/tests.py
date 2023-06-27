@@ -9,12 +9,14 @@ Dependencias: django.test.TestCase, django.contrib.auth.models.User,
     .utils.es_un_numero_de_telefono_valido
 """
 from datetime import date, timedelta
-import unittest, random
+import random
+import unittest
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-from .models import Persona
+from .models import Trabajador
 from .exceptions import CedulaInvalida
 from .utils import (
     es_una_cedula_valida, es_un_numero_de_telefono_valido,
@@ -25,8 +27,9 @@ class UtilsTestCase(TestCase):
     """Clase de pruebas para las funciones de utilidad."""
 
     def test_es_un_nombre_valido(self):
-        """
-        
+        """ Prueba la función es_un_nombre_valido
+        Verifica si el nombre de una persona solo consta de caracteres
+        y no incluye números u otros caracteres raros.
         """
         #Casos Validos para nombres
         self.assertTrue(es_un_nombre_valido("Ricardo Becerra"))
@@ -42,7 +45,6 @@ class UtilsTestCase(TestCase):
         self.assertFalse(es_un_nombre_valido("")) #espacios vacios
         self.assertFalse(es_un_nombre_valido(" ")) #espacio en blanco
         self.assertFalse(es_un_nombre_valido("DavidTorres"))
-        
 
     def test_es_una_cedula_valida(self):
         """Prueba la función es_una_cedula_valida.
@@ -77,8 +79,13 @@ class UtilsTestCase(TestCase):
         self.assertRaises(
             CedulaInvalida, es_una_cedula_valida, " "
         )
-    
 
+    def test_aleatorio_es_una_cedula_valida(self):
+        for i in range(101):
+            numero_aleatorio = random.randint(10000, 99999)
+            self.assertRaises(
+            CedulaInvalida, es_una_cedula_valida,  f"1789{numero_aleatorio}"
+        )
 
     def test_es_un_numero_de_telefono_valido(self):
         """Prueba la función es_un_numero_de_telefono_valido.
@@ -108,8 +115,6 @@ class UtilsTestCase(TestCase):
         # Otros casos inválidos
         self.assertFalse(es_un_numero_de_telefono_valido(""))  # Cadena vacía
         self.assertFalse(es_un_numero_de_telefono_valido(" "))  # Espacio en blanco
-
-    
 
     def testAleatorio_es_un_numero_de_telefono_valido(self):
         """
@@ -213,14 +218,13 @@ class UtilsTestCase(TestCase):
             else:
                 self.assertFalse(es_una_fecha_de_nacimiento_valida(fecha_nacimiento))
 
-
 class ViewsTestCase(TestCase):
     """Clase de pruebas para las vistas."""
 
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.persona = Persona.objects.create(
+        self.persona = Trabajador.objects.create(
             user=self.user,
             nombres='Test',
             apellidos='User',
@@ -261,16 +265,16 @@ class ViewsTestCase(TestCase):
             'email': 'johndoe@example.com',
             'telefono': '0987129357',
             'fecha_nacimiento': date(2000, 1, 1),
-            'nivel_educacion': 'SUPERIOR',
-            'estado_civil': 'SOLTERO',
+            'nivel_educacion': 'Superior',
+            'estado_civil': 'Soltero',
             'contrasena': 'password',
             'contrasena2': 'password'
         }
         response = self.client.post(self.api_direcction, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Persona.objects.count(), 2)
-        self.assertEqual(Persona.objects.last().nombres, 'John')
-        self.assertEqual(Persona.objects.last().apellidos, 'Doe')
+        self.assertEqual(Trabajador.objects.count(), 2)
+        self.assertEqual(Trabajador.objects.last().nombres, 'John')
+        self.assertEqual(Trabajador.objects.last().apellidos, 'Doe')
 
 class TestSuite(TestCase):
     """

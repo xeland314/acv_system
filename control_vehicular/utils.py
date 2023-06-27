@@ -1,4 +1,5 @@
-"""utils.py
+"""
+utils.py
 
 El módulo `utils.py` define varias clases enumeradas
 que se utilizan en el módulo `models.py` para representar diferentes tipos de datos.
@@ -10,32 +11,13 @@ El módulo `utils.py` incluye las siguientes clases enumeradas:
 - `CondicionVehicular`: enumera las diferentes condiciones vehiculares.
 - `PosicionLlanta`: enumera las diferentes posiciones de las llantas.
 - `TipoLicencia`: enumera los diferentes tipos de licencias.
-
-También se incluyen las siguientes variables que contienen
-las opciones posibles de cada enumeración:
-
-- `COMBUSTIBLES`: una lista de tuplas con las opciones posibles de combustible.
-- `TIPOS_VEHICULO`: una lista de tuplas con las opciones posibles de tipo de vehículo.
-- `CONDICIONES_VEHICULARES`: una lista de tuplas con las opciones
-    posibles de condiciones vehiculares.
-- `POSICIONES_LLANTA`: una lista de tuplas con las opciones posibles de posiciones de llantas.
-- `TIPOS_LICENCIA`: una lista de tuplas con las opciones posibles de tipos de licencia.
+- `UnidadOdometro`: enumera las diferentes unidades que puede utilizar un odómetro.
 """
 
 from datetime import datetime
 from enum import Enum
 import re
-
-class TipoVehiculo(Enum):
-    """
-    Enumeración de los diferentes tipos de vehículos.
-    """
-    CAMION = "Camión"
-    CAMIONETA = "Camioneta"
-    AUTOMOVIL = "Automóvil"
-    MOTOCICLETA = "Motocicleta"
-    BUS = "Bus"
-    TRACTOR = "Tractor"
+from typing import List, Tuple
 
 class Combustible(Enum):
     """
@@ -46,6 +28,20 @@ class Combustible(Enum):
     GAS = "Gas"
     ELECTRICO = "Eléctrico"
 
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los tipos de combustibles.
+
+        Cada tupla contiene el valor y el nombre de un tipo de combustible.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los tipos de combustibles.
+        """
+        return [(key.value, key.name) for key in cls]
+
 class CondicionVehicular(Enum):
     """
     Enumeración de las diferentes condiciones vehiculares.
@@ -53,6 +49,20 @@ class CondicionVehicular(Enum):
     OPERABLE = "Operable"
     NO_OPERABLE = "No operable"
     EN_MANTENIMIENTO = "En mantenimiento"
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de las condiciones vehiculares.
+
+        Cada tupla contiene el valor y el nombre de una condición vehicular.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de las condiciones vehiculares.
+        """
+        return [(key.value, key.name) for key in cls]
 
 class PosicionLlanta(Enum):
     """
@@ -67,6 +77,20 @@ class PosicionLlanta(Enum):
     IZQUIERDO_POSTERIOR_EXTERIOR = "Izquierdo posterior exterior"
     IZQUIERDO_POSTERIOR_INTERIOR = "Izquierdo posterior interior"
     REPUESTO = "Respuesto"
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de las posiciones de las llantas.
+
+        Cada tupla contiene el valor y el nombre de una posición de llanta.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de las posiciones de las llantas.
+        """
+        return [(key.value, key.name) for key in cls]
 
 class TipoLicencia(Enum):
     """
@@ -83,20 +107,49 @@ class TipoLicencia(Enum):
     E = 'E'
     E1 = 'E1'
 
-COMBUSTIBLES = [(tag.value, tag.name) for tag in Combustible]
-TIPOS_VEHICULO = [(tag.value, tag.name) for tag in TipoVehiculo]
-CONDICIONES_VEHICULARES = [(tag.value, tag.name) for tag in CondicionVehicular]
-POSICIONES_LLANTA = [(tag.value, tag.name) for tag in PosicionLlanta]
-TIPOS_LICENCIA = [(tag.value, tag.name) for tag in TipoLicencia]
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los tipos de licencias.
+
+        Cada tupla contiene el valor y el nombre de un tipo de licencia.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los tipos de licencias.
+        """
+        return [(key.value, key.name) for key in cls]
+
+class UnidadOdometro(Enum):
+    """
+    Enumeración de las diferentes unidades para medir un kilometraje.
+    """
+    KILOMETROS = 'km'
+    MILLAS = 'mi'
+    DIAS = 'días'
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de las unidades.
+
+        Cada tupla contiene el valor y el nombre de una unidad.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores y nombres de las unidades.
+        """
+        return [(key.value, key.name) for key in cls]
 
 def es_una_placa_de_vehiculo_valida(placa: str) -> bool:
     """
     Esta función solo verifica si el formato de la placa es válido.
     No verifica si la placa está registrada en el SRI o ANT.
     """
-    patron_vehiculo = r'^[A-Z]{3}\-\d{4}$'
+    patron_vehiculo = r'^[A-Z]{3}\-\d{3,4}$'
     patron_moto = r'^[A-Z]{2}\-\d{3}[A-Z]?$'
-    return bool(re.match(patron_vehiculo, placa) or re.match(patron_moto, placa))
+    return bool(re.match(patron_vehiculo, placa)) or bool(re.match(patron_moto, placa))
 
 def es_un_codigo_dot_valido(codigo: str) -> bool:
     """
@@ -114,10 +167,38 @@ def es_un_codigo_dot_valido(codigo: str) -> bool:
     Returns:
         bool: True si el código DOT tiene el formato correcto, False en caso contrario.
     """
-
     patron = r'^DOT-[A-Z0-9]{4}-[A-Z0-9]{4}-\d{4}$'
     return bool(re.match(patron, codigo))
 
+def es_un_anio_de_fabricacion_valido(anio: int):
+    """
+    Valida si el año de fabricación de un vehículo es válido.
+
+    Args:
+    anio (int): El año de fabricación a validar.
+
+    Returns:
+    bool: True si el año de fabricación es válido, False en caso contrario.
+    """
+    anio_actual = datetime.now().year
+    return anio > 1900 and anio <= anio_actual
+    
+def es_un_codigo_bateria_valido(codigo_bateria: str):
+    """
+    Verifica si un código de batería es válido.
+    Args:
+        codigo_bateria (str): El código de batería a verificar.
+    Returns:
+        bool: True si el código de batería es válido, False en caso contrario.
+    """
+    # Expresión regular para validar el código de batería
+    patron = r'^(?=.*\d)(?=.*[a-zA-Z])[\w\d]{8,}$'
+    # Comprobar si el código de batería coincide con el patrón
+    coincidencia = re.match(patron, codigo_bateria)
+    # Devolver True si hay coincidencia, False si no hay coincidencia
+    return bool(coincidencia)
+
+    
 def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     """
     Obtiene la fecha de fabricación de una llanta a partir de su código DOT.
@@ -145,44 +226,21 @@ def obtener_fecha_fabricacion(codigo_dot: str) -> datetime:
     fecha_fabricacion = datetime.strptime(
         f'20{anio_fabricacion}-W{semana_fabricacion}-1', '%Y-W%W-%w'
     )
-
     return fecha_fabricacion
 
-def es_un_anio_de_fabricacion_valido(anio:int):
-        """
-        Verifica si un año de fabricación es válido.
-
-    Parámetros:
-    - anio: Entero que representa el año de fabricación.
-
-    Retorna:
-    - True si el año de fabricación es válido.
-    - False si el año de fabricación no es válido.
-        """
-
-        anio_actual = datetime.now().year
-        return anio > 1900 and anio <= anio_actual
-            
-        
-def es_un_codigo_bateria_valido(codigo_bateria: str):
+def ha_caducado_la_licencia(fechaCaducidad: str):
     """
-    Valida si un código de batería cumple con los requisitos establecidos.
+    Verifica si una licencia ha caducado en base a la fecha de caducidad proporcionada.
 
     Args:
-        codigo_bateria (str): El código de batería a validar.
+        fechaCaducidad (str): Fecha de caducidad en formato 'YYYY-MM-DD'.
 
     Returns:
-        bool: True si el código de batería es válido, False en caso contrario.
+        bool: True si la licencia ha caducado, False en caso contrario.
     """
-    # Expresión regular para validar el código de batería
-    patron = r'^(?=.*\d)(?=.*[a-zA-Z])[\w\d]{8,}$'
-    # Comprobar si el código de batería coincide con el patrón
-    coincidencia = re.match(patron, codigo_bateria)
-    # Devolver True si hay coincidencia, False si no hay coincidencia
-    return coincidencia is not None
-
-
-    
-
-
-
+    # Obtener la fecha actual
+    fecha_actual = datetime.now().date()
+    # Convertir la fecha de caducidad a objeto de fecha
+    fecha_caducidad = datetime.strptime(fechaCaducidad, '%Y-%m-%d').date()
+    # Comparar la fecha de caducidad con la fecha actual
+    return fecha_caducidad > fecha_actual

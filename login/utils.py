@@ -12,6 +12,7 @@ Dependencias: enum.Enum, re
 from datetime import date
 from enum import Enum
 import re
+from typing import List, Tuple
 
 from .exceptions import CedulaInvalida
 
@@ -19,27 +20,47 @@ class EstadoCivil(Enum):
     """
     Clase enumeración para representar los diferentes estados civiles.
     """
-
     CASADO = "Casado"
     DIVORCIADO = "Divorciado"
     SOLTERO = "Soltero"
     UNION_LIBRE = "Unión Libre"
     VIUDO = "Viudo"
 
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los estados civiles.
+
+        Cada tupla contiene el valor y el nombre de un estado civil.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los estados civiles.
+        """
+        return [(key.value, key.name) for key in cls]
+
 class NivelEducacion(Enum):
     """
     Clase enumeración para representar los diferentes niveles de educación.
     """
-
     GENERAL_BASICA = "General Básica"
     BACHILLERATO = "Bachillerato"
     SUPERIOR = "Superior"
 
-# Lista con los valores de la clase enumeración EstadoCivil
-ESTADOS_CIVILES = [(tag.name, tag.value) for tag in EstadoCivil]
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        """
+        Devuelve una lista de tuplas con los valores y nombres de los niveles de educación.
 
-# Lista con los valores de la clase enumeración NivelEducacion
-NIVELES_EDUCACION = [(tag.name, tag.value)  for tag in NivelEducacion]
+        Cada tupla contiene el valor y el nombre de un nivel de educación.
+        Esta lista puede ser útil para usar en campos de elección en modelos de Django.
+
+        Returns:
+            List[Tuple[str, str]]: Una lista de tuplas con los valores
+            y nombres de los niveles de educación.
+        """
+        return [(key.value, key.name) for key in cls]
 
 def es_una_cedula_valida(cedula: str) -> bool:
     """Verifica si una cédula ecuatoriana es válida.

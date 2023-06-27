@@ -21,12 +21,10 @@ Dependencias:
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import EmpresaView, FuncionalidadView, RepresentanteView, SubscripcionView
+from .views import FuncionalidadView, SubscripcionView
 
 router = routers.DefaultRouter()
 router.register(r'funcionalidades', FuncionalidadView, basename="funcionalidades")
-router.register(r'empresas', EmpresaView, basename="empresas")
-router.register(r'representantes', RepresentanteView, basename="representantes")
 router.register(r'subscripciones', SubscripcionView, basename="suscripciones")
 
 urlpatterns = [

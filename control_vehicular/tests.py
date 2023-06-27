@@ -5,28 +5,33 @@ Este módulo define los tests para control_vehicular.
 
 Autor: Christopher Villamarín (@xeland314)
 """
-import unittest, random
+
+import random
+import unittest
 
 from django.test import TestCase
 
 from .exceptions import (
     CodigoDotInvalido,
     PlacaVehicularInvalida,
-    Fecha_Fabricacion_Invalida,
-    CodigoBateriaInvalido
+    FechaFabricacionInvalida,
+    CodigoBateriaInvalido,
+    LicenciaCaducada
 )
 from .models import (
     validar_codigo_dot,
     validar_placa_vehicular,
     validar_anio_fabricacion,
-    validar_codigo_bateria
+    validar_codigo_bateria,
+    validar_vigencia_licencia,
 )
 from .utils import (
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
-    obtener_fecha_fabricacion,
     es_un_anio_de_fabricacion_valido,
-    es_un_codigo_bateria_valido
+    es_un_codigo_bateria_valido,
+    obtener_fecha_fabricacion,
+    ha_caducado_la_licencia
 )
 
 class UtilsTestCase(TestCase):
@@ -54,7 +59,7 @@ class UtilsTestCase(TestCase):
             PlacaVehicularInvalida, validar_placa_vehicular, 'AB-123CD'
         )
     
-    def testAleatorio_es_una_placa_de_vehiculo_valida(self) -> None:
+    def test_aleatorio_es_una_placa_de_vehiculo_valida(self) -> None:
         """
         Prueba aleatoria de la función es_una_placa_de_vehiculo_valida.
 
@@ -62,7 +67,7 @@ class UtilsTestCase(TestCase):
         Verifica si la función es_una_placa_de_vehiculo_valida devuelve el resultado esperado para cada caso generado.
 
         Cada caso se genera de la siguiente manera:
-        1. Se generan 10 casos aleatorios en total.
+        1. Se generan 100 casos aleatorios en total.
         2. Para cada caso:
         - Se genera una placa aleatoria utilizando una combinación de letras mayúsculas y números.
         - Se verifica si la longitud de la placa es válida (3 letras y 3 o 4 números).
@@ -75,7 +80,7 @@ class UtilsTestCase(TestCase):
 
         """
 
-        for _ in range(10):
+        for _ in range(100):
         # Generar una placa de vehículo aleatoria válida
             letras = random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=3)
             numeros = random.choices("0123456789", k=random.choice([3, 4]))
@@ -128,24 +133,21 @@ class UtilsTestCase(TestCase):
         self.assertEqual(fecha_fabricacion.month, 2)
         self.assertEqual(fecha_fabricacion.day, 20)
 
-    def test_anio_de_fabricacion(self) -> None:
-        """
-        
-        """
+    def test_es_anio_fabricacion(self) -> None:
         self.assertTrue(es_un_anio_de_fabricacion_valido(1992))
-        self.assertTrue(es_un_anio_de_fabricacion_valido(2008))
-        self.assertFalse(es_un_anio_de_fabricacion_valido(2999))
+        self.assertTrue(es_un_anio_de_fabricacion_valido(2000))
+        self.assertFalse(es_un_anio_de_fabricacion_valido(2099))
         self.assertRaises(
-            Fecha_Fabricacion_Invalida, validar_anio_fabricacion, 1800
+            FechaFabricacionInvalida, validar_anio_fabricacion, 1500
         )
         self.assertRaises(
-            Fecha_Fabricacion_Invalida, validar_anio_fabricacion, 2025
+            FechaFabricacionInvalida, validar_anio_fabricacion, 2025
         )
-
-
-    def test_codigo_bateria(self) -> None:
-        """
-        """
+        
+    def test_es_codigo_bateria(self) -> None:
+        self.assertTrue(es_un_codigo_bateria_valido("POWR2022"))
+        self.assertTrue(es_un_codigo_bateria_valido("MAXPOWER99"))
+        self.assertFalse(es_un_codigo_bateria_valido("BATERIA"))
         self.assertTrue(es_un_codigo_bateria_valido('POWR2022'))
         self.assertTrue(es_un_codigo_bateria_valido('MAXPOWER99'))
         self.assertFalse(es_un_codigo_bateria_valido('BATERIA'))
@@ -155,7 +157,42 @@ class UtilsTestCase(TestCase):
         self.assertRaises(
             CodigoBateriaInvalido, validar_codigo_bateria, "2023125"
         )
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "PW120"
+        )
+        self.assertRaises(
+            CodigoBateriaInvalido, validar_codigo_bateria, "1283944"
+        )
 
+    def test_vigencia_licencia(self) -> None:
+        """
+        Prueba la funcionalidad de vigencia de la licencia.
+
+        Realiza una serie de pruebas para verificar si la función ha_caducado_la_licencia y la excepción LicenciaCaducada funcionan correctamente.
+
+        Returns:
+        None
+        """
+        self.assertTrue(ha_caducado_la_licencia('2025-08-19'))
+        self.assertFalse(ha_caducado_la_licencia('2005-12-19'))
+        self.assertFalse(ha_caducado_la_licencia('2022-04-15'))
+        self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, '2019-11-29'
+        )
+        self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, '2015-09-08'
+        )
+
+    def test_aleatorio_vigencia_licencia(self) -> None:
+        for i in range(101):
+            anio_aleatorio = random.randint(1990, 2022)
+            mes_aleatorio = random.randint(1, 12)
+            dia_aleatorio = random.randint(1, 25)
+
+            self.assertRaises(
+            LicenciaCaducada, validar_vigencia_licencia, str(anio_aleatorio) +
+              "-" +str(mes_aleatorio) + "-" + str(dia_aleatorio)
+        )
 
 class TestSuite(TestCase):
     """

@@ -1,0 +1,55 @@
+@startuml mantenimientos
+
+class Vehiculo {
+    +propietario
+    +marca: str
+    +modelo: str
+    +placa: str
+    +anio_de_fabricacion: int
+    +color: str
+    +cilindraje: float
+    +tonelaje: float
+    +unidad_carburaje: float
+    +combustible: str
+    +condicion: str
+    +fotografia
+    +matricula
+    +llantas
+}
+
+class HojaMantenimiento {
+    + intervalo
+    + fecha_inicial
+    + kilometraje_inicial
+    + tiempo_inicial
+}
+
+class Componente {
+    + nombre
+}
+
+enum Tareas {
+    ' I: Inspeccionar, limpiar y corregir o reemplazar de ser el caso
+    + INSPECCION
+    ' A: Ajustar
+    + AJUSTE
+    ' R: Reemplazar o cambiar
+    + REPARACION
+    ' T: Apretar al torque especificado
+    + TORQUE
+    ' L: Lubricar o engrasar
+    + LUBRICACION
+}
+
+class Operacion {
+    + tiempo
+    + kilometraje
+    + tiempo_calendario
+}
+
+Vehiculo --right-> "1" HojaMantenimiento
+HojaMantenimiento --> "*" Componente
+Componente --right-> "*" Operacion : + operaciones
+Operacion --> "1" Tareas : + tarea
+
+@enduml

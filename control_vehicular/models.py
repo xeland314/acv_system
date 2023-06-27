@@ -9,24 +9,42 @@ Dependencias:
     - El módulo utils.py para definir constantes TIPOS_LICENCIA,
         COMBUSTIBLES, CONDICIONES_VEHICULARES y POSICIONES_LLANTA.
 """
+import datetime
 
 from datetime import date
 import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from login.models import Persona
+from login.models import Trabajador
 
-from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, Fecha_Fabricacion_Invalida,CodigoBateriaInvalido
+from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida, FechaFabricacionInvalida, CodigoBateriaInvalido, LicenciaCaducada
 from .utils import (
-    COMBUSTIBLES, CONDICIONES_VEHICULARES,
-    POSICIONES_LLANTA, TIPOS_LICENCIA,
+    Combustible, CondicionVehicular,
+    PosicionLlanta, TipoLicencia,
+    UnidadOdometro,
     es_un_codigo_dot_valido,
     es_una_placa_de_vehiculo_valida,
-    es_un_anio_de_fabricacion_valido,
-    es_un_codigo_bateria_valido
-    
+    es_un_anio_de_fabricacion_valido,    
+    es_un_codigo_bateria_valido,
+    ha_caducado_la_licencia
 )
+
+def validar_vigencia_licencia(fechaCaducidad):
+    """
+    Valida la vigencia de una licencia en función de su fecha de caducidad.
+
+    Argumentos:
+    fechaCaducidad (str): La fecha de caducidad de la licencia en formato 'YYYY-MM-DD'.
+
+    Lanza:
+    LicenciaCaducada: Si la licencia ha caducado.
+    """
+    if not ha_caducado_la_licencia(fechaCaducidad):
+        raise LicenciaCaducada(
+            f"{fechaCaducidad} no es una fecha vigente",
+            params={'value': fechaCaducidad}
+        )
 
 class Licencia(models.Model):
     """
@@ -41,12 +59,21 @@ class Licencia(models.Model):
     """
     tipo = models.CharField(
         max_length=2,
-        choices=TIPOS_LICENCIA,
+        choices=TipoLicencia.choices(),
         help_text=_("El tipo de la licencia (A, B, C, etc.).")
+    )
+    fecha_de_emision = models.DateField(
+        blank=False,
+        help_text=_("La fecha de emisión de la licencia.")
     )
     fecha_de_caducidad = models.DateField(
         blank=False,
-        help_text=_("La fecha de caducidad de la licencia.")
+        help_text=_("La fecha de caducidad de la licencia."),
+        validators=[validar_vigencia_licencia,]
+    )
+    puntos = models.PositiveSmallIntegerField(
+        blank=False,
+        help_text=_("Puntos vigentes de la licencia.")
     )
 
     def __str__(self):
@@ -56,7 +83,7 @@ class Licencia(models.Model):
         "Retorna la validez de la licencia en el tiempo."
         return date.today() <= self.fecha_de_caducidad
 
-class Conductor(Persona):
+class Conductor(Trabajador):
     """
     Representa un conductor.
 
@@ -96,48 +123,107 @@ def validar_placa_vehicular(placa: str):
             params={'value': placa}
         )
 
-
-def validar_anio_fabricacion(anio:int):
+def validar_anio_fabricacion(anio: int) -> None:
     """
-        Verifica si un año de fabricación es válido.
+    Valida si un año de fabricación es válido.
 
     Parámetros:
-    - anio: Entero que representa el año de fabricación.
+    - anio (int): El año de fabricación a validar.
 
-    Retorna:
-    - True si el año de fabricación es válido.
-    - False si el año de fabricación no es válido.
-        """
+    Excepciones:
+    - FechaFabricacionInvalida: Si el año de fabricación no es válido.
 
+    """
     if not es_un_anio_de_fabricacion_valido (anio):
-        raise Fecha_Fabricacion_Invalida(
-            f"{anio} no es un año de fabricacion valido.",
-            params={'value':anio}
+        raise FechaFabricacionInvalida(
+            f"El año {anio} de fabricación está fuera de los límites.",
+            params={'value': anio}
         )
+
+class Kilometraje(models.Model):
+    """
+    Representa el odómetro de un vehículo.
+
+    Atributos:
+        - vehiculo (Vehiculo): El vehículo al que pertenece el odómetro.
+        - kilometraje (float): El kilometraje recorrido por el vehículo.
+        - unidad (str): La unidad de medida del kilometraje.
+        - fecha_inicial (DateField): La fecha inicial de uso del vehículo.
+    """
+    vehiculo = models.ForeignKey(
+        'Vehiculo',
+        related_name='bitacora_kilometraje',
+        on_delete=models.CASCADE,
+        help_text=_("El vehículo al que pertenece el odómetro.")
+    )
+    kilometraje = models.DecimalField(
+        _('Kilometraje'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("El kilometraje recorrido por el vehículo.")
+    )
+    unidad = models.CharField(
+        _('Unidad'),
+        max_length=10,
+        blank=False,
+        choices=UnidadOdometro.choices(),
+        help_text=_("La unidad de medida del kilometraje.")
+    )
+    fecha = models.DateField(
+        _('Fecha'),
+        blank=False,
+        help_text=_("La fecha en la que se registro X kilometraje.")
+    )
+
+    class Meta:
+        verbose_name = _("Kilometraje")
+        verbose_name_plural = _("Kilometrajes")
+
+    def __str__(self):
+        return f'{self.vehiculo}: {self.kilometraje} {self.unidad} - {self.fecha}'
+
+class Propietario(Trabajador):
+    """
+    Representa un conductor.
+
+    Atributos:
+        - heredados de Persona.
+
+    Métodos:
+        __str__(): Retorna una representación en string del propietario.
+    """
+    class Meta:
+        verbose_name = _("Propietario")
+        verbose_name_plural = _("Propietarios")
+
+    def __str__(self):
+        return f'{self.cedula} - {self.nombres} {self.apellidos}'
+
 class Vehiculo(models.Model):
     """
     Representa un vehículo.
 
     Atributos:
-        - propietario (Propietario): El propietario del vehículo.
-        - marca (str): La marca del vehículo.
-        - modelo (str): El modelo del vehículo.
-        - placa (str): La placa del vehículo.
-        - anio_de_fabricacion (int): El año de fabricación del vehículo.
-        - color (str): El color del vehículo.
         - cilindraje (float): El cilindraje del vehículo.
         - tonelaje (float): El tonelaje del vehículo.
         - unidad_carburante (float): La unidad de carburante del vehículo.
         - combustible (str): El tipo de combustible del vehículo.
         - condicion (str): La condición vehicular del vehículo.
-        - fotografia (ImageField): La fotografía del vehículo.
-    """   
-
+        - marca (str): La marca del vehículo.
+        - modelo (str): El modelo del vehículo.
+        - placa (str): La placa del vehículo.
+        - anio_de_fabricacion (int): El año de fabricación del vehículo.
+        - color (str): El color del vehículo.
+        - matricula (str): El número de la matrícula.
+        - foto_matricula(ImageField): La fotografía de la matrícula.
+        - foto_vehiculo (ImageField): La fotografía del vehículo.
+    """
+    id = models.BigAutoField(primary_key=True)
     propietario = models.ForeignKey(
-        Persona,
+        Propietario,
         on_delete=models.CASCADE,
         related_name='vehiculos',
-        default=1,
         help_text=_("El propietario del vehículo.")
     )
     marca = models.CharField(
@@ -157,93 +243,216 @@ class Vehiculo(models.Model):
         help_text=_("La placa del vehículo."),
         validators=[validar_placa_vehicular,]
     )
-    anio_de_fabricacion = models.IntegerField(
+    anio_de_fabricacion = models.PositiveIntegerField(
         _('Año de fabricación'),
         help_text=_("El año de fabricación del vehículo."),
         validators=[validar_anio_fabricacion,]
+
+    )
+    cilindraje = models.DecimalField(
+        _('Cilindraje'),
+        max_digits=10,
+        decimal_places=4,
+        help_text=_("El cilindraje del vehículo.")
     )
     color = models.CharField(
         _('Color'),
         max_length=50,
         help_text=_("El color del vehículo.")
     )
-    cilindraje = models.FloatField(
-        _('Cilindraje'),
-        help_text=_("El cilindraje del vehículo.")
-    )
-    tonelaje = models.FloatField(
-        _('Tonelaje'),
-        help_text=_("El tonelaje del vehículo.")
-    )
-    unidad_carburante = models.FloatField(
-        _('Unidad carburante'),
-        help_text=_("La unidad de carburante del vehículo.")
-    )
     combustible = models.CharField(
         _('Combustible'),
         max_length=30,
-        choices=COMBUSTIBLES,
+        choices=Combustible.choices(),
         help_text=_("El tipo de combustible del vehículo.")
     )
     condicion = models.CharField(
         _('Condición vehicular'),
         max_length=30,
-        choices=CONDICIONES_VEHICULARES,
+        choices=CondicionVehicular.choices(),
         help_text=_("La condición vehicular del vehículo.")
     )
-    fotografia = models.ImageField(
-        _('Fotografía'),
+    foto_matricula = models.ImageField(
+        _('Fotografía de la matrícula'),
+        upload_to='vehiculos',
+        null=True,
+        blank=True,
+        help_text=_("La fotografía de la matrícula.")
+    )
+    foto_vehiculo = models.ImageField(
+        _('Fotografía del vehículo'),
         upload_to='vehiculos',
         null=True,
         blank=True,
         help_text=_("La fotografía del vehículo.")
     )
+    marca = models.CharField(
+        _('Marca'),
+        max_length=50,
+        help_text=_("La marca del vehículo.")
+    )
+    modelo = models.CharField(
+        _('Modelo'),
+        max_length=50,
+        help_text=_("El modelo del vehículo.")
+    )
+    numero_de_chasis = models.CharField(
+        _('Número del chasis'),
+        max_length=20,
+        unique=True,
+        help_text=_("Número de chasis del motor."),
+    )
+    placa = models.CharField(
+        _('Placa'),
+        max_length=10,
+        unique=True,
+        help_text=_("La placa del vehículo."),
+        validators=[validar_placa_vehicular,]
+    )
+    tonelaje = models.DecimalField(
+        _('Tonelaje'),
+        max_digits=10,
+        decimal_places=2,
+        help_text=_("El tonelaje del vehículo.")
+    )
+    unidad_carburante = models.DecimalField(
+        _('Unidad carburante'),
+        max_digits=10,
+        decimal_places=4,
+        help_text=_("La unidad de carburante del vehículo.")
+    )
+
+    def agregar_kilometraje(self, valor, unidad):
+        """
+        Agrega un nuevo registro de kilometraje al odómetro del vehículo.
+
+        Args:
+            valor (float): El valor del kilometraje a agregar.
+            unidad (str): La unidad de medida del kilometraje.
+        """
+        Kilometraje.objects.create(valor=valor, unidad=unidad, vehiculo=self)
+
+    @property
+    def bitacora(self):
+        """
+        Retorna la bitácora de kilometraje del vehículo ordenada por fecha.
+
+        Returns:
+            QuerySet: La bitácora de kilometraje del vehículo ordenada por fecha.
+        """
+        return self.bitacora_kilometraje.order_by('-fecha')
+
+    class Meta:
+        verbose_name = _("Vehículo")
+        verbose_name_plural = _("Vehículos")
 
     def __str__(self) -> str:
-        return f'{self.marca} - {self.placa} - {self.propietario}'
-    
-    
+        return f"Vehículo #{self.id}: {self.placa} - {self.modelo} - {self.anio_de_fabricacion}"
 
-class Matricula(models.Model):
+class HojaMantenimiento(models.Model):
     """
-    Representa la matrícula de un vehículo.
+    Representa una hoja de mantenimiento para un vehículo.
 
     Atributos:
-        - propietario (Propietario): El propietario de la matrícula.
-        - vehiculo (Vehiculo): El vehículo al que pertenece la matrícula.
-        - matricula (str): El número de la matrícula.
-        - foto (ImageField): La fotografía de la matrícula.
+        - vehiculo (Vehiculo): El vehículo al que pertenece la hoja de mantenimiento.
+        - operaciones (list[Operacion]): Las operaciones de mantenimiento a realizar en el vehículo.
     """
-
-    propietario = models.ForeignKey(
-        Persona,
-        on_delete=models.SET_NULL,
-        null=True,
-        help_text=_("El propietario de la matrícula.")
-    )
     vehiculo = models.OneToOneField(
         Vehiculo,
         on_delete=models.CASCADE,
-        related_name='matricula',
-        help_text=_("El vehículo al que pertenece la matrícula.")
+        help_text=_("El vehículo al que pertenece la hoja de mantenimiento.")
     )
-    matricula = models.CharField(
-        _('Matrícula'),
-        max_length=50,
-        unique=True,
-        help_text=_("El número de la matrícula.")
+    frecuencia_minima = models.DecimalField(
+        _('Frecuencia mínima'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("El kilometraje/tiempo mínimo en el que se deben realizar las operaciones.")
     )
-    foto = models.ImageField(
-        _('Fotografía'),
-        upload_to='matriculas',
-        null=True,
-        blank=True,
-        help_text=_("La fotografía de la matrícula.")
+    final_ciclo = models.DecimalField(
+        _('Final de ciclo de mantenimiento'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("El kilometraje/tiempo límite que marca el fin de cada ciclo de mantenimiento.")
+    )
+    unidad = models.CharField(
+        _('Unidad'),
+        max_length=10,
+        blank=False,
+        choices=UnidadOdometro.choices(),
+        help_text=_("La unidad de medida del kilometraje.")
     )
 
-    def __str__(self) -> str:
-        """Devuelve una representación legible del objeto Matricula."""
-        return str(self.matricula)
+    class Meta:
+        verbose_name = _("Hoja de mantenimiento")
+        verbose_name_plural = _("Hojas de mantenimiento")
+
+    def __str__(self):
+        return (
+            f'{self.vehiculo}'
+            f' - Frecuencia mínima: {self.frecuencia_minima} {self.unidad}'
+            f' - Final de ciclo: {self.final_ciclo} {self.unidad}'
+        )
+
+class OperacionMantenimiento(models.Model):
+    """
+    Representa una operación de mantenimiento.
+
+    Atributos:
+        - hoja_mantenimiento: Hoja de mantenimiento a la que pertenece
+        esta operacion de mantenimiento.
+        - tarea (str): La tarea a realizar en la operación.
+        - sistema (str): El sistema del vehículo al que pertenece la operación.
+        - sub_sistema (str): El sub-sistema del vehículo al que pertenece la operación.
+        - frecuencia (float): La frecuencia en el que se debe realizar la operación.
+        - unidad (str): La unidad de medida de la frecuencia: horas, km, etc.
+    """
+    hoja_mantenimiento = models.ForeignKey(
+        HojaMantenimiento,
+        on_delete=models.CASCADE,
+        related_name='operaciones_de_mantenimiento',
+        help_text=_("Hoja mantenimiento a la que pertenece este mantenimiento.")
+    )
+    tarea = models.CharField(
+        _('Tarea'),
+        max_length=50,
+        blank=False,
+        help_text=_("La tarea a realizar en la operación.")
+    )
+    sistema = models.CharField(
+        _('Sistema'),
+        max_length=50,
+        blank=False,
+        help_text=_("El sistema del vehículo al que pertenece la operación.")
+    )
+    sub_sistema = models.CharField(
+        _('Sub-sistema'),
+        max_length=50,
+        blank=False,
+        help_text=_("El sub-sistema del vehículo al que pertenece la operación.")
+    )
+    frecuencia = models.DecimalField(
+        _('Frecuencia'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("El kilometraje/tiempo en el que se debe realizar la operación.")
+    )
+    unidad = models.CharField(
+        _('Unidad'),
+        max_length=10,
+        blank=False,
+        choices=UnidadOdometro.choices(),
+        help_text=_("La unidad de medida del kilometraje.")
+    )
+
+    class Meta:
+        verbose_name = _("Operación de mantenimiento")
+        verbose_name_plural = _("Operaciones de mantenimiento")
+
+    def __str__(self):
+        return f'{self.tarea}: {self.sub_sistema} cada {self.frecuencia} {self.unidad}'
 
 
 def validar_codigo_dot(codigo_dot: str):
@@ -274,7 +483,6 @@ class Llanta(models.Model):
         - codigo_de_fabricacion (str): El código de fabricación de la llanta.
         - posicion_respecto_al_vehiculo (str): La posición de la llanta respecto al vehículo.
     """
-
     vehiculo = models.ForeignKey(
         Vehiculo,
         on_delete=models.CASCADE,
@@ -290,7 +498,7 @@ class Llanta(models.Model):
     posicion_respecto_al_vehiculo = models.CharField(
         _('Posición respecto al vehículo'),
         max_length=50,
-        choices=POSICIONES_LLANTA,
+        choices=PosicionLlanta.choices(),
         help_text=_("La posición de la llanta respecto al vehículo.")
     )
 
@@ -298,19 +506,20 @@ class Llanta(models.Model):
         """Devuelve una representación legible por humanos del objeto Llanta."""
         return f"Llanta {self.posicion_respecto_al_vehiculo} de {self.vehiculo}"
 
-def validar_codigo_bateria(codigo_bateria: str):
+def validar_codigo_bateria(codigo_bateria: str) -> None:
     """
-    Valida si un código de batería cumple con los requisitos establecidos.
+    Valida si un código de batería es válido.
 
-    Args:
-        codigo_bateria (str): El código de batería a validar.
+    Parámetros:
+    - codigo_bateria (str): El código de batería a validar.
 
-    Returns:
-        bool: True si el código de batería es válido, False en caso contrario.
+    Excepciones:
+    - CodigoBateriaInvalido: Si el código de batería no es válido.
+
     """
     if not es_un_codigo_bateria_valido(codigo_bateria):
         raise CodigoBateriaInvalido(
-            f"{codigo_bateria} no es un código de bateria válido.",
+            f"{codigo_bateria} no es un código de batería válido.",
             params={'value': codigo_bateria}
         )
 
@@ -320,11 +529,9 @@ class Bateria(models.Model):
 
     Atributos:
         - vehiculo (Vehiculo): El vehículo al que pertenece la batería.
+        
         - codigo_de_fabricacion (str): El código de fabricación de la batería.
     """
-
-
-
     vehiculo = models.ForeignKey(
         Vehiculo,
         on_delete=models.CASCADE,

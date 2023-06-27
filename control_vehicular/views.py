@@ -2,11 +2,15 @@ from rest_framework import viewsets
 from .serializers import (
     BateriaSerializer, ConductorSerializer,
     LicenciaSerializer, LlantaSerializer,
-    MatriculaSerializer, VehiculoSerializer
+    KilometrajeSerializer,
+    VehiculoSerializer, HojaMantenimientoSerializer,
+    OperacionMantenimientoSerializer,
+    PropietarioSerializer
 )
 from .models import (
     Bateria, Conductor, Licencia, Llanta,
-    Matricula, Vehiculo
+    Vehiculo, Kilometraje, OperacionMantenimiento,
+    HojaMantenimiento, Propietario
 )
 
 class BateriaView(viewsets.ModelViewSet):
@@ -37,12 +41,33 @@ class LlantaView(viewsets.ModelViewSet):
     queryset = Llanta.objects.all()
     serializer_class = LlantaSerializer
 
-class MatriculaView(viewsets.ModelViewSet):
+class PropietarioView(viewsets.ModelViewSet):
     """
-    Clase que define la vista para listar y crear matriculas.
+    Clase que define la vista para listar y crear conductores.
     """
-    queryset = Matricula.objects.all()
-    serializer_class = MatriculaSerializer
+    queryset = Propietario.objects.all()
+    serializer_class = PropietarioSerializer
+
+class KilometrajeView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear odometros.
+    """
+    queryset = Kilometraje.objects.all()
+    serializer_class = KilometrajeSerializer
+
+class OperacionMatenimientoView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear Operaciones.
+    """
+    queryset = OperacionMantenimiento.objects.all()
+    serializer_class = OperacionMantenimientoSerializer
+
+class HojaMantenimientoView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear hojas de mantenimiento.
+    """
+    queryset = HojaMantenimiento.objects.all()
+    serializer_class = HojaMantenimientoSerializer
 
 class VehiculoView(viewsets.ModelViewSet):
     """
