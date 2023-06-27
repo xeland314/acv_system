@@ -7,7 +7,7 @@ Autor: Christopher Villamarín (@xeland314)
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from login.serializers import PersonaSerializer
+from login.serializers import TrabajadorSerializer
 from .models import (
     Bateria, Licencia,
     Conductor,Vehiculo,
@@ -29,7 +29,7 @@ class LicenciaSerializer(serializers.ModelSerializer):
         model = Licencia
         fields = ('tipo', 'fecha_de_emision', 'fecha_de_caducidad', 'puntos')
 
-class ConductorSerializer(PersonaSerializer):
+class ConductorSerializer(TrabajadorSerializer):
     """
     Serializador para el modelo Conductor.
     """
@@ -74,7 +74,7 @@ class KilometrajeSerializer(serializers.ModelSerializer):
             'vehiculo', 'kilometraje', 'unidad', 'fecha'
         )
 
-class PropietarioSerializer(PersonaSerializer):
+class PropietarioSerializer(TrabajadorSerializer):
     """
     Serializador para el modelo Conductor.
     """
@@ -170,4 +170,4 @@ class HojaMantenimientoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HojaMantenimiento
-        fields = ('vehiculo', 'frecuencia_minima', 'final_ciclo')
+        fields = ('vehiculo', 'frecuencia_minima', 'final_ciclo', 'unidad')

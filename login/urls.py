@@ -12,10 +12,12 @@ Dependencias:
 """
 from django.urls import path, include
 from rest_framework import routers
-from .views import UsuarioView
+from .views import EmpresaView, RepresentanteView, TrabajadorView
 
 router = routers.DefaultRouter()
-router.register(r"users", UsuarioView, "users")
+router.register(r"trabajadores", TrabajadorView, "trabajadores")
+router.register(r'empresas', EmpresaView, basename="empresas")
+router.register(r'representantes', RepresentanteView, basename="representantes")
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),

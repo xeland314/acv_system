@@ -19,11 +19,11 @@ from rest_framework.authtoken import views
 from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('api_generate_token/', views.obtain_auth_token),
     path('auth/', include('login.urls')),
-    path('vehiculos/', include('control_vehicular.urls')),
+    path('control_vehicular/', include('control_vehicular.urls')),
+    path('dashboard/', admin.site.urls),
+    path('docs/', include_docs_urls(title='Users API')),
     path('operaciones/', include('operaciones.urls')),
     path('suscripciones/', include('suscripciones.urls')),
-    path('docs/', include_docs_urls(title='Users API')),
 ]

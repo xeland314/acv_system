@@ -14,7 +14,7 @@ from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from login.models import Persona
+from login.models import Trabajador
 
 from .exceptions import CodigoDotInvalido, PlacaVehicularInvalida
 from .utils import (
@@ -61,7 +61,7 @@ class Licencia(models.Model):
         "Retorna la validez de la licencia en el tiempo."
         return date.today() <= self.fecha_de_caducidad
 
-class Conductor(Persona):
+class Conductor(Trabajador):
     """
     Representa un conductor.
 
@@ -144,7 +144,7 @@ class Kilometraje(models.Model):
     def __str__(self):
         return f'{self.vehiculo}: {self.kilometraje} {self.unidad} - {self.fecha}'
 
-class Propietario(Persona):
+class Propietario(Trabajador):
     """
     Representa un conductor.
 
@@ -318,6 +318,13 @@ class HojaMantenimiento(models.Model):
         blank=False,
         help_text=_("El kilometraje/tiempo límite que marca el fin de cada ciclo de mantenimiento.")
     )
+    unidad = models.CharField(
+        _('Unidad'),
+        max_length=10,
+        blank=False,
+        choices=UnidadOdometro.choices(),
+        help_text=_("La unidad de medida del kilometraje.")
+    )
 
     class Meta:
         verbose_name = _("Hoja de mantenimiento")
@@ -325,7 +332,7 @@ class HojaMantenimiento(models.Model):
 
     def __str__(self):
         return (
-            f'{self.vehiculo} - {len(self.operaciones)} operaciones'
+            f'{self.vehiculo}'
             f' - Frecuencia mínima: {self.frecuencia_minima} {self.unidad}'
             f' - Final de ciclo: {self.final_ciclo} {self.unidad}'
         )

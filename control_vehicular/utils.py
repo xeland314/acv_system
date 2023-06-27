@@ -146,9 +146,9 @@ def es_una_placa_de_vehiculo_valida(placa: str) -> bool:
     Esta función solo verifica si el formato de la placa es válido.
     No verifica si la placa está registrada en el SRI o ANT.
     """
-    patron_vehiculo = r'^[A-Z]{3}\-\d{4}$'
+    patron_vehiculo = r'^[A-Z]{3}\-\d{3,4}$'
     patron_moto = r'^[A-Z]{2}\-\d{3}[A-Z]?$'
-    return bool(re.match(patron_vehiculo, placa) or re.match(patron_moto, placa))
+    return bool(re.match(patron_vehiculo, placa)) or bool (re.match(patron_moto, placa))
 
 def es_un_codigo_dot_valido(codigo: str) -> bool:
     """

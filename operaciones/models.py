@@ -18,7 +18,7 @@ from django.utils.translation import gettext_lazy as _
 
 from control_vehicular.models import Vehiculo, Conductor
 
-from login.models import Persona
+from login.models import Trabajador
 
 from .utils import (
     EstadoCumplimiento, TipoMantenimiento
@@ -43,7 +43,7 @@ class OrdenTrabajo(models.Model):
         help_text=_("Fecha de emisión de la orden de trabajo")
     )
     persona = models.ForeignKey(
-        Persona,
+        Trabajador,
         on_delete=models.PROTECT,
         help_text=_("Responsable de la orden de trabajo")
     )
@@ -85,7 +85,7 @@ class AperturaOrdenMovimiento(models.Model):
         - detalle_comision (TextField): Detalles sobre la comisión asociada con la OrdenMovimiento.
     """
     persona = models.ForeignKey(
-        Persona,
+        Trabajador,
         on_delete=models.PROTECT,
         help_text=_("Responsable de la orden de trabajo")
     )

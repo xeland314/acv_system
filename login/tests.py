@@ -14,7 +14,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-from .models import Persona
+from .models import Trabajador
 from .exceptions import CedulaInvalida
 from .utils import (
     es_una_cedula_valida, es_un_numero_de_telefono_valido,
@@ -121,7 +121,7 @@ class ViewsTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.persona = Persona.objects.create(
+        self.persona = Trabajador.objects.create(
             user=self.user,
             nombres='Test',
             apellidos='User',
@@ -169,9 +169,9 @@ class ViewsTestCase(TestCase):
         }
         response = self.client.post(self.api_direcction, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Persona.objects.count(), 2)
-        self.assertEqual(Persona.objects.last().nombres, 'John')
-        self.assertEqual(Persona.objects.last().apellidos, 'Doe')
+        self.assertEqual(Trabajador.objects.count(), 2)
+        self.assertEqual(Trabajador.objects.last().nombres, 'John')
+        self.assertEqual(Trabajador.objects.last().apellidos, 'Doe')
 
 class TestSuite(TestCase):
     """
