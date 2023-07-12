@@ -38,9 +38,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Application definition
 INSTALLED_APPS = [
-    'material',
-    'material.admin',
-    # Old admin panel: 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -49,12 +47,18 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'corsheaders',
     'coreapi',
+    #'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
-    'login',
-    'control_vehicular',
-    'operaciones',
-    'suscripciones'
+    'conductores',
+    'empresas',
+    'manual_de_mantenimiento',
+    'ordenes_de_mantenimiento',
+    'ordenes_de_trabajo',
+    'representantes',
+    'suscripciones',
+    'usuarios',
+    'vehiculos'
 ]
 
 MIDDLEWARE = [
@@ -149,5 +153,9 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
 }

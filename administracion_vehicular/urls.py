@@ -20,10 +20,14 @@ from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('api_generate_token/', views.obtain_auth_token),
-    path('auth/', include('login.urls')),
-    path('control_vehicular/', include('control_vehicular.urls')),
+    path('conductores/', include('conductores.urls')),
+    path('empresas/', include('empresas.urls')),
     path('dashboard/', admin.site.urls),
     path('docs/', include_docs_urls(title='Users API')),
-    path('operaciones/', include('operaciones.urls')),
+    path('ordenes_mantenimiento/', include('ordenes_de_mantenimiento.urls')),
+    path('ordenes_trabajo/', include('ordenes_de_trabajo.urls')),
+    path('representantes/', include('representantes.urls')),
     path('suscripciones/', include('suscripciones.urls')),
+    path('usuarios/', include('usuarios.urls')),
+    path('vehiculos/', include('vehiculos.urls')),
 ]
