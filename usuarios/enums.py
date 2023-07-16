@@ -34,9 +34,12 @@ class Roles(Enum):
     """
     ADMINISTRADOR = "Administrador"
     CONDUCTOR = "Conductor"
+    CONDUCTOR_PROPIETARIO = "Conductor-Propietario"
     ENCARGADO = "Encargado"
+    PERSONA_NATURAL = "Persona natural"
     PROPIETARIO = "Propietario"
     SECRETARIO = "Secretario"
+    SUPERUSER = "Superuser"
     SUPERVISOR = "Supervisor"
 
     @classmethod

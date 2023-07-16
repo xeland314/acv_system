@@ -42,6 +42,7 @@ class SubscripcionSerializer(serializers.ModelSerializer):
     Atributos:
         - Meta: Clase interna para especificar el modelo y los campos a serializar.
     """
+    funcionalidades = FuncionalidadSerializer(many=True, read_only=True)
 
     class Meta:
         """Clase interna para especificar el modelo y los campos a serializar.
@@ -53,7 +54,7 @@ class SubscripcionSerializer(serializers.ModelSerializer):
             - default_error_messages: Mensajes de error personalizados.
         """
         model = Subscripcion
-        fields = '__all__'
+        fields = ['id', 'tipo', 'fecha_emision', 'fecha_caducidad', 'precio', 'funcionalidades']
         read_only_fields = ('id',)
         default_error_messages = {
             'invalid': _('Datos inválidos.'),

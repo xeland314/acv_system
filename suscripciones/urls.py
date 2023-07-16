@@ -25,7 +25,7 @@ from .views import FuncionalidadView, SubscripcionView
 
 router = routers.DefaultRouter()
 router.register(r'funcionalidades', FuncionalidadView, basename="funcionalidades")
-router.register(r'subscripciones', SubscripcionView, basename="suscripciones")
+router.register(r'suscripciones', SubscripcionView, basename="suscripciones")
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),
