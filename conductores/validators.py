@@ -1,7 +1,7 @@
 from datetime import datetime
 from .exceptions import LicenciaCaducada
 
-def ha_caducado_la_licencia(fechaCaducidad: str):
+def ha_caducado_la_licencia(fecha_caducidad: str):
     """
     Verifica si una licencia ha caducado en base a la fecha de caducidad proporcionada.
 
@@ -13,8 +13,6 @@ def ha_caducado_la_licencia(fechaCaducidad: str):
     """
     # Obtener la fecha actual
     fecha_actual = datetime.now().date()
-    # Convertir la fecha de caducidad a objeto de fecha
-    fecha_caducidad = datetime.strptime(fechaCaducidad, '%Y-%m-%d').date()
     # Comparar la fecha de caducidad con la fecha actual
     return fecha_caducidad > fecha_actual
 
