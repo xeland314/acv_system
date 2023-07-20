@@ -6,6 +6,8 @@ class Dispositivo(models.Model):
     is_wireless = models.BooleanField(default=False)
     device_type = models.CharField(max_length=50)
     mobile = models.CharField(max_length=50, blank=True)
+    platform_end_time = models.BigIntegerField()
+    activate_time = models.BigIntegerField()
 
 class CuentaApi(models.Model):
     account_id = models.IntegerField()
