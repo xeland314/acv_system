@@ -107,6 +107,11 @@ class OperacionMantenimiento(models.Model):
         choices=Tareas.choices(),
         help_text=_("La tarea a realizar en la operación.")
     )
+    descripcion = models.TextField(
+        _('Descripción'),
+        blank=True,
+        help_text=_('Descripción de la tarea a realizar')
+    )
     frecuencia = models.DecimalField(
         _('Frecuencia'),
         max_digits=10,

@@ -67,18 +67,20 @@ class VehiculoSerializer(serializers.ModelSerializer):
     """
     Serializador para el modelo Vehiculo.
     """
-    email_propietario = serializers.EmailField(
-        write_only=True,
-        required=True,
+    propietario = serializers.PrimaryKeyRelatedField(
+        queryset=PerfilUsuario.objects.all(),
+        help_text=_("Usuario al que pertenece el vehículo.")
     )
+
     class Meta:
         model = Vehiculo
         fields = (
             'anio_de_fabricacion', 'cilindraje', 'color',
             'combustible', 'condicion', 'foto_matricula', 'foto_vehiculo',
             'marca', 'modelo', 'numero_de_chasis', 'placa',
-            'tonelaje', 'unidad_carburante', 'email_propietario'
+            'tonelaje', 'unidad_carburante', 'propietario'
         )
+        read_only_fields = ('propietario', )
 
     def create(self, validated_data: dict):
         """Crea una nueva instancia del modelo Persona a partir de los datos validados.
@@ -89,8 +91,7 @@ class VehiculoSerializer(serializers.ModelSerializer):
         Returns:
             Propietario: Nueva instancia del modelo Persona creada a partir de los datos validados.
         """
-        email_propietario = validated_data.pop('email_propietario')
-        propietario = PerfilUsuario.objects.get(email=email_propietario)
+        propietario = validated_data.pop('email_propietario')
         validated_data['propietario'] = propietario
         vehiculo = Vehiculo.objects.create(**validated_data)
         return vehiculo

@@ -91,4 +91,4 @@ class OperacionMantenimientoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OperacionMantenimiento
-        fields = ('id', 'subsistema', 'tarea', 'frecuencia', 'unidad')
+        fields = ('id', 'subsistema', 'tarea', 'descripcion','frecuencia', 'unidad')

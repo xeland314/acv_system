@@ -63,4 +63,4 @@ class Conductor(PerfilUsuario):
         verbose_name_plural = _("Conductores")
 
     def __str__(self):
-        return f'{self.cedula} - {self.nombres} {self.apellidos} - {self.licencia}'
+        return f'{self.cedula} - {self.email} - {self.licencia}'

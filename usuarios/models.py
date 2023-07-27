@@ -88,4 +88,4 @@ class PerfilUsuario(models.Model):
         verbose_name_plural = _("Perfiles de usuario")
 
     def __str__(self):
-        return f"{self.user.first_name}"
+        return f"{self.email}"

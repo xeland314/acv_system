@@ -9,7 +9,7 @@ from rest_framework import routers
 from .views import RepresentanteView
 
 router = routers.DefaultRouter()
-router.register(r'empresas', RepresentanteView, basename="represetantes")
+router.register(r'representantes', RepresentanteView, basename="representantes")
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),

@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from conductores.models import Conductor
 
 from usuarios.models import PerfilUsuario
-from vehiculos.models import Vehiculo
+from vehiculos.models import Kilometraje, Vehiculo
 
 from .enums import EstadoCumplimiento
 
@@ -34,7 +34,9 @@ class AperturaOrdenMovimiento(models.Model):
         on_delete=models.PROTECT,
         help_text=_("El vehículo del cual se abre la orden de movimiento.")
     )
-    kilometraje_salida = models.IntegerField(
+    kilometraje_salida = models.OneToOneField(
+        Kilometraje,
+        on_delete=models.CASCADE,
         help_text=_("Kilometraje del vehículo al momento de la salida")
     )
     fecha_de_emision_orden = models.DateField(
@@ -70,7 +72,9 @@ class CierreOrdenMovimiento(models.Model):
     fecha_retorno_vehiculo = models.DateField(
         help_text=_("Fecha de retorno del vehículo")
     )
-    kilometraje_retorno = models.IntegerField(
+    kilometraje_retorno = models.OneToOneField(
+        Kilometraje,
+        on_delete=models.CASCADE,
         help_text=_("Kilometraje del vehículo al momento del retorno")
     )
     cumplimiento = models.CharField(

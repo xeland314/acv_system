@@ -24,6 +24,7 @@ urlpatterns = [
     path('empresas/', include('empresas.urls')),
     path('dashboard/', admin.site.urls),
     path('docs/', include_docs_urls(title='Users API')),
+    path('manual_mantenimiento/', include('manual_de_mantenimiento.urls')),
     path('ordenes_mantenimiento/', include('ordenes_de_mantenimiento.urls')),
     path('ordenes_trabajo/', include('ordenes_de_trabajo.urls')),
     path('representantes/', include('representantes.urls')),
