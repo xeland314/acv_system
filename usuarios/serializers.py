@@ -7,6 +7,7 @@ Autor: Christopher Villamarín (@xeland314)
 """
 
 from django.contrib.auth.models import Group, User
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -104,6 +105,17 @@ class PerfilSerializer(serializers.ModelSerializer):
         )
         usuario = PerfilUsuario.objects.create(user=user, **validated_data)
         return usuario
+
+    def to_representation(self, instance: PerfilUsuario):
+        representation = super().to_representation(instance)
+        try:
+            user: User = User.objects.get(username=representation.get('email'))
+            representation['nombres'] = user.first_name
+            representation['apellidos'] = user.last_name
+        except ObjectDoesNotExist:
+            representation['nombres'] = _('No se han encontrado datos')
+            representation['apellidos'] = _('No se han encontrado datos')
+        return representation
 
     def update(self, instance: PerfilUsuario, validated_data: dict):
         """Actualiza una instancia de PerfilUsuario con los datos validados.

@@ -9,10 +9,12 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import json
 from pathlib import Path
 import os
 
 import dj_database_url
+from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
+    'storages',
     'corsheaders',
     'coreapi',
     #'oauth2_provider',
@@ -162,3 +165,22 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ],
 }
+
+# Google credentials for saving images of users:
+if not DEBUG:
+    # Acceder a la variable de entorno desde tu código
+    my_credentials_str = os.environ['CREDENTIALS']
+    # Convertir la cadena de texto en un objeto JSON
+    credentials_json = json.loads(my_credentials_str)
+    my_credentials = service_account.Credentials.from_service_account_info(
+        credentials_json
+    )
+else:
+    my_credentials = service_account.Credentials.from_service_account_file(
+        'acv-img-storage-firebase-adminsdk-wmdec-b6bd5e0172.json'
+    )
+
+# Configura el backend de almacenamiento de Google Cloud Storage
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'acv-img-storage.appspot.com'
+GS_CREDENTIALS = my_credentials # Credenciales de cuenta de servicio

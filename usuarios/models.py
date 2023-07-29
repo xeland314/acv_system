@@ -77,10 +77,10 @@ class PerfilUsuario(models.Model):
         help_text=_("Estado civil de la persona.")
     )
     fotografia = models.ImageField(
-      _('Fotografía'),
-      null=True,
-      blank=True,
-      help_text=_("Fotografía opcional de la persona.")
+        _('Fotografía'),
+        null=True,
+        blank=True,
+        help_text=_("Fotografía opcional de la persona.")
     )
 
     class Meta:
