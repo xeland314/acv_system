@@ -6,7 +6,7 @@ para serializar y deserializar instancias del modelo PerfilUsuario.
 Autor: Christopher Villamarín (@xeland314)
 """
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -25,11 +25,6 @@ from .validators import (
     es_una_cedula_valida,
     es_un_numero_de_telefono_valido
 )
-
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ("name", )
 
 class PerfilSerializer(serializers.ModelSerializer):
     """
