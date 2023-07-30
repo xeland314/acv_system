@@ -12,14 +12,12 @@ from .views import (
     LlantaView,
     VehiculoView,
     KilometrajeView,
-    PropietarioView
 )
 
 router = routers.DefaultRouter()
 router.register(r'baterias', BateriaView, basename='baterias')
 router.register(r'kilometrajes', KilometrajeView, basename='kilometrajes')
 router.register(r'llantas', LlantaView, basename='llantas')
-router.register(r'propietarios', PropietarioView, basename='propietarios')
 router.register(r'vehiculos', VehiculoView, basename='vehiculos')
 
 urlpatterns = [
