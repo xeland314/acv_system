@@ -4,6 +4,7 @@ Este módulo define la vista PerfilView para listar y crear usuarios.
 
 Autor: Christopher Villamarín (@xeland314)
 """
+from django.utils.translation import gettext_lazy as _
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -42,8 +43,13 @@ class PerfilView(ModelViewSet):
         role = request.query_params.get('role')
 
         if empresa_id and role:
-            queryset = PerfilUsuario.objects.filter(empresa_id=empresa_id, role=role)
-            serializer = PerfilSerializer(queryset, many=True)
-            return Response(serializer.data)
+            try:
+                queryset = PerfilUsuario.objects.filter(empresa_id=empresa_id, role=role)
+                serializer = PerfilSerializer(queryset, many=True)
+                return Response(serializer.data)
+            except PerfilUsuario.DoesNotExist:
+                return Response({
+                    "error": _("No se ha encontrado ningún usuario con este rol en esta empresa")
+                })
 
-        return Response({"error": "Parámetros de búsqueda incorrectos."})
+        return Response({"error": _("Parámetros de búsqueda incorrectos.")})
