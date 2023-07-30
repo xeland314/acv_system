@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'ordenes_de_mantenimiento',
     'ordenes_de_trabajo',
     'representantes',
-    'suscripciones',
     'usuarios',
     'vehiculos'
 ]
