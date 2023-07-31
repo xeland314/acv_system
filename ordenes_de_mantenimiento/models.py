@@ -33,6 +33,7 @@ class AperturaOrdenMovimiento(models.Model):
     vehiculo = models.ForeignKey(
         Vehiculo,
         on_delete=models.PROTECT,
+        related_name="aperturas_vehiculo",
         help_text=_("El vehículo del cual se abre la orden de movimiento.")
     )
     kilometraje_salida = models.OneToOneField(
