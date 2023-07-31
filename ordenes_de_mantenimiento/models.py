@@ -18,9 +18,10 @@ class AperturaOrdenMovimiento(models.Model):
     """
     Representa la apertura de una OrdenMovimiento.
     """
-    persona = models.ForeignKey(
+    responsable = models.ForeignKey(
         PerfilUsuario,
         on_delete=models.PROTECT,
+        related_name="responsables",
         help_text=_("Responsable de emitir la orden de mantenimiento")
     )
     conductor = models.ForeignKey(

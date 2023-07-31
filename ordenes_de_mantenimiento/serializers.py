@@ -6,6 +6,7 @@ Autor: Christopher Villamarín (@xeland314)
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from conductores.models import Conductor
+from usuarios.enums import Roles
 
 from usuarios.models import PerfilUsuario
 from vehiculos.models import Vehiculo
@@ -19,8 +20,8 @@ class AperturaOrdenMovimientoSerializer(serializers.ModelSerializer):
     """
     Serializer para serializar y deserializar instancias del modelo AperturaOrdenMovimiento.
     """
-    persona = serializers.PrimaryKeyRelatedField(
-        queryset=PerfilUsuario.objects.all(),
+    responsable = serializers.PrimaryKeyRelatedField(
+        queryset=PerfilUsuario.objects.filter(role=Roles.RESPONSABLE),
         help_text=_("Responsable de emitir la orden de mantenimiento")
     )
     conductor = serializers.PrimaryKeyRelatedField(
@@ -34,11 +35,7 @@ class AperturaOrdenMovimientoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AperturaOrdenMovimiento
-        fields = (
-            'id', 'persona', 'conductor', 'vehiculo', 'kilometraje_salida',
-            'fecha_de_emision_orden', 'fecha_salida_vehiculo', 'itinerario',
-            'detalle_comision'
-        )
+        fields = '__all__'
 
 class CierreOrdenMovimientoSerializer(serializers.ModelSerializer):
     """
@@ -51,7 +48,4 @@ class CierreOrdenMovimientoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CierreOrdenMovimiento
-        fields = (
-            'id', 'apertura', 'fecha_de_cierre_orden', 'fecha_retorno_vehiculo',
-            'kilometraje_retorno', 'cumplimiento'
-        )
+        fields = '__all__'

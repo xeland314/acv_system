@@ -75,12 +75,12 @@ class VehiculoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehiculo
         fields = (
-            'anio_de_fabricacion', 'cilindraje', 'color',
+            'id', 'anio_de_fabricacion', 'cilindraje', 'color',
             'combustible', 'condicion', 'foto_matricula', 'foto_vehiculo',
             'marca', 'modelo', 'numero_de_chasis', 'placa',
             'tonelaje', 'unidad_carburante', 'propietario'
         )
-        read_only_fields = ('propietario', )
+        read_only_fields = ('id', 'propietario', )
 
     def create(self, validated_data: dict):
         """Crea una nueva instancia del modelo Persona a partir de los datos validados.

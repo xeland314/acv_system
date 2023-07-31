@@ -2,4 +2,4 @@
 ignore=migrations
 
 [TYPECHECK]
-ignored-classes=Administrador, AperturaOrdenMovimiento, Bateria, CierreOrdenMovimiento, Conductor, Empresa, Funcionalidad, Kilometraje, Licencia, Llanta, Matricula, OperacionMantenimiento, HojaMantenimiento, OrdenTrabajo, OrdenMovimiento, PerfilUsuario, Propietario, Responsable, Representante, Suscripcion, Trabajador, Token, Vehiculo
+ignored-classes=Administrador, AperturaOrdenMovimiento, Bateria, CierreOrdenMovimiento, Conductor, Empresa, Funcionalidad, Kilometraje, Licencia, Llanta, Matricula, OperacionMantenimiento, ManualMantenimiento, OrdenTrabajo, OrdenMovimiento, PerfilUsuario, Propietario, Responsable, Representante, Sistema, Subsistema, Suscripcion, Trabajador, Token, Vehiculo

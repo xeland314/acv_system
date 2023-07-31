@@ -38,6 +38,7 @@ class Roles(Enum):
     ENCARGADO = "Encargado"
     PERSONA_NATURAL = "Persona natural"
     PROPIETARIO = "Propietario"
+    RESPONSABLE = "Responsable"
     SECRETARIO = "Secretario"
     SUPERUSER = "Superuser"
     SUPERVISOR = "Supervisor"

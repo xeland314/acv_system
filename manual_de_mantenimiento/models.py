@@ -19,7 +19,14 @@ class ManualMantenimiento(models.Model):
     vehiculo = models.OneToOneField(
         Vehiculo,
         on_delete=models.CASCADE,
-        help_text=_("El vehículo al que pertenece la hoja de mantenimiento.")
+        help_text=_("El vehículo al que pertenece el manual de mantenimiento.")
+    )
+    anticipo_alertas = models.DecimalField(
+        _('Anticipo alertas'),
+        max_digits=10,
+        decimal_places=2,
+        blank=False,
+        help_text=_("Usando este valor es posible anticipar los mantenimientos con anticipación.")
     )
     frecuencia_minima = models.DecimalField(
         _('Frecuencia mínima'),
@@ -55,11 +62,11 @@ class ManualMantenimiento(models.Model):
         )
 
 class Sistema(models.Model):
-    hoja_mantenimiento = models.ForeignKey(
+    manual_mantenimiento = models.ForeignKey(
         ManualMantenimiento,
         on_delete=models.CASCADE,
         related_name='sistemas_vehiculos',
-        help_text=_("Hoja mantenimiento a la que pertenece este sistema.")
+        help_text=_("Manual de mantenimiento a la que pertenece este sistema.")
     )
     nombre = models.CharField(
         _('Sistema'),

@@ -1,9 +1,15 @@
 from django.utils.translation import gettext_lazy as _
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from .schemas import (
+    BateriaFilterSchema,
+    KilometrajeFilterSchema,
+    LlantaFilterSchema,
+    VehiculoFilterSchema
+)
 from .serializers import (
     BateriaSerializer,
     LlantaSerializer,
@@ -22,8 +28,8 @@ class BateriaView(viewsets.ModelViewSet):
     queryset = Bateria.objects.all()
     serializer_class = BateriaSerializer
 
-    @action(detail=False, methods=['get'])
-    def por_vehiculo_id(self, request: Request):
+    @action(detail=False, methods=['get'], schema=BateriaFilterSchema())
+    def buscar_por_vehiculo_id(self, request: Request):
         """Busca baterías por vehículo.
 
         Esta función busca baterías en la base de datos que pertenecen al vehículo
@@ -39,18 +45,20 @@ class BateriaView(viewsets.ModelViewSet):
         """
         vehiculo_id = request.query_params.get('vehiculo_id')
 
-        if vehiculo_id:
-            try:
-                baterias = Bateria.objects.filter(vehiculo_id=vehiculo_id)
-                serializer = BateriaSerializer(baterias, many=True)
-                return Response(serializer.data)
-            except Bateria.DoesNotExist:
-                return Response({
-                    "error": _("No se encontraron baterías para el vehículo especificado.")
-                })
-        return Response({
-            "error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")
-        })
+        if not vehiculo_id:
+            return Response(
+                {"error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            baterias = Bateria.objects.filter(vehiculo_id=vehiculo_id)
+            serializer = BateriaSerializer(baterias, many=True)
+            return Response(serializer.data)
+        except Bateria.DoesNotExist:
+            return Response(
+                {"error": _("No se encontraron baterías para el vehículo especificado.")},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 class LlantaView(viewsets.ModelViewSet):
     """
@@ -59,8 +67,8 @@ class LlantaView(viewsets.ModelViewSet):
     queryset = Llanta.objects.all()
     serializer_class = LlantaSerializer
 
-    @action(detail=False, methods=['get'])
-    def por_vehiculo_id(self, request: Request):
+    @action(detail=False, methods=['get'], schema=LlantaFilterSchema())
+    def buscar_por_vehiculo_id(self, request: Request):
         """Busca llantas por vehículo.
 
         Esta función busca llantas en la base de datos que pertenecen al vehículo
@@ -76,18 +84,20 @@ class LlantaView(viewsets.ModelViewSet):
         """
         vehiculo_id = request.query_params.get('vehiculo_id')
 
-        if vehiculo_id:
-            try:
-                llantas = Llanta.objects.filter(vehiculo_id=vehiculo_id)
-                serializer = LlantaSerializer(llantas, many=True)
-                return Response(serializer.data)
-            except Llanta.DoesNotExist:
-                return Response({
-                    "error": _("No se encontraron llantas para el vehículo especificado.")
-                })
-        return Response({
-            "error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")
-        })
+        if not vehiculo_id:
+            return Response(
+                {"error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            llantas = Llanta.objects.filter(vehiculo_id=vehiculo_id)
+            serializer = LlantaSerializer(llantas, many=True)
+            return Response(serializer.data)
+        except Llanta.DoesNotExist:
+            return Response(
+                {"error": _("No se encontraron llantas para el vehículo especificado.")},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 class KilometrajeView(viewsets.ModelViewSet):
     """
@@ -96,8 +106,8 @@ class KilometrajeView(viewsets.ModelViewSet):
     queryset = Kilometraje.objects.all()
     serializer_class = KilometrajeSerializer
 
-    @action(detail=False, methods=['get'])
-    def por_vehiculo_id(self, request: Request):
+    @action(detail=False, methods=['get'], schema=KilometrajeFilterSchema())
+    def buscar_por_vehiculo_id(self, request: Request):
         """Busca kilometrajes por vehículo.
 
         Esta función busca kilometrajes en la base de datos que pertenecen al vehículo
@@ -113,21 +123,23 @@ class KilometrajeView(viewsets.ModelViewSet):
         """
         vehiculo_id = request.query_params.get('vehiculo_id')
 
-        if vehiculo_id:
-            try:
-                kilometrajes = Kilometraje.objects.filter(vehiculo_id=vehiculo_id)
-                serializer = KilometrajeSerializer(kilometrajes, many=True)
-                return Response(serializer.data)
-            except Kilometraje.DoesNotExist:
-                return Response({
-                    "error": _("No se encontraron kilometrajes para el vehículo especificado.")
-                })
-        return Response({
-            "error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")
-        })
+        if not vehiculo_id:
+            return Response(
+                {"error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            kilometrajes = Kilometraje.objects.filter(vehiculo_id=vehiculo_id)
+            serializer = KilometrajeSerializer(kilometrajes, many=True)
+            return Response(serializer.data)
+        except Kilometraje.DoesNotExist:
+            return Response(
+                {"error": _("No se encontraron kilometrajes para el vehículo especificado."),},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-    @action(detail=False, methods=['get'])
-    def ultimo_por_vehiculo_id(self, request: Request):
+    @action(detail=False, methods=['get'], schema=KilometrajeFilterSchema())
+    def ultimo_buscar_por_vehiculo_id(self, request: Request):
         """Busca el último kilometraje por vehículo.
 
         Esta función busca el último kilometraje registrado en la base de datos para el
@@ -143,20 +155,22 @@ class KilometrajeView(viewsets.ModelViewSet):
         """
         vehiculo_id = request.query_params.get('vehiculo_id')
 
-        if vehiculo_id:
-            try:
-                ultimo_kilometraje = Kilometraje.objects.filter(
-                    vehiculo_id=vehiculo_id
-                ).latest('fecha')
-                serializer = KilometrajeSerializer(ultimo_kilometraje)
-                return Response(serializer.data)
-            except Kilometraje.DoesNotExist:
-                return Response({
-                    "error": _("No se encontraron kilometrajes para el vehículo especificado.")
-                })
-        return Response({
-            "error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")
-        })
+        if not vehiculo_id:
+            return Response(
+                {"error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            ultimo_kilometraje = Kilometraje.objects.filter(
+                vehiculo_id=vehiculo_id
+            ).latest('fecha')
+            serializer = KilometrajeSerializer(ultimo_kilometraje)
+            return Response(serializer.data)
+        except Kilometraje.DoesNotExist:
+            return Response(
+                {"error": _("No se encontraron kilometrajes para el vehículo especificado.")},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 class VehiculoView(viewsets.ModelViewSet):
     """
@@ -165,7 +179,7 @@ class VehiculoView(viewsets.ModelViewSet):
     queryset = Vehiculo.objects.all()
     serializer_class = VehiculoSerializer
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], schema=VehiculoFilterSchema())
     def buscar_por_propietario(self, request: Request):
         """Busca vehículos por propietario.
 
@@ -182,15 +196,17 @@ class VehiculoView(viewsets.ModelViewSet):
         """
         propietario_id = request.query_params.get('propietario_id')
 
-        if propietario_id:
-            try:
-                vehiculos = Vehiculo.objects.filter(propietario_id=propietario_id)
-                serializer = VehiculoSerializer(vehiculos, many=True)
-                return Response(serializer.data)
-            except Vehiculo.DoesNotExist:
-                return Response({
-                    "error": _("No se encontraron vehículos para el propietario especificado.")
-                })
-        return Response({
-            "error": _("Parámetro de búsqueda incorrecto: propietario_id es obligatorio.")
-        })
+        if not propietario_id:
+            return Response(
+                {"error": _("Parámetro de búsqueda incorrecto: propietario_id es obligatorio.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            vehiculos = Vehiculo.objects.filter(propietario_id=propietario_id)
+            serializer = VehiculoSerializer(vehiculos, many=True)
+            return Response(serializer.data)
+        except Vehiculo.DoesNotExist:
+            return Response(
+                {"error": _("No se encontraron vehículos para el propietario especificado.")},
+                status=status.HTTP_404_NOT_FOUND
+            )

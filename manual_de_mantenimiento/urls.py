@@ -9,10 +9,10 @@ from .views import (
 )
 
 router = routers.DefaultRouter()
-router.register(r'manuales-mantenimiento', ManualMantenimientoViewSet)
+router.register(r'manuales_mantenimiento', ManualMantenimientoViewSet)
 router.register(r'sistemas', SistemaViewSet)
 router.register(r'subsistemas', SubsistemaViewSet)
-router.register(r'operaciones-mantenimiento', OperacionMantenimientoViewSet)
+router.register(r'operaciones_mantenimiento', OperacionMantenimientoViewSet)
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),
