@@ -43,9 +43,9 @@ class UserFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.Integer(
                         title='Empresa ID',
-                        description=_('El id de la empresa de este usuario.')
+                        description='El id de la empresa de este usuario.'
                     ),
-                    description=_('El id de la empresa a filtrar.')
+                    description='El id de la empresa a filtrar.'
                 ),
                 coreapi.Field(
                     name='role',
@@ -53,12 +53,11 @@ class UserFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.String(
                         title='Rol',
-                        description=_('Rol del usuario dentro de la empresa.')    
+                        description='Rol del usuario dentro de la empresa.'
                     ),
-                    description=_('El rol de los usuarios a filtrar.')
+                    description='El rol de los usuarios a filtrar.'
                 )
             ]
-
         return super().get_manual_fields(path, method) + extra_fields
 
 class PerfilView(ModelViewSet):

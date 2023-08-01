@@ -176,7 +176,7 @@ if not DEBUG:
     )
 else:
     my_credentials = service_account.Credentials.from_service_account_file(
-        'acv-img-storage-firebase-adminsdk-wmdec-b6bd5e0172.json'
+        'acv-img-storage-firebase-adminsdk-wmdec-ddc905c945.json'
     )
 
 # Configura el backend de almacenamiento de Google Cloud Storage

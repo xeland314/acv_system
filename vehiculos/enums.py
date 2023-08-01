@@ -55,3 +55,14 @@ class UnidadOdometro(Enum):
     @classmethod
     def choices(cls) -> List[Tuple[str, str]]:
         return [(key.value, key.name) for key in cls]
+
+class UnidadCarburante(Enum):
+    """
+    Enumeración de las diferentes unidades para el carburante.
+    """
+    LITROS = 'litros'
+    GALONES = 'galones'
+
+    @classmethod
+    def choices(cls) -> List[Tuple[str, str]]:
+        return [(key.value, key.name) for key in cls]

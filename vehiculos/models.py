@@ -7,6 +7,7 @@ from .enums import (
     Combustible,
     CondicionVehicular,
     PosicionLlanta,
+    UnidadCarburante,
     UnidadOdometro
 )
 from .validators import (
@@ -159,10 +160,10 @@ class Vehiculo(models.Model):
         decimal_places=2,
         help_text=_("El tonelaje del vehículo.")
     )
-    unidad_carburante = models.DecimalField(
+    unidad_carburante = models.CharField(
         _('Unidad carburante'),
-        max_digits=10,
-        decimal_places=4,
+        max_length=8,
+        choices=UnidadCarburante.choices(),
         help_text=_("La unidad de carburante del vehículo.")
     )
 
@@ -175,16 +176,6 @@ class Vehiculo(models.Model):
             unidad (str): La unidad de medida del kilometraje.
         """
         Kilometraje.objects.create(valor=valor, unidad=unidad, vehiculo=self)
-
-    @property
-    def bitacora(self):
-        """
-        Retorna la bitácora de kilometraje del vehículo ordenada por fecha.
-
-        Returns:
-            QuerySet: La bitácora de kilometraje del vehículo ordenada por fecha.
-        """
-        return self.bitacora_kilometraje.order_by('-fecha')
 
     class Meta:
         verbose_name = _("Vehículo")

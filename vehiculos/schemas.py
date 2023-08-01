@@ -13,7 +13,7 @@ class BateriaFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.Integer(
                         title='Vehiculo ID',
-                        description=_('El id del vehículo para buscar sus baterías.')
+                        description='El id del vehículo para buscar sus baterías.'
                     )
                 )
             ]
@@ -32,7 +32,7 @@ class KilometrajeFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.Integer(
                         title='Vehiculo ID',
-                        description=_('El id del vehículo para buscar sus kilometrajes.')
+                        description='El id del vehículo para buscar sus kilometrajes.'
                     )
                 )
             ]
@@ -48,7 +48,7 @@ class LlantaFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.Integer(
                         title='Vehiculo ID',
-                        description=_('El id del vehículo para buscar sus llantas.')
+                        description='El id del vehículo para buscar sus llantas.'
                     )
                 )
             ]
@@ -64,7 +64,7 @@ class VehiculoFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.Integer(
                         title='Propietario ID',
-                        description=_('El id del propietario para buscar los vehículos.')
+                        description='El id del propietario para buscar los vehículos.'
                     )
                 )
             ]

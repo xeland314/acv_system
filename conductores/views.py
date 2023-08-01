@@ -28,9 +28,9 @@ class ConductorFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.Integer(
                         title='Empresa ID',
-                        description=_('El id de la empresa de este usuario.')
+                        description='El id de la empresa de este usuario.'
                     ),
-                    description=_('El id de la empresa a filtrar.')
+                    description='El id de la empresa a filtrar.'
                 ),
                 coreapi.Field(
                     name='role',
@@ -38,9 +38,9 @@ class ConductorFilterSchema(AutoSchema):
                     location='query',
                     schema=coreschema.String(
                         title='Rol',
-                        description=_('Rol del usuario dentro de la empresa.')    
+                        description='Rol del usuario dentro de la empresa.'
                     ),
-                    description=_('El rol de los usuarios a filtrar.')
+                    description='El rol de los usuarios a filtrar.'
                 )
             ]
 
@@ -80,12 +80,12 @@ class ConductorView(viewsets.ModelViewSet):
                 return Response(serializer.data)
             except Conductor.DoesNotExist:
                 return Response(
-                    {"error": "No se encontraron conductores para la empresa y rol especificados."},
+                    {"error": _("No se encontraron conductores para la empresa y rol especificados.")},
                     status=status.HTTP_404_NOT_FOUND
                 )
 
         return Response(
-            {"error": "Parámetros de búsqueda incorrectos. Se requiere empresa_id y role."},
+            {"error": _("Parámetros de búsqueda incorrectos. Se requiere empresa_id y role.")},
             status=status.HTTP_400_BAD_REQUEST
         )
 
