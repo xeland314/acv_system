@@ -26,7 +26,4 @@ class OrdenTrabajoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrdenTrabajo
-        fields = (
-            'id', 'fecha_emision', 'secretario', 'vehiculo', 'tipo_mantenimiento',
-            'tipo_trabajo', 'cumplimiento'
-        )
+        fields = '__all__'

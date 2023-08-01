@@ -17,7 +17,6 @@ class AperturaOrdenMovimientoView(viewsets.ModelViewSet):
     """
     queryset = AperturaOrdenMovimiento.objects.all()
     serializer_class = AperturaOrdenMovimientoSerializer
-    schema = AutoSchema(tags=['AperturaOrdenMovimiento'])
 
     def get_queryset(self):
         queryset = super().get_queryset()

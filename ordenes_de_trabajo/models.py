@@ -21,30 +21,44 @@ class OrdenTrabajo(models.Model):
     Representa una orden de trabajo para el mantenimiento de vehículos.
     """
     fecha_emision = models.DateField(
+        _("Fecha de emisión"),
         auto_now=True,
         blank=False,
         help_text=_("Fecha de emisión de la orden de trabajo")
     )
-    secretario = models.ForeignKey(
+    responsable = models.ForeignKey(
         PerfilUsuario,
         on_delete=models.PROTECT,
+        related_name="orden_trabajo_responsables",
         help_text=_("Responsable de emitir la orden de trabajo")
     )
     vehiculo = models.ForeignKey(
         Vehiculo,
         on_delete=models.PROTECT,
+        related_name="orden_trabajo_vehiculos",
         help_text=_("Vehículo asociado con la orden de trabajo")
     )
     tipo_mantenimiento = models.CharField(
+        _("Tipo de mantenimiento"),
         max_length=30,
         choices=TipoMantenimiento.choices(),
         help_text=_("Tipo de mantenimiento a realizar")
     )
-    tipo_trabajo = models.TextField(help_text=_("Descripción del trabajo a realizar"))
+    tipo_trabajo = models.TextField(
+        _("Observaciones"),
+        help_text=_("Descripción del trabajo a realizar")
+    )
     cumplimiento = models.CharField(
+        _("Cumplimiento"),
         max_length=20,
         choices=EstadoCumplimiento.choices(),
         help_text=_("Estado de cumplimiento de la orden de trabajo")
+    )
+    costo_mantenimiento = models.DecimalField(
+        _("Costo del mantenimiento"),
+        default=0,
+        decimal_places=2,
+        max_digits=10
     )
 
     class Meta:
