@@ -5,7 +5,6 @@ Autor: Christopher Villamarín (@xeland314)
 """
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-from conductores.models import Conductor
 from usuarios.enums import Roles
 
 from usuarios.models import PerfilUsuario
@@ -25,7 +24,7 @@ class AperturaOrdenMovimientoSerializer(serializers.ModelSerializer):
         help_text=_("Responsable de emitir la orden de mantenimiento")
     )
     conductor = serializers.PrimaryKeyRelatedField(
-        queryset=Conductor.objects.all(),
+        queryset=PerfilUsuario.objects.all(),
         help_text=_("El conductor que va a conducir el vehículo de la orden de apertura.")
     )
     vehiculo = serializers.PrimaryKeyRelatedField(
@@ -41,9 +40,13 @@ class CierreOrdenMovimientoSerializer(serializers.ModelSerializer):
     """
     Serializer para serializar y deserializar instancias del modelo CierreOrdenMovimiento.
     """
+    apertura = AperturaOrdenMovimientoSerializer(read_only=True)
     apertura = serializers.PrimaryKeyRelatedField(
         queryset=AperturaOrdenMovimiento.objects.all(),
-        help_text=_("Apertura de la orden de movimiento a la que se vincula el cierre de la misma")
+        write_only=True,
+        help_text=_(
+            "Apertura de la orden de movimiento a la que se vincula el cierre de la misma"
+        )
     )
 
     class Meta:

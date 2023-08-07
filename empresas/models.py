@@ -15,6 +15,7 @@ class Funcionalidad(models.Model):
         - nombre: Nombre de la funcionalidad.
         - descripcion: Descripción de la funcionalidad.
     """
+    id = models.BigAutoField(primary_key=True)
     nombre = models.CharField(
         _('Nombre'),
         max_length=255,
@@ -48,6 +49,7 @@ class Suscripcion(models.Model):
         - features: Relación muchos a muchos con el modelo Funcionalidad.
         - created_by: Relación uno a muchos con el modelo User.
     """
+    id = models.BigAutoField(primary_key=True)
     tipo = models.CharField(
         _('Tipo'),
         max_length=255,
@@ -80,7 +82,7 @@ class Suscripcion(models.Model):
         verbose_name_plural = _("Suscripciones")
 
     def __str__(self) -> str:
-        return f"{self.tipo} - (Desde {self.fecha_emision} hasta {self.fecha_caducidad})"
+        return f"{self.id}:{self.tipo} - (Desde {self.fecha_emision} hasta {self.fecha_caducidad})"
 
 class Empresa(models.Model):
     """Modelo para almacenar información sobre empresas.
@@ -90,7 +92,7 @@ class Empresa(models.Model):
     tiene campos para almacenar relaciones con otros modelos,
     como la suscripción de la empresa.
     """
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     nombre_comercial = models.CharField(
         _('Nombre comercial'),
         blank=False,

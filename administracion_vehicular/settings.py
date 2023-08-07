@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     #'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
-    'conductores',
     'empresas',
     'manual_de_mantenimiento',
     'ordenes_de_mantenimiento',
@@ -176,7 +175,7 @@ if not DEBUG:
     )
 else:
     my_credentials = service_account.Credentials.from_service_account_file(
-        'acv-img-storage-firebase-adminsdk-wmdec-ddc905c945.json'
+        'acv-img-storage-firebase-adminsdk-wmdec-b6bd5e0172.json'
     )
 
 # Configura el backend de almacenamiento de Google Cloud Storage

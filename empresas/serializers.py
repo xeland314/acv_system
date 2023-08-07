@@ -55,7 +55,7 @@ class SuscripcionSerializer(serializers.ModelSerializer):
             - default_error_messages: Mensajes de error personalizados.
         """
         model = Suscripcion
-        fields = ['id', 'tipo', 'fecha_emision', 'fecha_caducidad', 'precio', 'funcionalidades']
+        fields = '__all__'
         read_only_fields = ('id',)
         default_error_messages = {
             'invalid': _('Datos inválidos.'),
@@ -66,14 +66,14 @@ class EmpresaSerializer(serializers.ModelSerializer):
     """Serializer para serializar y deserializar instancias del modelo Empresa."""
 
     suscripcion = SuscripcionSerializer(read_only=True)
+    suscripcion = serializers.PrimaryKeyRelatedField(
+        queryset=Suscripcion.objects.all(),
+        write_only=True
+    )
 
     class Meta:
         model = Empresa
-        fields = (
-            'id', 'nombre_comercial', 'ruc',
-            'suscripcion', 'direccion', 'correo', 'telefono',
-            'logo_empresa'
-        )
+        fields = '__all__'
         read_only_fields = ('id',)
         default_error_messages = {
             'invalid': _('Datos inválidos.'),

@@ -7,17 +7,19 @@ from rest_framework.response import Response
 from .schemas import (
     BateriaFilterSchema,
     KilometrajeFilterSchema,
+    LicenciaFilterSchema,
     LlantaFilterSchema,
     VehiculoFilterSchema
 )
 from .serializers import (
     BateriaSerializer,
+    LicenciaSerializer,
     LlantaSerializer,
     KilometrajeSerializer,
     VehiculoSerializer,
 )
 from .models import (
-    Bateria, Llanta,
+    Bateria, Licencia, Llanta,
     Vehiculo, Kilometraje,
 )
 
@@ -29,7 +31,7 @@ class BateriaView(viewsets.ModelViewSet):
     serializer_class = BateriaSerializer
 
     @action(detail=False, methods=['get'], schema=BateriaFilterSchema())
-    def buscar_por_vehiculo_id(self, request: Request):
+    def search_by(self, request: Request):
         """Busca baterías por vehículo.
 
         Esta función busca baterías en la base de datos que pertenecen al vehículo
@@ -68,7 +70,7 @@ class LlantaView(viewsets.ModelViewSet):
     serializer_class = LlantaSerializer
 
     @action(detail=False, methods=['get'], schema=LlantaFilterSchema())
-    def buscar_por_vehiculo_id(self, request: Request):
+    def search_by(self, request: Request):
         """Busca llantas por vehículo.
 
         Esta función busca llantas en la base de datos que pertenecen al vehículo
@@ -99,6 +101,45 @@ class LlantaView(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+class LicenciaView(viewsets.ModelViewSet):
+    """
+    Clase que define la vista para listar y crear licencias.
+    """
+    queryset = Licencia.objects.all()
+    serializer_class = LicenciaSerializer
+
+    @action(detail=False, methods=['get'], schema=LicenciaFilterSchema())
+    def search_by(self, request: Request):
+        """Busca licencias por conductor.
+
+        Esta función busca licencias en la base de datos que pertenecen al conductor
+        especificado en el parámetro `conductor_id` de la petición HTTP.
+
+        Args:
+            request (Request): La petición HTTP con el parámetro de búsqueda.
+
+        Returns:
+            Response: Una respuesta HTTP con los datos serializados de las licencias
+            que pertenecen al conductor especificado, o un mensaje de error si no se
+            encontraron licencias o si el parámetro de búsqueda es incorrecto.
+        """
+        conductor_id = request.query_params.get('conductor_id')
+
+        if not conductor_id:
+            return Response(
+                {"error": _("Parámetro de búsqueda incorrecto: conductor_id es obligatorio.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            licencias = Licencia.objects.filter(conductor_id=conductor_id)
+            serializer = LicenciaSerializer(licencias, many=False)
+            return Response(serializer.data)
+        except Licencia.DoesNotExist:
+            return Response(
+                {"error": _("No se encontraron licencias para el conductor especificado.")},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 class KilometrajeView(viewsets.ModelViewSet):
     """
     Vista para gestionar los kilometrajes de los vehículos.
@@ -107,7 +148,7 @@ class KilometrajeView(viewsets.ModelViewSet):
     serializer_class = KilometrajeSerializer
 
     @action(detail=False, methods=['get'], schema=KilometrajeFilterSchema())
-    def buscar_por_vehiculo_id(self, request: Request):
+    def search_by(self, request: Request):
         """Busca kilometrajes por vehículo.
 
         Esta función busca kilometrajes en la base de datos que pertenecen al vehículo
@@ -138,40 +179,6 @@ class KilometrajeView(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-    @action(detail=False, methods=['get'], schema=KilometrajeFilterSchema())
-    def ultimo_buscar_por_vehiculo_id(self, request: Request):
-        """Busca el último kilometraje por vehículo.
-
-        Esta función busca el último kilometraje registrado en la base de datos para el
-        vehículo especificado en el parámetro `vehiculo_id` de la petición HTTP.
-
-        Args:
-            request (Request): La petición HTTP con el parámetro de búsqueda.
-
-        Returns:
-            Response: Una respuesta HTTP con los datos serializados del último
-            kilometraje registrado para el vehículo especificado, o un mensaje de error
-            si no se encontró un kilometraje o si el parámetro de búsqueda es incorrecto.
-        """
-        vehiculo_id = request.query_params.get('vehiculo_id')
-
-        if not vehiculo_id:
-            return Response(
-                {"error": _("Parámetro de búsqueda incorrecto: vehiculo_id es obligatorio.")},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            ultimo_kilometraje = Kilometraje.objects.filter(
-                vehiculo_id=vehiculo_id
-            ).latest('fecha')
-            serializer = KilometrajeSerializer(ultimo_kilometraje)
-            return Response(serializer.data)
-        except Kilometraje.DoesNotExist:
-            return Response(
-                {"error": _("No se encontraron kilometrajes para el vehículo especificado.")},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
 class VehiculoView(viewsets.ModelViewSet):
     """
     Vista para gestionar vehículos.
@@ -180,7 +187,7 @@ class VehiculoView(viewsets.ModelViewSet):
     serializer_class = VehiculoSerializer
 
     @action(detail=False, methods=['get'], schema=VehiculoFilterSchema())
-    def buscar_por_propietario(self, request: Request):
+    def search_by(self, request: Request):
         """Busca vehículos por propietario.
 
         Esta función busca vehículos en la base de datos que pertenecen al propietario

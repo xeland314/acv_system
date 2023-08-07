@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -7,6 +8,7 @@ from .enums import (
     Combustible,
     CondicionVehicular,
     PosicionLlanta,
+    TipoLicencia,
     UnidadCarburante,
     UnidadOdometro
 )
@@ -14,7 +16,8 @@ from .validators import (
     validar_anio_fabricacion,
     validar_codigo_bateria,
     validar_codigo_dot,
-    validar_placa_vehicular
+    validar_placa_vehicular,
+    validar_vigencia_licencia
 )
 
 class Kilometraje(models.Model):
@@ -71,28 +74,10 @@ class Vehiculo(models.Model):
         related_name='vehiculos',
         help_text=_("El propietario del vehículo.")
     )
-    marca = models.CharField(
-        _('Marca'),
-        max_length=50,
-        help_text=_("La marca del vehículo.")
-    )
-    modelo = models.CharField(
-        _('Modelo'),
-        max_length=50,
-        help_text=_("El modelo del vehículo.")
-    )
-    placa = models.CharField(
-        _('Placa'),
-        max_length=10,
-        unique=True,
-        help_text=_("La placa del vehículo."),
-        validators=[validar_placa_vehicular,]
-    )
     anio_de_fabricacion = models.PositiveIntegerField(
         _('Año de fabricación'),
         help_text=_("El año de fabricación del vehículo."),
         validators=[validar_anio_fabricacion,]
-
     )
     cilindraje = models.DecimalField(
         _('Cilindraje'),
@@ -104,6 +89,11 @@ class Vehiculo(models.Model):
         _('Color'),
         max_length=50,
         help_text=_("El color del vehículo.")
+    )
+    clase = models.CharField(
+        _('Clase de vehículo'),
+        max_length=50,
+        help_text=_("Clase del vehículo.")
     )
     combustible = models.CharField(
         _('Combustible'),
@@ -160,22 +150,18 @@ class Vehiculo(models.Model):
         decimal_places=2,
         help_text=_("El tonelaje del vehículo.")
     )
+    valor_unidad_carburante = models.DecimalField(
+        _('Valor unidad carburante'),
+        max_digits=12,
+        decimal_places=4,
+        help_text=_("Valor de la unidad de carburante del vehículo.")
+    )
     unidad_carburante = models.CharField(
         _('Unidad carburante'),
         max_length=8,
         choices=UnidadCarburante.choices(),
         help_text=_("La unidad de carburante del vehículo.")
     )
-
-    def agregar_kilometraje(self, valor, unidad):
-        """
-        Agrega un nuevo registro de kilometraje al odómetro del vehículo.
-
-        Args:
-            valor (float): El valor del kilometraje a agregar.
-            unidad (str): La unidad de medida del kilometraje.
-        """
-        Kilometraje.objects.create(valor=valor, unidad=unidad, vehiculo=self)
 
     class Meta:
         verbose_name = _("Vehículo")
@@ -241,3 +227,46 @@ class Bateria(models.Model):
     def __str__(self) -> str:
         """Devuelve una representación legible por humanos del objeto Bateria."""
         return f"Batería de {self.vehiculo}"
+
+class Licencia(models.Model):
+    """
+    Representa una licencia de conducir.
+
+    Atributos:
+        tipo (str): El tipo de la licencia (A, B, C, etc.).
+        fecha_de_caducidad (date): La fecha de caducidad de la licencia.
+
+    Métodos:
+        esta_vigente(): Retorna la validez de la licencia en el tiempo.
+    """
+    conductor = models.OneToOneField(
+        PerfilUsuario,
+        on_delete=models.CASCADE,
+        related_name="licencias_conductores",
+        help_text=_("Conductor al que pertenece esta licencia.")
+    )
+    tipo = models.CharField(
+        max_length=2,
+        choices=TipoLicencia.choices(),
+        help_text=_("El tipo de la licencia (A, B, C, etc.).")
+    )
+    fecha_de_emision = models.DateField(
+        blank=False,
+        help_text=_("La fecha de emisión de la licencia.")
+    )
+    fecha_de_caducidad = models.DateField(
+        blank=False,
+        help_text=_("La fecha de caducidad de la licencia."),
+        validators=[validar_vigencia_licencia,]
+    )
+    puntos = models.PositiveSmallIntegerField(
+        blank=False,
+        help_text=_("Puntos vigentes de la licencia.")
+    )
+
+    def __str__(self):
+        return f'{self.tipo} - {self.fecha_de_caducidad}'
+
+    def esta_vigente(self):
+        """Retorna la validez de la licencia en el tiempo."""
+        return date.today() <= self.fecha_de_caducidad

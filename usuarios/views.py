@@ -21,21 +21,21 @@ from .serializers import PerfilSerializer
 
 class UserFilterSchema(AutoSchema):
 
-    def get_description(self, path, method):
+    def get_description(self, path: str, method):
         """
         Devuelve una descripción personalizada para la vista.
         """
-        if path == '/usuarios/api/v1/perfiles/filter_by_empresa_and_role/':
+        if path.endswith('/search_by/'):
             return 'Filtra los perfiles de usuario por empresa y rol.'
         return super().get_description(path, method)
 
-    def get_manual_fields(self, path, method):
+    def get_manual_fields(self, path: str, method):
         """
         Devuelve una lista de campos personalizados para la vista.
         """
         extra_fields = []
 
-        if path == '/usuarios/api/v1/perfiles/filter_by_empresa_and_role/':
+        if path.endswith('search_by'):
             extra_fields = [
                 coreapi.Field(
                     name='empresa_id',
@@ -49,7 +49,7 @@ class UserFilterSchema(AutoSchema):
                 ),
                 coreapi.Field(
                     name='role',
-                    required=True,
+                    required=False,
                     location='query',
                     schema=coreschema.String(
                         title='Rol',
@@ -70,7 +70,7 @@ class PerfilView(ModelViewSet):
     authentication_class = (TokenAuthentication,)
 
     @action(detail=False, methods=['get'], schema=UserFilterSchema())
-    def filter_by_empresa_and_role(self, request: Request):
+    def search_by(self, request: Request):
         """Filtra los perfiles de usuario por empresa y rol.
 
         Args:
@@ -88,17 +88,20 @@ class PerfilView(ModelViewSet):
         role = request.query_params.get('role')
 
         if empresa_id and role:
-            try:
-                queryset = PerfilUsuario.objects.filter(empresa_id=empresa_id, role=role)
-                serializer = PerfilSerializer(queryset, many=True)
-                return Response(serializer.data)
-            except PerfilUsuario.DoesNotExist:
-                return Response(
-                    {"error": _("No se ha encontrado ningún usuario con este rol en esta empresa")},
-                    status=status.HTTP_404_NOT_FOUND
-                )
+            queryset = PerfilUsuario.objects.filter(empresa_id=empresa_id, role=role)
+        elif empresa_id:
+            queryset = PerfilUsuario.objects.filter(empresa_id=empresa_id)
+        else:
+            return Response(
+                {"error": _("Parámetros de búsqueda incorrectos.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response(
-            {"error": _("Parámetros de búsqueda incorrectos.")},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        if not queryset.exists():
+            return Response(
+                {"error": _("No se ha encontrado ningún usuario con este rol en esta empresa")},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = PerfilSerializer(queryset, many=True)
+        return Response(serializer.data)

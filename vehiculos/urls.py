@@ -9,6 +9,7 @@ from rest_framework import routers
 
 from .views import (
     BateriaView,
+    LicenciaView,
     LlantaView,
     VehiculoView,
     KilometrajeView,
@@ -17,6 +18,7 @@ from .views import (
 router = routers.DefaultRouter()
 router.register(r'baterias', BateriaView, basename='baterias')
 router.register(r'kilometrajes', KilometrajeView, basename='kilometrajes')
+router.register(r'licencias', LicenciaView, basename='licencias')
 router.register(r'llantas', LlantaView, basename='llantas')
 router.register(r'vehiculos', VehiculoView, basename='vehiculos')
 

@@ -36,7 +36,8 @@ class CodigoDotInvalido(ValidationError):
 class PlacaVehicularInvalida(ValidationError):
     """Raised when a vehicle license plate is invalid.
 
-    This exception is raised when the vehicle license plate being validated does not meet the expected format.
+    This exception is raised when the vehicle license plate
+    being validated does not meet the expected format.
     It is a subclass of DRF's `ValidationError` and can be used to
     return a 400 Bad Request response with a descriptive error message
     when using DRF to build an API.
@@ -77,13 +78,23 @@ class FechaFabricacionInvalida(ValidationError):
             detail = "La fecha de fabricación está por fuera de los límites definidos."
         super().__init__(_(detail), params)
 
-class CodigoBateriaInvalido(ValidationError):
-    """ Inicializa una instancia de la excepción.
-        Args:
-            detail (str): Detalle opcional que describe el error de fecha de fabricación.
-            params (dict): Parámetros opcionales adicionales para el error.
+class LicenciaCaducada(ValidationError):
     """
+    Representa una excepción que se produce cuando la licencia ha caducado.
+
+    Args:
+        detail (str): Detalle opcional que describe el error de la fecha de caducidad de la licencia.
+        params (dict): Parámetros opcionales adicionales para el error.
+    """
+
     def __init__(self, detail=None, params=None):
+        """
+        Inicializa una instancia de la excepción LicenciaCaducada.
+
+        Args:
+            detail (str): Detalle opcional que describe el error de la fecha de caducidad de la licencia.
+            params (dict): Parámetros opcionales adicionales para el error.
+        """
         if detail is None:
-            detail = "El código de bateria no cumple con el formato esperado."
+            detail = "La licencia está caducada."
         super().__init__(_(detail), params)

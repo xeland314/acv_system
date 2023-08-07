@@ -31,7 +31,8 @@ class ManualMantenimientoViewSet(ModelViewSet):
     serializer_class = ManualMantenimientoSerializer
 
     @action(detail=False, methods=['get'], schema=ManualMantenimientoSchema())
-    def by_vehiculo(self, request: Request):
+    def search_by(self, request: Request):
+        """Función de búsqueda para los manuales de mantenimiento"""
         vehiculo_id = request.query_params.get('vehiculo_id')
         if not vehiculo_id:
             return Response(
@@ -56,7 +57,8 @@ class SistemaViewSet(ModelViewSet):
     serializer_class = SistemaSerializer
 
     @action(detail=False, methods=['get'], schema=SistemaSchema())
-    def by_manual_mantenimiento(self, request: Request):
+    def search_by(self, request: Request):
+        """Función de búsqueda para sistemas"""
         manualmantenimiento_id = request.query_params.get('manual_mantenimiento_id')
         if not manualmantenimiento_id:
             return Response(
@@ -80,7 +82,8 @@ class SubsistemaViewSet(ModelViewSet):
     serializer_class = SubsistemaSerializer
 
     @action(detail=False, methods=['get'], schema=SubsistemaSchema())
-    def by_sistema(self, request: Request):
+    def search_by(self, request: Request):
+        """Función de búsqueda para subsistemas"""
         sistema_id = request.query_params.get('sistema_id')
         if not sistema_id:
             return Response(
@@ -104,7 +107,8 @@ class OperacionMantenimientoViewSet(ModelViewSet):
     serializer_class = OperacionMantenimientoSerializer
 
     @action(detail=False, methods=['get'], schema=OperacionMantenimientoSchema())
-    def by_subsistema(self, request: Request):
+    def search_by(self, request: Request):
+        """Función de búsqueda para las operaciones de mantenimiento"""
         subsistema_id = request.query_params.get('subsistema_id')
         if not subsistema_id:
             return Response(

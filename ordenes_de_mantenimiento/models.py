@@ -7,7 +7,6 @@ Autor: Christopher Villamarín (@xeland314)
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from conductores.models import Conductor
 
 from usuarios.models import PerfilUsuario
 from vehiculos.models import Kilometraje, Vehiculo
@@ -21,11 +20,11 @@ class AperturaOrdenMovimiento(models.Model):
     responsable = models.ForeignKey(
         PerfilUsuario,
         on_delete=models.PROTECT,
-        related_name="responsables",
+        related_name="aperturas_responsables",
         help_text=_("Responsable de emitir la orden de mantenimiento")
     )
     conductor = models.ForeignKey(
-        Conductor,
+        PerfilUsuario,
         on_delete=models.PROTECT,
         help_text=_("El conductor que va a conducir el vehículo de la orden de apertura."),
         related_name='aperturas_conductor'

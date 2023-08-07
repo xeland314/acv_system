@@ -20,14 +20,13 @@ from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('api_generate_token/', views.obtain_auth_token),
-    path('conductores/', include('conductores.urls')),
-    path('empresas/', include('empresas.urls')),
     path('dashboard/', admin.site.urls),
-    path('docs/', include_docs_urls(title='Users API')),
-    path('manual_mantenimiento/', include('manual_de_mantenimiento.urls')),
-    path('ordenes_mantenimiento/', include('ordenes_de_mantenimiento.urls')),
-    path('ordenes_trabajo/', include('ordenes_de_trabajo.urls')),
-    path('representantes/', include('representantes.urls')),
-    path('usuarios/', include('usuarios.urls')),
-    path('vehiculos/', include('vehiculos.urls')),
+    path('docs/', include_docs_urls(title='Developer API documentation')),
+    path('', include('empresas.urls')),
+    path('', include('manual_de_mantenimiento.urls')),
+    path('', include('ordenes_de_mantenimiento.urls')),
+    path('', include('ordenes_de_trabajo.urls')),
+    path('', include('representantes.urls')),
+    path('', include('usuarios.urls')),
+    path('', include('vehiculos.urls')),
 ]
