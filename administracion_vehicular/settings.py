@@ -9,14 +9,15 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import json
 from pathlib import Path
 import os
 
 import dj_database_url
+from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -38,7 +39,6 @@ if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,14 +46,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic', 
+    'whitenoise.runserver_nostatic',
+    'storages',
     'corsheaders',
     'coreapi',
+    #'oauth2_provider',
     'rest_framework',
     'rest_framework.authtoken',
-    'login',
-    'control_vehicular',
-    'operaciones'
+    'empresas',
+    'manual_de_mantenimiento',
+    'ordenes_de_mantenimiento',
+    'ordenes_de_trabajo',
+    'representantes',
+    'usuarios',
+    'vehiculos'
 ]
 
 MIDDLEWARE = [
@@ -96,10 +102,8 @@ DATABASES = {
     )
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -144,8 +148,37 @@ if not DEBUG:    # Tell Django to copy statics to the `staticfiles` directory
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_WHITELIST = ['http://localhost:5173']
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:5173',
+    'http://localhost:8080'
+]
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
 }
+
+# Google credentials for saving images of users:
+if not DEBUG:
+    # Acceder a la variable de entorno desde tu código
+    my_credentials_str = os.environ['CREDENTIALS']
+    # Convertir la cadena de texto en un objeto JSON
+    credentials_json = json.loads(my_credentials_str)
+    my_credentials = service_account.Credentials.from_service_account_info(
+        credentials_json
+    )
+else:
+    my_credentials = service_account.Credentials.from_service_account_file(
+        'acv-img-storage-firebase-adminsdk-wmdec-b6bd5e0172.json'
+    )
+
+# Configura el backend de almacenamiento de Google Cloud Storage
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'acv-img-storage.appspot.com'
+GS_CREDENTIALS = my_credentials # Credenciales de cuenta de servicio
