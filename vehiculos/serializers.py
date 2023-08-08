@@ -6,6 +6,7 @@ Autor: Christopher Villamarín (@xeland314)
 
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from empresas.models import Empresa
 
 from usuarios.models import PerfilUsuario
 
@@ -33,6 +34,10 @@ class VehiculoSerializer(serializers.ModelSerializer):
     propietario = serializers.PrimaryKeyRelatedField(
         queryset=PerfilUsuario.objects.all(),
         help_text=_("Usuario al que pertenece el vehículo.")
+    )
+    empresa = serializers.PrimaryKeyRelatedField(
+        queryset=Empresa.objects.all(),
+        help_text=_("Empresa en la que se ha registrado el vehículo.")
     )
 
     class Meta:

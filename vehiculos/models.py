@@ -1,6 +1,7 @@
 from datetime import date
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from empresas.models import Empresa
 
 from usuarios.models import PerfilUsuario
 
@@ -68,6 +69,12 @@ class Vehiculo(models.Model):
     Representa un vehículo.
     """
     id = models.BigAutoField(primary_key=True)
+    empresa = models.ForeignKey(
+        Empresa,
+        related_name="vehiculos_empresa",
+        on_delete=models.CASCADE,
+        help_text=_("Empresa en la que se ha registrado el vehículo.")
+    )
     propietario = models.ForeignKey(
         PerfilUsuario,
         on_delete=models.CASCADE,
