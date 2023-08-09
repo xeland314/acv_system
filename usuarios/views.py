@@ -105,3 +105,51 @@ class PerfilView(ModelViewSet):
 
         serializer = PerfilSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def search(self, request: Request):
+        """
+        Busca un usuario por su nombre de usuario,
+        correo electrónico o número de cédula.
+
+        Este método recibe como argumentos el nombre de usuario, el correo electrónico
+        o el número de cédula del usuario a buscar,
+        y devuelve la información del usuario correspondiente utilizando
+        el serializador PerfilSerializer.
+
+        Args:
+            - username (str): El nombre de usuario del usuario a buscar.
+            - email (str): El correo electrónico del usuario a buscar.
+            - cedula (str): El número de cédula del usuario a buscar.
+
+            Solo uno de estos parámetros debe ser proporcionado en cada llamada.
+            Si se proporciona más de uno, solo se utilizará el primero.
+
+        Returns:
+            - Un objeto Response con la información del usuario en formato JSON,
+            o un mensaje de error si ocurre algún problema.
+        """
+        username = request.query_params.get('username')
+        email = request.query_params.get('email')
+        cedula = request.query_params.get('cedula')
+
+        if username:
+            queryset = PerfilUsuario.objects.filter(username=username)
+        elif email:
+            queryset = PerfilUsuario.objects.filter(email=email)
+        elif cedula:
+            queryset = PerfilUsuario.objects.filter(cedula=cedula)
+        else:
+            return Response(
+                {"error": _("Parámetros de búsqueda incorrectos.")},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not queryset.exists():
+            return Response(
+                {"error": _("No se ha encontrado ningún usuario con estos datos")},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = PerfilSerializer(queryset.first())
+        return Response(serializer.data)
