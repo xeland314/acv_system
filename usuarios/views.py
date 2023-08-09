@@ -129,13 +129,10 @@ class PerfilView(ModelViewSet):
             - Un objeto Response con la información del usuario en formato JSON,
             o un mensaje de error si ocurre algún problema.
         """
-        username = request.query_params.get('username')
         email = request.query_params.get('email')
         cedula = request.query_params.get('cedula')
 
-        if username:
-            queryset = PerfilUsuario.objects.filter(username=username)
-        elif email:
+        if email:
             queryset = PerfilUsuario.objects.filter(email=email)
         elif cedula:
             queryset = PerfilUsuario.objects.filter(cedula=cedula)
